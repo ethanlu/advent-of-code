@@ -8,7 +8,7 @@ class question(object):
         self.code_character_count = 0
         self.in_memory_character_count = 0
 
-    def run(self, input):
+    def part_one(self, input):
         for s in input:
             print s
             self.code_character_count += len(s)
@@ -74,7 +74,7 @@ class question(object):
                     raise Exception('invalid state : ' + str(self.state))
         return (self.code_character_count - self.in_memory_character_count)
 
-    def run2(self, input):
+    def part_two(self, input):
         for s in input:
             print s
             self.code_character_count += len(re.escape(s)) + 2

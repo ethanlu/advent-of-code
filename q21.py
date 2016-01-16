@@ -65,58 +65,6 @@ class q21(object):
 
         return gear_setup
 
-    def _all_possible_gear_stats2(self, allowed_equipment_slot):
-        gear_setups = []
-
-        possible_weapons = combinations(self.store['weapons'].keys(), allowed_equipment_slot['weapons']) if allowed_equipment_slot['weapons'] else []
-        for (weapon, ) in possible_weapons:
-            gear = {'gear': {'weapon': weapon,
-                             'armor': '',
-                             'rings': ''},
-                    'cost': self.store['weapons'][weapon]['cost'],
-                    'damage': self.store['weapons'][weapon]['damage'],
-                    'armor': self.store['weapons'][weapon]['armor']}
-
-            possible_armors = combinations(self.store['armor'].keys(), allowed_equipment_slot['armor']) if allowed_equipment_slot['armor'] else []
-            if possible_armors:
-                for (armor, ) in possible_armors:
-                    gear = {'gear': {'weapon': weapon,
-                                     'armor': armor,
-                                     'rings': ''},
-                            'cost': self.store['weapons'][weapon]['cost'] + self.store['armor'][armor]['cost'],
-                            'damage': self.store['weapons'][weapon]['damage'] + self.store['armor'][armor]['damage'],
-                            'armor': self.store['weapons'][weapon]['armor'] + self.store['armor'][armor]['armor']}
-
-                    possible_rings = combinations(self.store['rings'].keys(), allowed_equipment_slot['rings']) if allowed_equipment_slot['rings'] else []
-                    for rings in possible_rings:
-                        gear = {'gear': {'weapon': weapon,
-                                         'armor': armor,
-                                         'rings': rings},
-                                'cost': self.store['weapons'][weapon]['cost'] + self.store['armor'][armor]['cost'],
-                                'damage': self.store['weapons'][weapon]['damage'] + self.store['armor'][armor]['damage'],
-                                'armor': self.store['weapons'][weapon]['armor'] + self.store['armor'][armor]['armor']}
-                        for i in range(len(rings)):
-                            gear['cost'] += self.store['rings'][rings[i]]['cost']
-                            gear['damage'] += self.store['rings'][rings[i]]['damage']
-                            gear['armor'] += self.store['rings'][rings[i]]['armor']
-            else:
-                possible_rings = combinations(self.store['rings'].keys(), allowed_equipment_slot['rings']) if allowed_equipment_slot['rings'] else []
-                for rings in possible_rings:
-                    gear = {'gear': {'weapon': weapon,
-                                     'armor': '',
-                                     'rings': rings},
-                            'cost': self.store['weapons'][weapon]['cost'],
-                            'damage': self.store['weapons'][weapon]['damage'],
-                            'armor': self.store['weapons'][weapon]['armor']}
-                    for i in range(len(rings)):
-                        gear['cost'] += self.store['rings'][rings[i]]['cost']
-                        gear['damage'] += self.store['rings'][rings[i]]['damage']
-                        gear['armor'] += self.store['rings'][rings[i]]['armor']
-
-            gear_setups.append(gear)
-
-        return gear_setups
-
     def _battle(self, player, boss):
         while True:
             # player gets first trike
