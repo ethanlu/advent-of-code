@@ -4,7 +4,7 @@ import re
 
 input = ['jio a, +22','inc a','tpl a','tpl a','tpl a','inc a','tpl a','inc a','tpl a','inc a','inc a','tpl a','inc a','inc a','tpl a','inc a','inc a','tpl a','inc a','inc a','tpl a','jmp +19','tpl a','tpl a','tpl a','tpl a','inc a','inc a','tpl a','inc a','tpl a','inc a','inc a','tpl a','inc a','inc a','tpl a','inc a','tpl a','tpl a','jio a, +8','inc b','jie a, +4','tpl a','inc a','jmp +2','hlf a','jmp -7']
 
-class q23(object):
+class Day23(object):
     def __init__(self, instructions):
         self.instructions = instructions
         self.current_address = 0

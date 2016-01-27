@@ -1,4 +1,4 @@
-class q10(object):
+class Day10(object):
     def __init__(self):
         pass
 

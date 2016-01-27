@@ -1,6 +1,6 @@
 import re
 
-class q11(object):
+class Day11(object):
     def __init__(self):
         pass
 

@@ -1,8 +1,6 @@
-import re
-
 input = 36000000
 
-class q20(object):
+class Day20(object):
     def __init__(self, number):
         self.number = number
 

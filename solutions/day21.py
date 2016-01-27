@@ -4,7 +4,7 @@ import re
 
 input = 'Hit Points: 100,Damage: 8,Armor: 2'
 
-class q21(object):
+class Day21(object):
     def __init__(self, boss_stats):
         self.boss_hp = int(re.match('.*Hit Points: (\d+)', boss_stats).group(1))
         self.boss_damage = int(re.match('.*Damage: (\d+)', boss_stats).group(1))

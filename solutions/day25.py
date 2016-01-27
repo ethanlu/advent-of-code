@@ -2,7 +2,7 @@ import re
 
 input = 'To continue, please consult the code grid in the manual.  Enter the code at row 2981, column 3075.'
 
-class q25(object):
+class Day25(object):
     def __init__(self, input):
         self.input = input
         r = re.match('To continue, please consult the code grid in the manual\.  Enter the code at row (\d+), column (\d+).', self.input)

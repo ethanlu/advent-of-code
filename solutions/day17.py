@@ -1,6 +1,6 @@
 input = [33,14,18,20,45,35,16,35,1,13,18,13,50,44,48,6,24,41,30,42]
 
-class q17(object):
+class Day17(object):
     def __init__(self, containers):
         self.containers = containers
 

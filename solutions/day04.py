@@ -1,6 +1,6 @@
 import hashlib
 
-class q4(object):
+class Day04(object):
     def __init__(self, key):
         self.key = key
 

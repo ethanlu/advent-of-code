@@ -20,7 +20,7 @@ class BattleState(object):
     def from_battle_state(cls, state):
         return cls(state.player_hp, state.player_mana, state.boss_hp, state.boss_damage, state.player_shield_duration, state.player_recharge_duration, state.boss_poison_duration, state.cast_sequence, state.total_mana_used)
 
-class q22(object):
+class Day22(object):
     def __init__(self, boss_stats):
         self.boss_hp = int(re.match('.*Hit Points: (\d+)', boss_stats).group(1))
         self.boss_damage = int(re.match('.*Damage: (\d+)', boss_stats).group(1))
