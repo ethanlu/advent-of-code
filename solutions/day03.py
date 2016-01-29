@@ -3,9 +3,9 @@ from itertools import cycle
 class Day03(object):
     def __init__(self, input_file):
         with open(input_file) as f:
-            self.directions = f.read().replace('\n','').strip()
+            self._directions = f.read().replace('\n','').strip()
 
-    def journey(self, directions):
+    def _journey(self, directions):
         x = 0
         y = 0
         visited_houses = set([(x,y)])
@@ -24,14 +24,14 @@ class Day03(object):
         return visited_houses
 
     def part_one(self):
-        return len(self.journey(self.directions))
+        return len(self._journey(self._directions))
 
     def part_two(self):
         # use cycle module to alternate between the two direction lists
         direction_list = cycle([[],[]])
-        map(lambda d: direction_list.next().append(d), self.directions)
+        map(lambda d: direction_list.next().append(d), self._directions)
 
-        return len(self.journey(direction_list.next()).union(self.journey(direction_list.next())))
+        return len(self._journey(direction_list.next()).union(self._journey(direction_list.next())))
 
 if __name__ == '__main__':
     p = Day03('input/day03.txt')
