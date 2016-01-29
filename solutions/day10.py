@@ -3,25 +3,7 @@ class Day10(object):
         with open(input_file) as f:
             self._start = map(lambda l: l.strip(), f.readlines())[0]
 
-    def look_say(self, input):
-        look_say = []
-
-        for n in input:
-            if len(look_say) == 0:
-                look_say.append((1, n))
-            else:
-                (count_n, current_n) = look_say.pop()
-
-                if current_n == n:
-                    count_n += 1
-                    look_say.append((count_n, current_n))
-                else:
-                    look_say.append((count_n, current_n))
-                    look_say.append((1, n))
-
-        return "".join(["{c}{n}".format(c=c, n=n) for (c, n) in look_say])
-
-    def _look_say(self, number):
+    def _do_look_say(self, number):
         response = ''
 
         i = 0
@@ -43,9 +25,9 @@ class Day10(object):
 
     def _get_next_look_say(self, number, iteration):
         if iteration > 1:
-            return self._get_next_look_say(self._look_say(number), iteration - 1)
+            return self._get_next_look_say(self._do_look_say(number), iteration - 1)
         else:
-            return self._look_say(number)
+            return self._do_look_say(number)
 
     def part_one(self,):
         return len(self._get_next_look_say(self._start, 40))
