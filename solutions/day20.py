@@ -1,8 +1,7 @@
-input = 36000000
-
 class Day20(object):
-    def __init__(self, number):
-        self.number = number
+    def __init__(self, input_file):
+        with open(input_file) as f:
+            self._number = int(f.read().strip())
 
     def _get_factors_sum(self, n, gift_factor, house_limit):
         factors = set([])
@@ -25,9 +24,9 @@ class Day20(object):
 
             if largest < fsum:
                 largest = fsum
-            print str(i) + ' : ' + str(largest)
+            #print str(i) + ' : ' + str(largest)
 
-            if fsum >= self.number:
+            if fsum >= self._number:
                 break
 
             i += 1
@@ -42,11 +41,21 @@ class Day20(object):
 
             if largest < fsum:
                 largest = fsum
-            print str(i) + ' : ' + str(largest)
+            #print str(i) + ' : ' + str(largest)
 
-            if fsum >= self.number:
+            if fsum >= self._number:
                 break
 
             i += 1
 
         return i
+
+
+if __name__ == '__main__':
+    p = Day20('input/day20.txt')
+
+    print '-----part one-----'
+    print p.part_one()
+
+    print '-----part two-----'
+    print p.part_two()

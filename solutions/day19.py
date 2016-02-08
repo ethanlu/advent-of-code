@@ -1,20 +1,23 @@
 import re
 
-input = ['Al => ThF','Al => ThRnFAr','B => BCa','B => TiB','B => TiRnFAr','Ca => CaCa','Ca => PB','Ca => PRnFAr','Ca => SiRnFYFAr','Ca => SiRnMgAr','Ca => SiTh','F => CaF','F => PMg','F => SiAl','H => CRnAlAr','H => CRnFYFYFAr','H => CRnFYMgAr','H => CRnMgYFAr','H => HCa','H => NRnFYFAr','H => NRnMgAr','H => NTh','H => OB','H => ORnFAr','Mg => BF','Mg => TiMg','N => CRnFAr','N => HSi','O => CRnFYFAr','O => CRnMgAr','O => HP','O => NRnFAr','O => OTi','P => CaP','P => PTi','P => SiRnFAr','Si => CaSi','Th => ThCa','Ti => BP','Ti => TiTi','e => HF','e => NAl','e => OMg']
-molecule = 'CRnCaCaCaSiRnBPTiMgArSiRnSiRnMgArSiRnCaFArTiTiBSiThFYCaFArCaCaSiThCaPBSiThSiThCaCaPTiRnPBSiThRnFArArCaCaSiThCaSiThSiRnMgArCaPTiBPRnFArSiThCaSiRnFArBCaSiRnCaPRnFArPMgYCaFArCaPTiTiTiBPBSiThCaPTiBPBSiRnFArBPBSiRnCaFArBPRnSiRnFArRnSiRnBFArCaFArCaCaCaSiThSiThCaCaPBPTiTiRnFArCaPTiBSiAlArPBCaCaCaCaCaSiRnMgArCaSiThFArThCaSiThCaSiRnCaFYCaSiRnFYFArFArCaSiRnFYFArCaSiRnBPMgArSiThPRnFArCaSiRnFArTiRnSiRnFYFArCaSiRnBFArCaSiRnTiMgArSiThCaSiThCaFArPRnFArSiRnFArTiTiTiTiBCaCaSiRnCaCaFYFArSiThCaPTiBPTiBCaSiThSiRnMgArCaF'
 
 class Day19(object):
-    def __init__(self, transformations):
-        self.transformations = []
+    def __init__(self, input_file):
+        self._transformations = []
 
-        for t in transformations:
-            tmp = t.split('=>')
-            self.transformations.append((tmp[0].strip(), tmp[1].strip()))
+        with open(input_file) as f:
+            lines = [l.strip() for l in f.readlines()]
+
+            self._final_molecule = lines[-1]
+
+            for t in lines[0:len(lines)-3]:
+                tmp = t.split('=>')
+                self._transformations.append((tmp[0].strip(), tmp[1].strip()))
 
     def _transform(self, molecule):
         possible_molecules = set()
 
-        for source, destination in self.transformations:
+        for source, destination in self._transformations:
             i = 0
             while i >= 0:
                 i = molecule.find(source, i)
@@ -33,16 +36,28 @@ class Day19(object):
             i += 1
         return i
 
-    def part_one(self, molecule):
-        return len(self._transform(molecule))
+    def part_one(self):
+        return len(self._transform(self._final_molecule))
 
-    def part_two(self, starting_molecule, target_molecule):
+    def part_two(self):
         # don't think this solution will always find the "shortest" steps to ANY molecule. it just happens to reverse engineer the algorithm
         # the question used to generate the target molecule
-        repl_r = {destination:source for source, destination in self.transformations}
+        starting_molecule = 'e'
+        target_molecule = self._final_molecule
+        repl_r = {destination:source for source, destination in self._transformations}
         molecules = [target_molecule]
         while molecules[-1] != starting_molecule:
             molecules.append(re.sub('^(.*)(' + '|'.join(repl_r.keys()) + ')(.*?)$',
                                 lambda x: x.group(1) + repl_r[x.group(2)] + x.group(3),
                                 molecules[-1]))
         return len(molecules) - 1
+
+
+if __name__ == '__main__':
+    p = Day19('input/day19.txt')
+
+    print '-----part one-----'
+    print p.part_one()
+
+    print '-----part two-----'
+    print p.part_two()
