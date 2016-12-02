@@ -16,7 +16,7 @@ class Day01(object):
         return position
 
 if __name__ == '__main__':
-    p = Day01('input/2015/day01.txt')
+    p = Day01('../../input/2015/day01.txt')
 
     print '-----part one-----'
     print p.part_one()

@@ -36,7 +36,7 @@ class Day10(object):
         return len(self._get_next_look_say(self._start, 50))
 
 if __name__ == '__main__':
-    p = Day10('input/2015/day10.txt')
+    p = Day10('../../input/2015/day10.txt')
 
     print '-----part one-----'
     print p.part_one()

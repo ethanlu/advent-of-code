@@ -34,7 +34,7 @@ class Day03(object):
         return len(self._journey(direction_list.next()).union(self._journey(direction_list.next())))
 
 if __name__ == '__main__':
-    p = Day03('input/2015/day03.txt')
+    p = Day03('../../input/2015/day03.txt')
 
     print '-----part one-----'
     print p.part_one()
