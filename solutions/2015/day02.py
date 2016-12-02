@@ -11,7 +11,7 @@ class Day02(object):
         return sum([min((2*l+2*w), (2*w+2*h), (2*h+2*l)) + l*w*h for (l, w, h) in self._boxes])
 
 if __name__ == '__main__':
-    p = Day02('input/day02.txt')
+    p = Day02('input/2015/day02.txt')
 
     print '-----part one-----'
     print p.part_one()

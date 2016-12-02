@@ -89,7 +89,7 @@ class Day08(object):
 
 
 if __name__ == '__main__':
-    p = Day08('input/day08.txt')
+    p = Day08('input/2015/day08.txt')
 
     print '-----part one-----'
     print p.part_one()
