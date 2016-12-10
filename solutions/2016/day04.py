@@ -53,7 +53,7 @@ class Day04(object):
 
     def part_two(self):
         # O(n) time complexity (n is length of movements in entire file)
-        # O(c) space complexity
+        # O(n) space complexity
         sector = None
         for code in self._input:
             s = code.decrypt()
