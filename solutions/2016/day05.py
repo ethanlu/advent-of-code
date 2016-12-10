@@ -25,7 +25,6 @@ class Day05(object):
 
         return ''.join(password)
 
-
     def part_two(self):
         # O(n) time complexity (n is search space of md5 hash with 5 leading zeroes and 6th character between 0 and 7)
         # O(c) space complexity
