@@ -10,7 +10,7 @@ class Day04(object):
         i = 0
         while True:
             i += 1
-            #print 'mining...' + str(i)
+            #print('mining...' + str(i))
             if hashlib.md5(self._key + str(i)).hexdigest()[0:l] == pattern:
                 break
         return i
@@ -25,8 +25,8 @@ class Day04(object):
 if __name__ == '__main__':
     p = Day04('../../input/2015/day04.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

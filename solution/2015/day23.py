@@ -46,7 +46,7 @@ class Day23(object):
 
     def _execute_instruction(self):
         instruction = self.instructions[self.current_address]
-        print str(self.current_address) + ' : ' + instruction
+        print(str(self.current_address) + ' : ' + instruction)
 
         register_set_op = re.match('^(hlf|tpl|inc) (a|b)$', instruction)
         jump_op = re.match('(jmp) ([\-\+]\d+)', instruction)

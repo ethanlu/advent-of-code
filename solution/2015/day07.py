@@ -73,7 +73,7 @@ class Day07(object):
         circuits = Queue.Queue()
         map(lambda c: circuits.put(c), self._circuits)
         while circuits.qsize() > 0:
-            #print 'circuits left : ' + str(circuits.qsize())
+            #print('circuits left : ' + str(circuits.qsize()))
             (operator, wire, sources) = circuits.get()
 
             try:
@@ -105,8 +105,8 @@ class Day07(object):
 if __name__ == '__main__':
     p = Day07('../../input/2015/day07.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

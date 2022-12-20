@@ -19,7 +19,7 @@ class Day03(object):
             elif d == 'v':
                 y-=1
             else:
-                print 'error'
+                print('error')
             visited_houses.add((x,y))
         return visited_houses
 
@@ -36,8 +36,8 @@ class Day03(object):
 if __name__ == '__main__':
     p = Day03('../../input/2015/day03.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

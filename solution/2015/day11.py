@@ -47,7 +47,7 @@ class Day11(object):
 
     def part_one(self):
         for s in self._next_password(self._s):
-            #print s + ' is invalid'
+            #print(s + ' is invalid')
             if self._is_valid(s):
                 break
 
@@ -57,7 +57,7 @@ class Day11(object):
         valid_password = self.part_one()
 
         for s in self._next_password(valid_password):
-            #print s + ' is invalid'
+            #print(s + ' is invalid')
             if self._is_valid(s):
                 break
 
@@ -67,8 +67,8 @@ class Day11(object):
 if __name__ == '__main__':
     p = Day11('../../input/2015/day11.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

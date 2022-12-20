@@ -38,7 +38,7 @@ class Day09(object):
             distance = self._get_total_distance(path)
             if shortest_path == 0 or shortest_path > distance:
                 shortest_path = distance
-            #print str(path) + ' : ' + str(distance)
+            #print(str(path) + ' : ' + str(distance))
 
         return shortest_path
 
@@ -49,7 +49,7 @@ class Day09(object):
             distance = self._get_total_distance(path)
             if longest_path < distance:
                 longest_path = distance
-            #print str(path) + ' : ' + str(distance)
+            #print(str(path) + ' : ' + str(distance))
 
         return longest_path
 
@@ -57,8 +57,8 @@ class Day09(object):
 if __name__ == '__main__':
     p = Day09('../../input/2015/day09.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

@@ -79,8 +79,8 @@ class Day18(object):
 if __name__ == '__main__':
     p = Day18('../../input/2015/day18.txt')
 
-    print '-----part one-----'
-    print p.part_one(100)
+    print('-----part one-----')
+    print(p.part_one(100))
 
-    print '-----part two-----'
-    print p.part_two(100)
+    print('-----part two-----')
+    print(p.part_two(100))

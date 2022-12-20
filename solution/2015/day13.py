@@ -49,7 +49,7 @@ class Day13(object):
             if best_happiness == 0 or best_happiness < seating_happiness:
                 best_happiness = seating_happiness
 
-            #print str(seating_arrangement) + ' : ' + str(seating_happiness)
+            #print(str(seating_arrangement) + ' : ' + str(seating_happiness))
 
         return best_happiness
 
@@ -63,8 +63,8 @@ class Day13(object):
 if __name__ == '__main__':
     p = Day13('../../input/2015/day13.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
-    print p.part_two()
+    print('-----part two-----')
+    print(p.part_two())

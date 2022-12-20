@@ -31,7 +31,7 @@ class Day25(object):
         column = 1
 
         while row != target_row or column != target_column:
-            print 'code at ' + str(row) + ', ' + str(column) + ' is ' + str(code)
+            print('code at ' + str(row) + ', ' + str(column) + ' is ' + str(code))
 
             if row == 1:
                 # based on position of this code, the next code is the next diagonal values at the starting from lower left

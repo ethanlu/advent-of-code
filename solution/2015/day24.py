@@ -37,7 +37,7 @@ class Day24(object):
         # and return first
         best_groups = []
         for s in range(1, len(self.weights)):
-            print 'look for group if size ' + str(s)
+            print('look for group if size ' + str(s))
             groups = self._find_all_groups_of_size(s, sum(self.weights)/3)
 
             if len(groups) > 0:
@@ -51,7 +51,7 @@ class Day24(object):
         # and return first
         best_groups = []
         for s in range(1, len(self.weights)):
-            print 'look for group if size ' + str(s)
+            print('look for group if size ' + str(s))
             groups = self._find_all_groups_of_size(s, sum(self.weights)/4)
 
             if len(groups) > 0:

@@ -16,7 +16,7 @@ class Day08(object):
 
     def part_one(self):
         for s in self._inputs:
-            #print s
+            #print(s)
             self._code_character_count += len(s)
             self._state = 0
 
@@ -82,7 +82,7 @@ class Day08(object):
 
     def part_two(self):
         for s in self._inputs:
-            #print s
+            #print(s)
             self._code_character_count += len(re.escape(s)) + 2
             self._in_memory_character_count += len(s)
         return (self._code_character_count - self._in_memory_character_count)
@@ -91,9 +91,9 @@ class Day08(object):
 if __name__ == '__main__':
     p = Day08('../../input/2015/day08.txt')
 
-    print '-----part one-----'
-    print p.part_one()
+    print('-----part one-----')
+    print(p.part_one())
 
-    print '-----part two-----'
+    print('-----part two-----')
     p.reset()
-    print p.part_two()
+    print(p.part_two())
