@@ -16,11 +16,11 @@ namespace solution.year2022
             
         public override string PartOne()
         {
-            int largestCalorie = 0;
-            int currentCalorie = 0;
-            for (int i = 0; i < this.input.Length; i++)
+            var largestCalorie = 0;
+            var currentCalorie = 0;
+            foreach (var calorie in this.input)
             {
-                if (string.IsNullOrEmpty(this.input[i]))
+                if (string.IsNullOrEmpty(calorie))
                 {
                     // blank reached, check if calories is new largest
                     if (currentCalorie >= largestCalorie)
@@ -32,7 +32,7 @@ namespace solution.year2022
                 }
                 else
                 {
-                    currentCalorie += System.Convert.ToInt32(this.input[i]);
+                    currentCalorie += System.Convert.ToInt32(calorie);
                 }
             }
 

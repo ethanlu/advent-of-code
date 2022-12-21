@@ -38,13 +38,13 @@ namespace solution.year2022
                 {'Z', 'S'},
             };
         
-            int score = 0;
-            char opponent = 'x';
-            char you = 'x';
-            for (int i = 0; i < this.input.Length; i++)
+            var score = 0;
+            var opponent = 'x';
+            var you = 'x';
+            foreach (var play in this.input)
             {
-                opponent = choiceMap[this.input[i][0]];
-                you = choiceMap[this.input[i][2]];
+                opponent = choiceMap[play[0]];
+                you = choiceMap[play[2]];
 
                 // add score based on your choice
                 score += this.choiceScore[you];
@@ -55,17 +55,17 @@ namespace solution.year2022
                 }
                 
                 // add score based on outcome
-                if (opponent == 'R')
+                switch (opponent)
                 {
-                    score += you == 'P' ? this.outcomeScore['W'] : this.outcomeScore['L'];
-                }
-                if (opponent == 'P')
-                {
-                    score += you == 'S' ? this.outcomeScore['W'] : this.outcomeScore['L'];
-                }
-                if (opponent == 'S')
-                {
-                    score += you == 'R' ? this.outcomeScore['W'] : this.outcomeScore['L'];
+                    case 'R':
+                        score += you == 'P' ? this.outcomeScore['W'] : this.outcomeScore['L'];
+                        break;
+                    case 'P':
+                        score += you == 'S' ? this.outcomeScore['W'] : this.outcomeScore['L'];
+                        break;
+                    default:
+                        score += you == 'R' ? this.outcomeScore['W'] : this.outcomeScore['L'];
+                        break;
                 }
             }
 
@@ -90,30 +90,30 @@ namespace solution.year2022
                 {'Z', 'W'},
             };
         
-            int score = 0;
-            char opponent = 'x';
-            char outcome = 'x';
-            char you = 'x';
-            for (int i = 0; i < this.input.Length; i++)
+            var score = 0;
+            var opponent = 'x';
+            var outcome = 'x';
+            var you = 'x';
+            foreach (var play in this.input)
             {
-                opponent = choiceMap[this.input[i][0]];
-                outcome = choiceMap[this.input[i][2]];
+                opponent = choiceMap[play[0]];
+                outcome = choiceMap[play[2]];
 
                 // add score based on outcome
                 score += this.outcomeScore[outcome];
 
                 // add score based on choice
-                if (outcome == 'D')
+                switch (outcome)
                 {
-                    you = opponent;
-                }
-                if (outcome == 'L')
-                {
-                    you = opponent == 'R' ? 'S' : opponent == 'P' ? 'R' : 'P';
-                }
-                if (outcome == 'W')
-                {
-                    you = opponent == 'R' ? 'P' : opponent == 'P' ? 'S' : 'R';
+                    case 'D':
+                        you = opponent;
+                        break;
+                    case 'L':
+                        you = opponent == 'R' ? 'S' : opponent == 'P' ? 'R' : 'P';
+                        break;
+                    default:
+                        you = opponent == 'R' ? 'P' : opponent == 'P' ? 'S' : 'R';
+                        break;
                 }
                 score += this.choiceScore[you];
                 
