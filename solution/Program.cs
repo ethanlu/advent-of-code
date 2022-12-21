@@ -83,26 +83,3 @@ namespace solution
         }
     }
 }
-
-
-// namespace solution.year2022
-// {
-//     public class Day01 : Solution
-//     {
-//         public Day01(string year, string day) : base(year, day)
-//         {
-//             // load input
-//         }
-//             
-//         public override string PartOne()
-//         {
-//             return this.LoadInputAsString();
-//         }
-//
-//         public override string PartTwo()
-//         {
-//             return string.Join(" - ", this.LoadInputAsLines());
-//         }
-//         
-//     }
-// }

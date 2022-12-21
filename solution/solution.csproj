@@ -42,6 +42,7 @@
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="year2022\Day01.cs" />
+        <Compile Include="year2022\Day02.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\input\2015\day01.txt">
