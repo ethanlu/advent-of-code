@@ -139,3 +139,5 @@ dmypy.json
 */.idea
 */bin
 */obj
+
+*/*.exe
