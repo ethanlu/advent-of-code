@@ -49,6 +49,7 @@
         <Compile Include="year2022\Day05.cs" />
         <Compile Include="year2022\Day07.cs" />
         <Compile Include="year2022\Day08.cs" />
+        <Compile Include="year2022\Day09.cs" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\input\2015\day01.txt">
