@@ -24,7 +24,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'aoc = solution.app:main'
+            'aoc = adventofcode.app:main'
         ]
     }
 )
