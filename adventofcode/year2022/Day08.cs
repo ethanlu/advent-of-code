@@ -1,139 +1,140 @@
-namespace adventofcode.year2022
+using adventofcode.common;
+
+namespace adventofcode.year2022;
+
+public class Day08 : Solution
 {
-    public class Day08 : Solution
+    private List<List<int>> _grid = new List<List<int>>();
+
+    public Day08(string year, string day) : base(year, day)
     {
-        private List<List<int>> _grid = new List<List<int>>();
+        var input = this.LoadInputAsLines();
 
-        public Day08(string year, string day) : base(year, day)
+        foreach (var line in input)
         {
-            var input = this.LoadInputAsLines();
+            _grid.Add(new List<int>(line.ToArray().Select(c => Convert.ToInt32(c.ToString()))));
+        }
+    }
 
-            foreach (var line in input)
-            {
-                _grid.Add(new List<int>(line.ToArray().Select(c => Convert.ToInt32(c.ToString()))));
-            }
+    private bool IsVisible(int r, int c)
+    {
+        // edge
+        if (r == 0 || r == _grid.Count - 1 || c == 0 || c == _grid[0].Count - 1)
+        {
+            return true;
         }
 
-        private bool IsVisible(int r, int c)
+        var top = true;
+        // top
+        for (var row = r - 1; row >= 0; row--)
         {
-            // edge
-            if (r == 0 || r == _grid.Count - 1 || c == 0 || c == _grid[0].Count - 1)
-            {
-                return true;
-            }
-
-            var top = true;
-            // top
-            for (var row = r - 1; row >= 0; row--)
-            {
-                top = top && _grid[r][c] > _grid[row][c];
-            }
-            
-            // bottom
-            var bottom = true;
-            for (var row = r + 1; row < _grid.Count(); row++)
-            {
-                bottom = bottom && _grid[r][c] > _grid[row][c];
-            }
-            
-            // left
-            var left = true;
-            for (var col = c - 1; col >= 0; col--)
-            {
-                left = left && _grid[r][c] > _grid[r][col];
-            }
-            
-            // right
-            var right = true;
-            for (var col = c + 1; col < _grid[0].Count; col++)
-            {
-                right = right && _grid[r][c] > _grid[r][col];
-            }
-
-            return top || bottom || left || right;
+            top = top && _grid[r][c] > _grid[row][c];
         }
         
-        private int ScenicScore(int r, int c)
+        // bottom
+        var bottom = true;
+        for (var row = r + 1; row < _grid.Count(); row++)
         {
-            // top
-            var top = 0;
-            for (var row = r - 1; row >= 0; row--)
-            {
-                top++;
-                if (_grid[r][c] <= _grid[row][c])
-                {
-                    break;
-                }
-            }
-            
-            // bottom
-            var bottom = 0;
-            for (var row = r + 1; row < _grid.Count(); row++)
-            {
-                bottom++;
-                if (_grid[r][c] <= _grid[row][c])
-                {
-                    break;
-                }
-            }
-            
-            // left
-            var left = 0;
-            for (var col = c - 1; col >= 0; col--)
-            {
-                left++;
-                if (_grid[r][c] <= _grid[r][col])
-                {
-                    break;
-                }
-            }
-            
-            // right
-            var right = 0;
-            for (var col = c + 1; col < _grid[0].Count; col++)
-            {
-                right++;
-                if (_grid[r][c] <= _grid[r][col])
-                {
-                    break;
-                }
-            }
-
-            return top * bottom * left * right;
+            bottom = bottom && _grid[r][c] > _grid[row][c];
+        }
+        
+        // left
+        var left = true;
+        for (var col = c - 1; col >= 0; col--)
+        {
+            left = left && _grid[r][c] > _grid[r][col];
+        }
+        
+        // right
+        var right = true;
+        for (var col = c + 1; col < _grid[0].Count; col++)
+        {
+            right = right && _grid[r][c] > _grid[r][col];
         }
 
-        public override string PartOne()
+        return top || bottom || left || right;
+    }
+    
+    private int ScenicScore(int r, int c)
+    {
+        // top
+        var top = 0;
+        for (var row = r - 1; row >= 0; row--)
         {
-            var visible = 0;
-
-            for (var row = 0; row < _grid.Count; row++)
+            top++;
+            if (_grid[r][c] <= _grid[row][c])
             {
-                for (var col = 0; col < _grid[0].Count; col++)
-                {
-                    visible += this.IsVisible(row, col) ? 1 : 0;
-                }
+                break;
             }
-
-            return Convert.ToString(visible);
+        }
+        
+        // bottom
+        var bottom = 0;
+        for (var row = r + 1; row < _grid.Count(); row++)
+        {
+            bottom++;
+            if (_grid[r][c] <= _grid[row][c])
+            {
+                break;
+            }
+        }
+        
+        // left
+        var left = 0;
+        for (var col = c - 1; col >= 0; col--)
+        {
+            left++;
+            if (_grid[r][c] <= _grid[r][col])
+            {
+                break;
+            }
+        }
+        
+        // right
+        var right = 0;
+        for (var col = c + 1; col < _grid[0].Count; col++)
+        {
+            right++;
+            if (_grid[r][c] <= _grid[r][col])
+            {
+                break;
+            }
         }
 
-        public override string PartTwo()
-        {
-            var largestScore = 0;
+        return top * bottom * left * right;
+    }
 
-            for (var row = 0; row < _grid.Count; row++)
+    public override string PartOne()
+    {
+        var visible = 0;
+
+        for (var row = 0; row < _grid.Count; row++)
+        {
+            for (var col = 0; col < _grid[0].Count; col++)
             {
-                for (var col = 0; col < _grid[0].Count; col++)
+                visible += this.IsVisible(row, col) ? 1 : 0;
+            }
+        }
+
+        return Convert.ToString(visible);
+    }
+
+    public override string PartTwo()
+    {
+        var largestScore = 0;
+
+        for (var row = 0; row < _grid.Count; row++)
+        {
+            for (var col = 0; col < _grid[0].Count; col++)
+            {
+                var score = this.ScenicScore(row, col);
+                if (score > largestScore)
                 {
-                    var score = this.ScenicScore(row, col);
-                    if (score > largestScore)
-                    {
-                        largestScore = score;
-                    }
+                    largestScore = score;
                 }
             }
-
-            return Convert.ToString(largestScore);
         }
+
+        return Convert.ToString(largestScore);
     }
 }

@@ -1,59 +1,59 @@
-namespace adventofcode.year2022
+using adventofcode.common;
+
+namespace adventofcode.year2022;
+
+public class Day06 : Solution
 {
-    public class Day06 : Solution
+    private string _input;
+
+    public Day06(string year, string day) : base(year, day)
     {
-        private string _input;
+        _input = this.LoadInputAsString();
+    }
 
-        public Day06(string year, string day) : base(year, day)
+    public override string PartOne()
+    {
+        var index = 0;
+        Queue<char> sequence = new Queue<char>();
+        foreach (char x in _input)
         {
-            _input = this.LoadInputAsString();
-        }
-
-        public override string PartOne()
-        {
-            var index = 0;
-            Queue<char> sequence = new Queue<char>();
-            foreach (char x in _input)
+            index++;
+            
+            sequence.Enqueue(x);
+            if (index > 4)
             {
-                index++;
+                sequence.Dequeue();
                 
-                sequence.Enqueue(x);
-                if (index > 4)
+                if (sequence.ToArray().Distinct().Count() == 4)
                 {
-                    sequence.Dequeue();
-                    
-                    if (sequence.ToArray().Distinct().Count() == 4)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
-
-            return Convert.ToString(index);
         }
 
-        public override string PartTwo()
+        return Convert.ToString(index);
+    }
+
+    public override string PartTwo()
+    {
+        var index = 0;
+        Queue<char> sequence = new Queue<char>();
+        foreach (char x in _input)
         {
-            var index = 0;
-            Queue<char> sequence = new Queue<char>();
-            foreach (char x in _input)
+            index++;
+            
+            sequence.Enqueue(x);
+            if (index > 14)
             {
-                index++;
+                sequence.Dequeue();
                 
-                sequence.Enqueue(x);
-                if (index > 14)
+                if (sequence.ToArray().Distinct().Count() == 14)
                 {
-                    sequence.Dequeue();
-                    
-                    if (sequence.ToArray().Distinct().Count() == 14)
-                    {
-                        break;
-                    }
+                    break;
                 }
             }
-
-            return Convert.ToString(index);
         }
-        
+
+        return Convert.ToString(index);
     }
 }
