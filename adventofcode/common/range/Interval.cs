@@ -23,15 +23,13 @@ public class Interval : IComparable<Interval>, IEquatable<Interval>
 
     public bool Overlaps(Interval interval)
     {
-        return _left <= interval.Left() && _right >= interval.Left() ||
-               _left <= interval.Right() && _right >= interval.Right() ||
-               interval.Left() <= _left && interval.Right() >= _left ||
-               interval.Left() <= _right && interval.Right() >= _right;
+        return !(_right < interval.Left() || _left > interval.Right());
     }
 
     public bool Contains(Interval interval)
     {
-        return _left <= interval.Left() && _right >= interval.Right();
+        return (_left <= interval.Left() && _right >= interval.Right()) ||
+               (interval.Left() <= _left && interval.Right() >= _right);
     }
 
     public bool Contains(int n)

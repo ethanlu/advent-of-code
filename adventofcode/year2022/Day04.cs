@@ -1,4 +1,5 @@
 using adventofcode.common;
+using adventofcode.common.range;
 using System.Text.RegularExpressions;
 
 namespace adventofcode.year2022;
@@ -18,12 +19,10 @@ public class Day04 : Solution
         foreach (var assignments in _input)
         {
             var match = Regex.Match(assignments, @"^(\d+)-(\d+),(\d+)-(\d+)$");
-            var start1 = Convert.ToInt32(match.Groups[1].ToString());
-            var end1 = Convert.ToInt32(match.Groups[2].ToString());
-            var start2 = Convert.ToInt32(match.Groups[3].ToString());
-            var end2 = Convert.ToInt32(match.Groups[4].ToString());
+            var interval1 = new Interval(Convert.ToInt32(match.Groups[1].ToString()), Convert.ToInt32(match.Groups[2].ToString()));
+            var interval2 = new Interval(Convert.ToInt32(match.Groups[3].ToString()), Convert.ToInt32(match.Groups[4].ToString()));
 
-            overlap += (start1 <= start2 && end1 >= end2) || (start2 <= start1 && end2 >= end1) ? 1 : 0;
+            overlap += interval1.Contains(interval2) ? 1 : 0;
         }
         
         return Convert.ToString(overlap);
@@ -35,12 +34,10 @@ public class Day04 : Solution
         foreach (var assignments in _input)
         {
             var match = Regex.Match(assignments, @"^(\d+)-(\d+),(\d+)-(\d+)$");
-            var start1 = Convert.ToInt32(match.Groups[1].ToString());
-            var end1 = Convert.ToInt32(match.Groups[2].ToString());
-            var start2 = Convert.ToInt32(match.Groups[3].ToString());
-            var end2 = Convert.ToInt32(match.Groups[4].ToString());
+            var interval1 = new Interval(Convert.ToInt32(match.Groups[1].ToString()), Convert.ToInt32(match.Groups[2].ToString()));
+            var interval2 = new Interval(Convert.ToInt32(match.Groups[3].ToString()), Convert.ToInt32(match.Groups[4].ToString()));
 
-            overlap += (end1 < start2 || start1 > end2) ? 0 : 1;
+            overlap += interval1.Overlaps(interval2) ? 1 : 0;
         }
         
         return Convert.ToString(overlap);
