@@ -43,7 +43,7 @@ public struct Point : IEquatable<Point>
         return _x == p.X() && _y == p.Y();
     }
 
-    public override bool Equals(Object obj)
+    public override bool Equals(Object? obj)
     {
         return obj is Point && Equals((Point) obj);
     }
