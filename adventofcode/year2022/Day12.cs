@@ -80,16 +80,10 @@ public class Day12 : Solution
 
         Console.WriteLine(shortest);
     }
-    
-    private int Heuristic(INode node)
-    {
-        var n = (GridNode) node;
-        return (Math.Abs(_end.X() - n.X()) + Math.Abs(_end.Y() - n.Y()));
-    } 
 
     public override string PartOne()
     {
-        var astar = new AStar(_start, _end, Heuristic);
+        var astar = new AStar(new Path().AddNode(_start), _end, new GridNodeHeuristic(_end));
         var shortest = astar.FindPath();
         
         ShowPath(shortest);
@@ -99,14 +93,14 @@ public class Day12 : Solution
 
     public override string PartTwo()
     {
-        var astar = new AStar(_start, _end, Heuristic);
+        var astar = new AStar(new Path().AddNode(_start), _end, new GridNodeHeuristic(_end));
         var shortest = astar.FindPath();
         
         foreach (var node in _grid)
         {
             if (node.Height() == 1 && node.Id() != _start.Id())
             {
-                astar = new AStar(node, _end, Heuristic);
+                astar = new AStar(new Path().AddNode(node), _end, new GridNodeHeuristic(_end));
                 var candidate = astar.FindPath();
 
                 if (candidate.Nodes().Last().Id() == _end.Id() && candidate.Nodes().Count < shortest.Nodes().Count)
@@ -179,4 +173,19 @@ internal class GridNode : Node
 
         return neighbors;
     }
+}
+
+internal class GridNodeHeuristic : Heuristic
+{
+    private GridNode _end;
+    public GridNodeHeuristic(GridNode end)
+    {
+        _end = end;
+    }
+    
+    public override int Cost(INode node, Path path)
+    {
+        var n = (GridNode) node;
+        return (Math.Abs(_end.X() - n.X()) + Math.Abs(_end.Y() - n.Y()));
+    } 
 }

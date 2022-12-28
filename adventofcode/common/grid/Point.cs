@@ -52,4 +52,9 @@ public struct Point : IEquatable<Point>
     {
         return _x * 13 + _y * 37;
     }
+    
+    public override string ToString()
+    {
+        return $"({_x}, {_y})";
+    }
 }

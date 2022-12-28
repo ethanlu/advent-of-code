@@ -72,7 +72,6 @@ public class Interval : IComparable<Interval>, IEquatable<Interval>
         {
             return 1;
         }
-
         return 0;
     }
     
@@ -89,5 +88,10 @@ public class Interval : IComparable<Interval>, IEquatable<Interval>
     public override int GetHashCode()
     {
         return _left * 13 + _right * 37;
+    }
+    
+    public override string ToString()
+    {
+        return $"({_left}..{_right})";
     }
 }

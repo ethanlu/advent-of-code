@@ -2,28 +2,27 @@ namespace adventofcode.common.graph.search;
 
 public class AStar
 {
-    private INode _start;
+    private Path _start;
     private INode _end;
-    private HashSet<string> _visited;
-    private Func<INode, int> _heuristic;
+    private HashSet<INode> _visited;
+    private IHeuristic _heuristic;
     
 
-    public AStar(INode start, INode end, Func<INode, int> heuristic)
+    public AStar(Path start, INode end, IHeuristic? heuristic)
     {
         _start = start;
         _end = end;
-        _visited = new HashSet<string>();
-        _heuristic = heuristic;
+        _visited = new HashSet<INode>();
+        _heuristic = heuristic ?? new Heuristic();
     }
 
     public Path FindPath()
     {
-        var shortest = new Path();
-        shortest.AddNode(_start);
-        _visited.Add(_start.Id());
+        var shortest = _start;
+        _visited.Add(shortest.Nodes().Last());
         
         var candidates = new PriorityQueue<Path, int>();
-        candidates.Enqueue(shortest, shortest.Cost() + _heuristic(_start));
+        candidates.Enqueue(shortest, shortest.Cost() + _heuristic.Cost(shortest.Nodes().Last(), shortest));
 
         do
         {
@@ -38,12 +37,11 @@ public class AStar
 
             foreach (var neighbor in candidate.Nodes().Last().Neighbors())
             {
-                if (!_visited.Contains(neighbor.Id()))
+                if (!_visited.Contains(neighbor))
                 {
-                    var nextPath = new Path(candidate);
-                    nextPath.AddNode(neighbor);
-                    candidates.Enqueue(nextPath, nextPath.Cost() + _heuristic(neighbor));
-                    _visited.Add(neighbor.Id());
+                    var nextPath = new Path(candidate).AddNode(neighbor);
+                    candidates.Enqueue(nextPath, nextPath.Cost() + _heuristic.Cost(neighbor, nextPath));
+                    _visited.Add(neighbor);
                 }
             }
         } while (candidates.Count > 0);
