@@ -56,7 +56,7 @@ internal class Program
         
         Console.WriteLine("-----part one-----");
         timer.Start();
-        //Console.WriteLine(solution.PartOne());
+        Console.WriteLine(solution.PartOne());
         timer.Stop();
         Time(timer.Elapsed);
 
