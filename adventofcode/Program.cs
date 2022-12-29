@@ -1,4 +1,6 @@
-﻿namespace adventofcode;
+﻿using System.Diagnostics;
+
+namespace adventofcode;
 
 using common;
 using System.Text.RegularExpressions;
@@ -25,6 +27,13 @@ internal class Program
 
     public static void Main(string[] args)
     {
+        void Time(TimeSpan ts)
+        {
+            Console.WriteLine("Elapsed : " + String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10));
+        }
+
         if (args.Length != 2)
         {
             throw new ArgumentException("Missing year and/or day");
@@ -43,11 +52,19 @@ internal class Program
         var day = args[1];
 
         ISolution solution = LoadSolution(year, day);
+        var timer = new Stopwatch();
         
         Console.WriteLine("-----part one-----");
-        Console.WriteLine(solution.PartOne());
-        
+        timer.Start();
+        //Console.WriteLine(solution.PartOne());
+        timer.Stop();
+        Time(timer.Elapsed);
+
         Console.WriteLine("-----part two-----");
+        timer.Reset();
+        timer.Start();
         Console.WriteLine(solution.PartTwo());
+        timer.Stop();
+        Time(timer.Elapsed);
     }
 }

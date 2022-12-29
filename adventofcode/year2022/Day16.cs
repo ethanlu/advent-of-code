@@ -1,6 +1,7 @@
 using adventofcode.common;
 using adventofcode.common.graph;
 using Path = adventofcode.common.graph.Path;
+using adventofcode.common.util;
 using System.Text.RegularExpressions;
 using adventofcode.common.graph.search;
 
@@ -9,22 +10,23 @@ namespace adventofcode.year2022;
 public class Day16 : Solution
 {
     private Dictionary<string, Node> _valves;
+    private List<Node> _importantValves;
 
     public Day16(string year, string day) : base(year, day)
     {
         var input = LoadInputAsLines();
 
-        var tmp = new Dictionary<string, Node>();
-        var _importantValves = new List<string>();
+        _valves = new Dictionary<string, Node>();
+        _importantValves = new List<Node>();
         foreach (var line in input)
         {
             var match = Regex.Match(line, @"^Valve ([A-Z]{2}) has flow rate=(\d+);");
             var valve = new Node(match.Groups[1].Value, match.Groups[1].Value, Convert.ToInt32(match.Groups[2].Value));
-            tmp.Add(match.Groups[1].Value, valve);
+            _valves.Add(match.Groups[1].Value, valve);
 
-            if (valve.Weight() != 0 || valve.Id() == "AA")
+            if (valve.Weight() != 0)
             {
-                _importantValves.Add(valve.Id());
+                _importantValves.Add(valve);
             }
         }
         foreach (var line in input)
@@ -32,46 +34,59 @@ public class Day16 : Solution
             var match = Regex.Match(line, @"^Valve ([A-Z]{2}) has flow rate=\d+; tunnels? leads? to valves? ([A-Z,\s]+)$");
             foreach (var neighbor in match.Groups[2].Value.Split(", "))
             {
-                tmp[match.Groups[1].Value].AddNode(tmp[neighbor], 0);
+                _valves[match.Groups[1].Value].AddNode(_valves[neighbor], 0);
             }
         }
-        
+    }
+
+    private Dictionary<string, Node> OptimizeValves(List<Node> inputValves)
+    {
         // optimize graph by running shortest path between all valve nodes that have a flow rate > 0 and build a new graph based on the paths
-        _valves = new Dictionary<string, Node>();
         var shortestPaths = new List<IPath>();
-        foreach (var start in _importantValves)
+        foreach (var start in inputValves)
         {
-            foreach (var end in _importantValves)
+            foreach (var end in inputValves)
             {
                 if (start != end)
                 {
                     var p = new Path();
-                    p.AddNode(tmp[start]);
-                    var astar = new AStar(p, tmp[end], null);
+                    p.AddNode(start);
+                    var astar = new AStar(p, end, null);
                     shortestPaths.Add(astar.FindPath());
                 }
             }
         }
+        
+        var optimizedValves = new Dictionary<string, Node>();
         foreach (var p in shortestPaths)
         {
-            if (!_valves.ContainsKey(p.Nodes().First().Id()))
+            if (!optimizedValves.ContainsKey(p.Nodes().First().Id()))
             {
-                _valves.Add(p.Nodes().First().Id(), new Node(p.Nodes().First().Id(), p.Nodes().First().Name(), p.Nodes().First().Weight()));
+                optimizedValves.Add(p.Nodes().First().Id(), new Node(p.Nodes().First().Id(), p.Nodes().First().Name(), p.Nodes().First().Weight()));
             }
-            if (!_valves.ContainsKey(p.Nodes().Last().Id()))
+            if (!optimizedValves.ContainsKey(p.Nodes().Last().Id()))
             {
-                _valves.Add(p.Nodes().Last().Id(), new Node(p.Nodes().Last().Id(), p.Nodes().Last().Name(), p.Nodes().Last().Weight()));
+                optimizedValves.Add(p.Nodes().Last().Id(), new Node(p.Nodes().Last().Id(), p.Nodes().Last().Name(), p.Nodes().Last().Weight()));
             }
 
-            _valves[p.Nodes().First().Id()].AddNode(_valves[p.Nodes().Last().Id()], p.Nodes().Count - 1);
+            optimizedValves[p.Nodes().First().Id()].AddNode(optimizedValves[p.Nodes().Last().Id()], p.Nodes().Count - 1);
         }
+
+        return optimizedValves;
     }
 
     public override string PartOne()
     {
+        // optimize the graph to only be a graph of valve nodes with flow rate > 0 and the starting valve node
+        var valves = new List<Node>(_importantValves);
+        valves.Add(_valves["AA"]);
+        var optimizedValves = OptimizeValves(valves);
+        
+        // with optimized valve graph, find best path using bfs
         var maxDepth = 30;
-        var start = new Tunnel(maxDepth);
-        start.AddNode(_valves["AA"]);
+        var start = new TunnelPath(maxDepth);
+        start.AddNode(optimizedValves["AA"]);
+        
         var bfs = new BFS(start, maxDepth);
         var paths = bfs.FindPaths();
         
@@ -80,25 +95,71 @@ public class Day16 : Solution
 
     public override string PartTwo()
     {
-        return Convert.ToString("");
+        // split the valves with flow rate > 0 evenly into two separate optimized graphs to find the optimal path for you and elephant
+        var bestScore = 0;
+        TunnelPath? youBest = null;
+        TunnelPath? elephantBest = null;
+        foreach (var combination in IterTools<Node>.Combination(_importantValves, _importantValves.Count / 2))
+        {
+            var valvesYou = new List<Node>(combination);
+            var handledByYou = combination.ToHashSet();
+            var valvesElephant = new List<Node>(_importantValves.Select(x => x).Where(x =>!handledByYou.Contains(x)));
+            valvesYou.Add(_valves["AA"]);
+            valvesElephant.Add(_valves["AA"]);
+            
+            Console.WriteLine("#######################");
+            Console.WriteLine($"Combination : {string.Join("-", valvesYou)} / {string.Join("-", valvesElephant)}");
+        
+            var optimizedValvesYou = OptimizeValves(valvesYou);
+            var optimizedValvesElephant = OptimizeValves(valvesElephant);
+        
+            var maxDepth = 26;
+            var start = new TunnelPath(maxDepth);
+            start.AddNode(optimizedValvesYou["AA"]);
+            var bfs = new BFS(start, maxDepth);
+            var you = (TunnelPath) bfs.FindPaths().Last();
+        
+            start = new TunnelPath(maxDepth);
+            start.AddNode(optimizedValvesElephant["AA"]);
+            bfs = new BFS(start, maxDepth);
+            var elephant = (TunnelPath) bfs.FindPaths().Last();
+
+            var currentScore = you.Gain() + elephant.Gain();
+            if (bestScore < currentScore)
+            {
+                bestScore = currentScore;
+                youBest = you;
+                elephantBest = elephant;
+            }
+            
+            Console.WriteLine($"You        : {you} ");
+            Console.WriteLine($"Elephant   : {elephant} ");
+            Console.WriteLine($"Score      : {currentScore} ");
+            Console.WriteLine($"Best Score : {bestScore} ");
+        }
+        
+        Console.WriteLine(youBest.ToString());
+        Console.WriteLine(elephantBest.ToString());
+
+        return Convert.ToString(bestScore);
     }
 }
 
-internal class Tunnel : Path
+internal class TunnelPath : Path
 {
     private HashSet<INode> _firstVisit;
     private int _maxDepth;
 
-    public Tunnel(int maxDepth)
+    public TunnelPath(int maxDepth)
     {
         _firstVisit = new HashSet<INode>();
         _maxDepth = maxDepth;
     }
 
-    public Tunnel(Tunnel tunnel) : base(tunnel)
+    public TunnelPath(TunnelPath TunnelPath) : base(TunnelPath)
     {
-        _firstVisit = new HashSet<INode>(tunnel.FirstVisit());
-        _maxDepth = tunnel.MaxDepth();
+        _firstVisit = new HashSet<INode>(TunnelPath.FirstVisit());
+        _maxDepth = TunnelPath.MaxDepth();
     }
 
     public HashSet<INode> FirstVisit()
@@ -130,7 +191,7 @@ internal class Tunnel : Path
 
     public override IPath CreateCopy()
     {
-        return new Tunnel(this);
+        return new TunnelPath(this);
     }
 
     public override string ToString()
