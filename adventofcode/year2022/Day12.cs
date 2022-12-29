@@ -53,7 +53,7 @@ public class Day12 : Solution
         }
     }
 
-    private void ShowPath(Path shortest)
+    private void ShowPath(IPath shortest)
     {
         var t = new HashSet<string>();
         foreach (var n in shortest.Nodes())
@@ -83,7 +83,9 @@ public class Day12 : Solution
 
     public override string PartOne()
     {
-        var astar = new AStar(new Path().AddNode(_start), _end, new GridNodeHeuristic(_end));
+        var start = new Path();
+        start.AddNode(_start);
+        var astar = new AStar(start, _end, new GridNodeHeuristic(_end));
         var shortest = astar.FindPath();
         
         ShowPath(shortest);
@@ -93,14 +95,18 @@ public class Day12 : Solution
 
     public override string PartTwo()
     {
-        var astar = new AStar(new Path().AddNode(_start), _end, new GridNodeHeuristic(_end));
+        var start = new Path();
+        start.AddNode(_start);
+        var astar = new AStar(start, _end, new GridNodeHeuristic(_end));
         var shortest = astar.FindPath();
         
         foreach (var node in _grid)
         {
             if (node.Height() == 1 && node.Id() != _start.Id())
             {
-                astar = new AStar(new Path().AddNode(node), _end, new GridNodeHeuristic(_end));
+                start = new Path();
+                start.AddNode(node);
+                astar = new AStar(start, _end, new GridNodeHeuristic(_end));
                 var candidate = astar.FindPath();
 
                 if (candidate.Nodes().Last().Id() == _end.Id() && candidate.Nodes().Count < shortest.Nodes().Count)
@@ -146,29 +152,29 @@ internal class GridNode : Node
         return _height;
     }
 
-    public override List<INode> Neighbors()
+    public override List<(INode, int)> AdjacentNodes()
     {
-        var neighbors = new List<INode>();
+        var neighbors = new List<(INode, int)>();
 
         // top
         if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Height() - Height() < 2)
         {
-            neighbors.Add(_grid[_x, _y + 1]);
+            neighbors.Add((_grid[_x, _y + 1], 0));
         }
         // bottom
         if (_y - 1 >= 0  && _grid[_x, _y - 1].Height() - Height() < 2)
         {
-            neighbors.Add(_grid[_x, _y - 1]);
+            neighbors.Add((_grid[_x, _y - 1], 0));
         }
         // left
         if (_x - 1 >= 0 && _grid[_x - 1, _y].Height() - Height() < 2)
         {
-            neighbors.Add(_grid[_x - 1, _y]);
+            neighbors.Add((_grid[_x - 1, _y], 0));
         }
         // right
         if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Height() - Height() < 2)
         {
-            neighbors.Add(_grid[_x + 1, _y]);
+            neighbors.Add((_grid[_x + 1, _y], 0));
         }
 
         return neighbors;
@@ -183,7 +189,7 @@ internal class GridNodeHeuristic : Heuristic
         _end = end;
     }
     
-    public override int Cost(INode node, Path path)
+    public override int Cost(INode node, IPath path)
     {
         var n = (GridNode) node;
         return (Math.Abs(_end.X() - n.X()) + Math.Abs(_end.Y() - n.Y()));

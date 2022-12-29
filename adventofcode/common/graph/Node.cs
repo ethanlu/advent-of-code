@@ -1,16 +1,18 @@
 namespace adventofcode.common.graph;
 
-public abstract class Node : INode, IComparable<INode>, IEquatable<INode>
+public class Node : INode, IComparable<INode>, IEquatable<INode>
 {
     protected string _id;
     protected string _name;
     protected int _weight;
+    protected List<(INode, int)> _adjacentNodes;
 
     public Node(string id, string name, int weight)
     {
         _id = id;
         _name = name;
         _weight = weight;
+        _adjacentNodes = new List<(INode, int)>();
     }
 
     public string Id()
@@ -26,6 +28,17 @@ public abstract class Node : INode, IComparable<INode>, IEquatable<INode>
     public int Weight()
     {
         return _weight;
+    }
+    
+    public INode AddNode(INode node, int edgeWeight)
+    {
+        _adjacentNodes.Add((node, edgeWeight));
+        return this;
+    }
+
+    public virtual List<(INode, int)> AdjacentNodes()
+    {
+        return _adjacentNodes;
     }
     
     public int CompareTo(INode? n)
@@ -70,6 +83,4 @@ public abstract class Node : INode, IComparable<INode>, IEquatable<INode>
     {
         return $"{_name}({_weight})";
     }
-
-    public abstract List<INode> Neighbors();
 }

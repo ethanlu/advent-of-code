@@ -2,13 +2,13 @@ namespace adventofcode.common.graph.search;
 
 public class AStar
 {
-    private Path _start;
+    private IPath _start;
     private INode _end;
     private HashSet<INode> _visited;
     private IHeuristic _heuristic;
     
 
-    public AStar(Path start, INode end, IHeuristic? heuristic)
+    public AStar(IPath start, INode end, IHeuristic? heuristic)
     {
         _start = start;
         _end = end;
@@ -16,13 +16,13 @@ public class AStar
         _heuristic = heuristic ?? new Heuristic();
     }
 
-    public Path FindPath()
+    public IPath FindPath()
     {
         var shortest = _start;
         _visited.Add(shortest.Nodes().Last());
         
-        var candidates = new PriorityQueue<Path, int>();
-        candidates.Enqueue(shortest, shortest.Cost() + _heuristic.Cost(shortest.Nodes().Last(), shortest));
+        var candidates = new PriorityQueue<IPath, int>();
+        candidates.Enqueue(shortest, shortest.Cost() + shortest.Depth() + _heuristic.Cost(shortest.Nodes().Last(), shortest));
 
         do
         {
@@ -35,13 +35,16 @@ public class AStar
                 break;
             }
 
-            foreach (var neighbor in candidate.Nodes().Last().Neighbors())
+            foreach (var t in candidate.Nodes().Last().AdjacentNodes())
             {
-                if (!_visited.Contains(neighbor))
+                var adjacentNode = t.Item1;
+                var edgeWeight = t.Item2;
+                if (!_visited.Contains(adjacentNode))
                 {
-                    var nextPath = new Path(candidate).AddNode(neighbor);
-                    candidates.Enqueue(nextPath, nextPath.Cost() + _heuristic.Cost(neighbor, nextPath));
-                    _visited.Add(neighbor);
+                    var nextPath = candidate.CreateCopy();
+                    nextPath.AddNode(adjacentNode, edgeWeight);
+                    candidates.Enqueue(nextPath, nextPath.Cost() + nextPath.Depth() + _heuristic.Cost(adjacentNode, nextPath));
+                    _visited.Add(adjacentNode);
                 }
             }
         } while (candidates.Count > 0);

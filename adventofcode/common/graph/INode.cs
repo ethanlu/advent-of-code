@@ -5,5 +5,6 @@ public interface INode
     string Id();
     string Name();
     int Weight();
-    List<INode> Neighbors();
+    INode AddNode(INode adjacentNode, int edgeWeight);
+    List<(INode, int)> AdjacentNodes();
 }

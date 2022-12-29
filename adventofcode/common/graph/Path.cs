@@ -1,20 +1,31 @@
 namespace adventofcode.common.graph;
 
-public class Path : IComparable<Path>, IEquatable<Path>
+public class Path : IPath, IComparable<IPath>, IEquatable<Path>
 {
     protected List<INode> _nodes;
+    protected int _depth;
     protected int _cost;
+    protected int _gain;
 
     public Path()
     {
         _nodes = new List<INode>();
+        _depth = 0;
         _cost = 0;
+        _gain = 0;
     }
     
     public Path(Path path)
     {
         _nodes = new List<INode>(path.Nodes());
-        _cost = ((Path)path).Cost();
+        _depth = path.Depth();
+        _cost = path.Cost();
+        _gain = path.Gain();
+    }
+    
+    public int Depth()
+    {
+        return _depth;
     }
 
     public int Cost()
@@ -22,21 +33,14 @@ public class Path : IComparable<Path>, IEquatable<Path>
         return _cost;
     }
 
-    public virtual int Depth()
+    public int Gain()
     {
-        return _nodes.Count;
+        return _gain;
     }
 
     public List<INode> Nodes()
     {
         return _nodes;
-    }
-
-    public virtual Path AddNode(INode node)
-    {
-        _nodes.Add(node);
-        _cost += node.Weight();
-        return this;
     }
 
     public INode NodeAt(int index)
@@ -48,14 +52,35 @@ public class Path : IComparable<Path>, IEquatable<Path>
 
         return index >= 0 ? _nodes[index] : _nodes[_nodes.Count + index];
     }
+    
+    public virtual void AddNode(INode node, int edgeWeight=0)
+    {
+        _nodes.Add(node);
+        _gain += node.Weight();
+        _cost += edgeWeight;
+        _depth++;
+    }
 
-    public int CompareTo(Path? p)
+    public virtual IPath CreateCopy()
+    {
+        return new Path(this);
+    }
+
+    public int CompareTo(IPath? p)
     {
         if (p is null)
         {
             throw new Exception("Path input is null");
         }
-
+        
+        if (Gain() < p.Gain())
+        {
+            return -1;
+        }
+        if (Gain() > p.Gain())
+        {
+            return 1;
+        }
         if (Cost() < p.Cost())
         {
             return -1;
@@ -64,11 +89,11 @@ public class Path : IComparable<Path>, IEquatable<Path>
         {
             return 1;
         }
-        if (_nodes.Count < p.Nodes().Count)
+        if (Depth() < p.Depth())
         {
             return -1;
         }
-        if (_nodes.Count > p.Nodes().Count)
+        if (Depth() > p.Depth())
         {
             return 1;
         }
@@ -81,13 +106,18 @@ public class Path : IComparable<Path>, IEquatable<Path>
         {
             return false;
         }
+        
+        if (Gain() != p.Gain())
+        {
+            return false;
+        }
 
         if (Cost() != p.Cost())
         {
             return false;
         }
 
-        if (_nodes.Count != p.Nodes().Count)
+        if (Depth() != p.Depth())
         {
             return false;
         }
