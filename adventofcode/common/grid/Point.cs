@@ -37,6 +37,17 @@ public struct Point : IEquatable<Point>
     {
         return _y;
     }
+    
+    public static Point operator +(Point a, Point b) => new Point(a.X() + b.X(), a.Y() + b.Y());
+    public static Point operator -(Point a, Point b) => new Point(a.X() - b.X(), a.Y() - b.Y());
+    public static Point operator *(Point a, Point b) => new Point(a.X() * b.X(), a.Y() * b.Y());
+    public static Point operator /(Point a, Point b) => new Point(a.X() / b.X(), a.Y() / b.Y());
+    public static Point operator %(Point a, Point b) => new Point(a.X() % b.X(), a.Y() % b.Y());
+    public static Point operator +(Point a, int b) => new Point(a.X() + b, a.Y() + b);
+    public static Point operator -(Point a, int b) => new Point(a.X() - b, a.Y() - b);
+    public static Point operator *(Point a, int b) => new Point(a.X() * b, a.Y() * b);
+    public static Point operator /(Point a, int b) => new Point(a.X() / b, a.Y() / b);
+    public static Point operator %(Point a, int b) => new Point(a.X() % b, a.Y() % b);
 
     public bool Equals(Point p)
     {

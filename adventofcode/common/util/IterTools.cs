@@ -61,7 +61,7 @@ public class IterTools<T>
 
     public static IEnumerable<List<T>> Combination(List<T> items, int length=-1)
     {
-        // https://docs.python.org/3/library/itertools.html#itertools.permutations
+        // https://docs.python.org/3/library/itertools.html#itertools.combinations
         length = length < 0 ? items.Count : length;
         if (length > items.Count)
         {
