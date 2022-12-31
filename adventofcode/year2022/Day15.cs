@@ -8,19 +8,19 @@ namespace adventofcode.year2022;
 public class Day15 : Solution
 {
     private List<Sensor> _sensors;
-    private HashSet<Point> _beacons;
+    private HashSet<Point2D> _beacons;
 
     public Day15(string year, string day) : base(year, day)
     {
         var input = LoadInputAsLines();
         _sensors = new List<Sensor>();
-        _beacons = new HashSet<Point>();
+        _beacons = new HashSet<Point2D>();
 
         foreach (var line in input)
         {
             var match = Regex.Match(line, @"^Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+)$");
-            var sp = new Point(Convert.ToInt32(match.Groups[1].Value), Convert.ToInt32(match.Groups[2].Value));
-            var bp = new Point(Convert.ToInt32(match.Groups[3].Value), Convert.ToInt32(match.Groups[4].Value));
+            var sp = new Point2D(Convert.ToInt32(match.Groups[1].Value), Convert.ToInt32(match.Groups[2].Value));
+            var bp = new Point2D(Convert.ToInt32(match.Groups[3].Value), Convert.ToInt32(match.Groups[4].Value));
             
             _sensors.Add(new Sensor(sp, bp));
             _beacons.Add(bp);
@@ -110,23 +110,23 @@ public class Day15 : Solution
 
 internal class Sensor
 {
-    private Point _sensorPoint;
+    private Point2D _sensorPoint2D;
     private int _radius;
 
-    public Sensor(Point sensor, Point beacon)
+    public Sensor(Point2D sensor, Point2D beacon)
     {
-        _sensorPoint = sensor;
-        _radius = Math.Abs(_sensorPoint.X() - beacon.X()) + Math.Abs(_sensorPoint.Y() - beacon.Y());
+        _sensorPoint2D = sensor;
+        _radius = Math.Abs(_sensorPoint2D.X() - beacon.X()) + Math.Abs(_sensorPoint2D.Y() - beacon.Y());
     }
 
     public Interval? CoveragXAtY(int y)
     {
-        if (y >= _sensorPoint.Y() - _radius && y <= _sensorPoint.Y() + _radius)
+        if (y >= _sensorPoint2D.Y() - _radius && y <= _sensorPoint2D.Y() + _radius)
         {
-            var diffY = Math.Abs(_sensorPoint.Y() - y);
+            var diffY = Math.Abs(_sensorPoint2D.Y() - y);
             var diffX = Math.Abs(_radius - diffY);
-            var minX = _sensorPoint.X() - diffX;
-            var maxX = _sensorPoint.X() + diffX;
+            var minX = _sensorPoint2D.X() - diffX;
+            var maxX = _sensorPoint2D.X() + diffX;
             
             return new Interval(minX, maxX);
         }

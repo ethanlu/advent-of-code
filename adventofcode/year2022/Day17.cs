@@ -75,23 +75,23 @@ internal readonly struct SimulationState
 
 internal class Block
 {
-    private List<Point> _rocks;
+    private List<Point2D> _rocks;
     private int _height;
 
-    public Block(char[,] rocks, Point origin)
+    public Block(char[,] rocks, Point2D origin)
     {
         var width = rocks.GetLength(0);
         _height = rocks.GetLength(1);
 
-        _rocks = new List<Point>(
-            (from y in Enumerable.Range(0, _height) from x in Enumerable.Range(0, width) select (new Point(x, y) + origin, rocks[x, y]))
+        _rocks = new List<Point2D>(
+            (from y in Enumerable.Range(0, _height) from x in Enumerable.Range(0, width) select (new Point2D(x, y) + origin, rocks[x, y]))
             .Where(x => x.Item2 == '#')
             .Select(x => x.Item1)
             .ToList()
         );
     }
 
-    public Block(List<Point> rocks, int height)
+    public Block(List<Point2D> rocks, int height)
     {
         _rocks = rocks;
         _height = height;
@@ -102,19 +102,19 @@ internal class Block
         return _height;
     }
 
-    private Point Delta(char direction)
+    private Point2D Delta(char direction)
     {
-        var delta = new Point(0, 0);
+        var delta = new Point2D(0, 0);
         switch (direction)
         {
             case '<':
-                delta += new Point(-1, 0);
+                delta += new Point2D(-1, 0);
                 break;
             case '>':
-                delta += new Point(1, 0);
+                delta += new Point2D(1, 0);
                 break;
             default:
-                delta += new Point(0, -1);
+                delta += new Point2D(0, -1);
                 break;
         }
 
@@ -131,21 +131,21 @@ internal class Block
         return _rocks.Select(r => r.Y()).Aggregate(_height, (lowest, y) => y < lowest ? y : lowest);
     }
 
-    public List<Point> Position()
+    public List<Point2D> Position()
     {
         return _rocks;
     }
 
-    public List<Point> Peek(char direction)
+    public List<Point2D> Peek(char direction)
     {
         var delta = Delta(direction);
-        return new List<Point>(_rocks.Select(r => r + delta));
+        return new List<Point2D>(_rocks.Select(r => r + delta));
     }
 
     public void Move(char direction)
     {
         var delta = Delta(direction);
-        _rocks = new List<Point>(_rocks.Select(r => r + delta));
+        _rocks = new List<Point2D>(_rocks.Select(r => r + delta));
     }
 }
 
@@ -159,14 +159,14 @@ internal class RockFall
     private char[] _jetstream;
     private char[,] _chamber;
     private readonly List<char[,]> _templates;
-    private Point _rockOrigin;
+    private Point2D _rockOrigin;
     private long _limit;
     
     public RockFall(List<char[,]> templates, string jetstream, int width, long limit)
     {
         _templates = templates;
         _jetstream = jetstream.ToCharArray();
-        _rockOrigin = new Point(2, 3);
+        _rockOrigin = new Point2D(2, 3);
         _limit = limit;
         _chamber = new char[width, Height];
     }
@@ -176,7 +176,7 @@ internal class RockFall
         return Convert.ToInt32(Enumerable.Range(0, _chamber.GetLength(0)).Aggregate("", (acc, x) => acc + (_chamber[x, y] == '#' ? "1" : "0")), 2);
     }
 
-    private bool Collision(List<Point> peek)
+    private bool Collision(List<Point2D> peek)
     {
         return peek.Select(rock => rock.X()).Where(x => x < 0).Count() > 0 ||
                peek.Select(rock => rock.X()).Where(x => x >= _chamber.GetLength(0)).Count() > 0 ||
@@ -186,15 +186,15 @@ internal class RockFall
 
     public void Show(Block? fallingRock, int limitY=0)
     {
-        var fallingPoints = (fallingRock is not null ? fallingRock.Position() : new List<Point>()).ToHashSet();
+        var fallingPoint2Ds = (fallingRock is not null ? fallingRock.Position() : new List<Point2D>()).ToHashSet();
         for (int y = Math.Max(_rockOrigin.Y(), fallingRock is not null ? fallingRock.TopY() : 0); y >= limitY; y--)
         {
             Console.Write("|");
             for (int x = 0; x < _chamber.GetLength(0); x++)
             {
-                var p = new Point(x, y);
+                var p = new Point2D(x, y);
 
-                if (fallingPoints.Contains(p))
+                if (fallingPoint2Ds.Contains(p))
                 {
                     Console.Write('@');
                     continue;
@@ -228,7 +228,7 @@ internal class RockFall
             throw new Exception("Tried to take too big of a snapshot");
         }
 
-        // cutoff point should be the smallest of all of the second largest y point that has a # for every x column
+        // cutoff Point2D should be the smallest of all of the second largest y Point2D that has a # for every x column
         var paginateAtY = _rockOrigin.Y() - SnapshotHeight * 2;
         
         // create new chamber
@@ -243,12 +243,12 @@ internal class RockFall
         _chamber = newChamber;
         
         // apply offset to _rockOrigin, currentRock, and rockHeight
-        _rockOrigin -= new Point(0, paginateAtY);
+        _rockOrigin -= new Point2D(0, paginateAtY);
 
         if (currentRock is not null)
         {
             currentRock = new Block(
-                currentRock.Position().Select(x => x - new Point(0, paginateAtY)).ToList(),
+                currentRock.Position().Select(x => x - new Point2D(0, paginateAtY)).ToList(),
                 currentRock.Height()
             );
         }
@@ -318,7 +318,7 @@ internal class RockFall
                 // update rock origin if the difference between it and the highest rock is less than 3
                 if (_rockOrigin.Y() - rockHeight < 3)
                 {
-                    _rockOrigin = new Point(_rockOrigin.X(), rockHeight + 3);
+                    _rockOrigin = new Point2D(_rockOrigin.X(), rockHeight + 3);
                 }
                 
                 rockCount++;

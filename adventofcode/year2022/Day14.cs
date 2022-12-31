@@ -5,25 +5,25 @@ namespace adventofcode.year2022;
 
 public class Day14 : Solution
 {
-    private HashSet<Point> _rocks;
+    private HashSet<Point2D> _rocks;
 
     public Day14(string year, string day) : base(year, day)
     {
-        _rocks = new HashSet<Point>();
+        _rocks = new HashSet<Point2D>();
         foreach (var line in LoadInputAsLines())
         {
-            var points = line.Split(" -> ");
-            for (int i = 1; i < points.Length; i++)
+            var Point2Ds = line.Split(" -> ");
+            for (int i = 1; i < Point2Ds.Length; i++)
             {
-                var start = new Point(points[i - 1].Split(',')[0], points[i - 1].Split(',')[1]);
-                var end = new Point(points[i].Split(',')[0], points[i].Split(',')[1]);
+                var start = new Point2D(Point2Ds[i - 1].Split(',')[0], Point2Ds[i - 1].Split(',')[1]);
+                var end = new Point2D(Point2Ds[i].Split(',')[0], Point2Ds[i].Split(',')[1]);
 
                 // horizontal
                 if (start.X() != end.X())
                 {
                     for (int x = Math.Min(start.X(), end.X()); x <= Math.Max(start.X(), end.X()); x++)
                     {
-                        _rocks.Add(new Point(x, start.Y()));
+                        _rocks.Add(new Point2D(x, start.Y()));
                     }
                 }
 
@@ -32,7 +32,7 @@ public class Day14 : Solution
                 {
                     for (int y = Math.Min(start.Y(), end.Y()); y <= Math.Max(start.Y(), end.Y()); y++)
                     {
-                        _rocks.Add(new Point(start.X(), y));
+                        _rocks.Add(new Point2D(start.X(), y));
                     }
                 }
             }
@@ -41,7 +41,7 @@ public class Day14 : Solution
 
     public override string PartOne()
     {
-        var cave = new SandFall(_rocks, new Point(500, 0), true);
+        var cave = new SandFall(_rocks, new Point2D(500, 0), true);
         int sands = cave.Run();
         cave.ShowCave();
         
@@ -50,7 +50,7 @@ public class Day14 : Solution
 
     public override string PartTwo()
     {
-        var cave = new SandFall(_rocks, new Point(500, 0), false);
+        var cave = new SandFall(_rocks, new Point2D(500, 0), false);
         int sands = cave.Run();
         cave.ShowCave();
 
@@ -65,10 +65,10 @@ internal class SandFall
     private char[,] _cave;
     private int _width;
     private int _height;
-    private Point _sandSource;
+    private Point2D _sandSource;
     private bool _abyss;
 
-    public SandFall(HashSet<Point> rocks, Point sandSource, bool abyss)
+    public SandFall(HashSet<Point2D> rocks, Point2D sandSource, bool abyss)
     {
         _abyss = abyss;
         _width = 1000;
@@ -85,7 +85,7 @@ internal class SandFall
         {
             for (int x = 0; x < _width; x++)
             {
-                if (rocks.Contains(new Point(x, y)))
+                if (rocks.Contains(new Point2D(x, y)))
                 {
                     _cave[x, y] = '#';
                 }
