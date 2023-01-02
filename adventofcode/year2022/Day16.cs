@@ -79,7 +79,6 @@ public class Day16 : Solution
 
     public override string PartOne()
     {
-        return "";
         // optimize the graph to only be a graph of valve nodes with flow rate > 0 and the starting valve node
         var valves = new List<Node>(_importantValves);
         valves.Add(_valves["AA"]);
