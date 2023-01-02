@@ -1,6 +1,6 @@
 namespace adventofcode.common.graph;
 
-public class Node : INode, IComparable<INode>, IEquatable<INode>
+public class Node : INode
 {
     protected string _id;
     protected string _name;

@@ -2,23 +2,34 @@ namespace adventofcode.common.graph.search;
 
 public class BFS
 {
-    private IPath _start;
+    private bool _verbose;
+    private ISearchPath _start;
     private int _maxCost;
 
-    public BFS(IPath start, int maxCost)
+    public BFS(ISearchPath start, int maxCost)
     {
         _start = start;
         _maxCost = maxCost;
+        _verbose = false;
     }
 
-    public List<IPath> FindPaths()
+    public void Verbose(bool verbose)
     {
-        var paths = new List<IPath>();
+        _verbose = verbose;
+    }
 
-        var candidates = new Queue<IPath>();
+    public List<ISearchPath> FindPaths(int trimHandicap=0)
+    {
+        var paths = new List<ISearchPath>();
+
+        var candidates = new Queue<ISearchPath>();
         candidates.Enqueue(_start);
 
         var currentBest = _start;
+
+        var i = 0L;
+        var trimmed = 0L;
+        var completed = 0L;
         do
         {
             var candidate = candidates.Dequeue();
@@ -27,32 +38,34 @@ public class BFS
             {
                 // reached max depth...add candidate to list of paths
                 paths.Add(candidate);
+                if (_verbose) { Console.WriteLine($"completed : {candidate}"); }
+
+                completed++;
                 continue;
             }
 
-            var adjacentNodes = candidate.Nodes().Last().AdjacentNodes();
-            foreach (var n in adjacentNodes)
+            foreach (var nextState in candidate.SearchStates().Last().NextSearchStates(candidate.SearchStates().Count > 1 ? candidate.SearchStates()[candidate.SearchStates().Count - 2] : null))
             {
-                var node = n.Item1;
-                var edgeWeight = n.Item2;
-                if (adjacentNodes.Count == 1 || candidate.Nodes().Count < 3 || !node.Equals(candidate.NodeAt(-2)))
+                var potentialCandidate = candidate.CreateCopy();
+                potentialCandidate.Add(nextState);
+                
+                if (potentialCandidate.Gain() < currentBest.Gain() - trimHandicap && (potentialCandidate.Cost() > currentBest.Cost() || potentialCandidate.Depth() > currentBest.Depth()))
                 {
-                    var potentialCandidate = candidate.CreateCopy();
-                    potentialCandidate.AddNode(node, edgeWeight);
-
-                    if (potentialCandidate.Gain() < currentBest.Gain() && potentialCandidate.Depth() > currentBest.Depth())
-                    {
-                        // trim this potential candidate as it has less gains for higher cost than current best
-                        continue;
-                    }
-                    if (potentialCandidate.Gain() > currentBest.Gain())
-                    {
-                        currentBest = potentialCandidate;
-                    }
-
-                    candidates.Enqueue(potentialCandidate);
+                    // trim this potential candidate as it has less gains for higher cost than any of the best
+                    if (_verbose) { Console.WriteLine($"trimmed : {potentialCandidate}"); }
+                    trimmed++;
+                    continue;
                 }
+                if (potentialCandidate.Gain() > currentBest.Gain())
+                {
+                    currentBest = potentialCandidate;
+                    if (_verbose) { Console.WriteLine($"best candidate : {potentialCandidate}"); }
+                }
+
+                candidates.Enqueue(potentialCandidate);
             }
+            i++;
+            if (_verbose && i % 1000L == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
         } while (candidates.Count > 0);
 
         paths.Sort();

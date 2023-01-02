@@ -1,22 +1,22 @@
 using adventofcode.common;
-using adventofcode.common.graph;
 using adventofcode.common.graph.search;
-using Path = adventofcode.common.graph.Path;
 
 namespace adventofcode.year2022;
 
 public class Day12 : Solution
 {
-    private GridNode[,] _grid;
-    private GridNode _start;
-    private GridNode _end;
+    private (int, char)[,] _grid;
+    private List<(int, int)> _lowestPoints;
+    private StepState _start;
+    private StepState _end;
 
     public Day12(string year, string day) : base(year, day)
     {
         var input = LoadInputAsLines();
         var maxY = input.Length;
         var maxX = input[0].Length;
-        _grid = new GridNode[maxX, maxY];
+        _grid = new (int, char)[maxX, maxY];
+        _lowestPoints = new List<(int, int)>();
 
         var y = 0;
         foreach (var line in input)
@@ -27,15 +27,22 @@ public class Day12 : Solution
                 switch (character)
                 {
                     case 'S':
-                        _start = new GridNode(_grid, 1, $"{x},{y}",character.ToString(), 1);
-                        _grid[x, y] = _start;
+                        _start = new StepState(_grid, x, y, 1, 0);
+                        _grid[x, y] = (1, character);
                         break;
                     case 'E':
-                        _end = new GridNode(_grid, 26, $"{x},{y}",character.ToString(), 1);
-                        _grid[x, y] = _end;
+                        _end = new StepState(_grid, x, y,26, 0);
+                        _grid[x, y] = (26, character);
                         break;
                     default:
-                        _grid[x, y] = new GridNode(_grid, character - 96, $"{x},{y}",character.ToString(), 1);
+                        var height = character - 96;
+                        _grid[x, y] = (height, character);
+
+                        if (height == 1)
+                        {
+                            _lowestPoints.Add((x, y));
+                        }
+
                         break;
                 }
                 x++;
@@ -53,12 +60,12 @@ public class Day12 : Solution
         }
     }
 
-    private void ShowPath(IPath shortest)
+    private void ShowPath(ISearchPath shortest)
     {
-        var t = new HashSet<string>();
-        foreach (var n in shortest.Nodes())
+        var t = new HashSet<(int, int)>();
+        foreach (StepState n in shortest.SearchStates())
         {
-            t.Add(n.Id());
+            t.Add((n.X(), n.Y()));
         }
 
         for (int y = 0; y < _grid.GetLength(1); y++)
@@ -66,13 +73,13 @@ public class Day12 : Solution
             var line = "";
             for (int x = 0; x < _grid.GetLength(0); x++)
             {
-                if (t.Contains(_grid[x, y].Id()))
+                if (t.Contains((x, y)))
                 {
                     line += " ";
                 }
                 else
                 {
-                    line += _grid[x, y].Name();
+                    line += _grid[x, y].Item2;
                 }
             }
             Console.WriteLine(line);
@@ -83,58 +90,55 @@ public class Day12 : Solution
 
     public override string PartOne()
     {
-        var start = new Path();
-        start.AddNode(_start);
-        var astar = new AStar(start, _end, new GridNodeHeuristic(_end));
+        var start = new SearchPath();
+        start.Add(_start);
+        var astar = new AStar(start, _end, new StepStateHeuristic(_end));
         var shortest = astar.FindPath();
         
         ShowPath(shortest);
         
-        return Convert.ToString(shortest.Nodes().Count - 1);
+        return Convert.ToString(shortest.SearchStates().Count - 1);
     }
 
     public override string PartTwo()
     {
-        var start = new Path();
-        start.AddNode(_start);
-        var astar = new AStar(start, _end, new GridNodeHeuristic(_end));
+        var start = new SearchPath();
+        start.Add(_start);
+        var astar = new AStar(start, _end, new StepStateHeuristic(_end));
         var shortest = astar.FindPath();
         
-        foreach (var node in _grid)
+        foreach (var (x, y) in _lowestPoints)
         {
-            if (node.Height() == 1 && node.Id() != _start.Id())
-            {
-                start = new Path();
-                start.AddNode(node);
-                astar = new AStar(start, _end, new GridNodeHeuristic(_end));
-                var candidate = astar.FindPath();
+            start = new SearchPath();
+            start.Add(new StepState(_grid, x, y, _grid[x, y].Item1, 0));
+            astar = new AStar(start, _end, new StepStateHeuristic(_end));
+            var candidate = astar.FindPath();
 
-                if (candidate.Nodes().Last().Id() == _end.Id() && candidate.Nodes().Count < shortest.Nodes().Count)
-                {
-                    shortest = candidate;
-                }
+            if (candidate.SearchStates().Last().Id() == _end.Id() && candidate.SearchStates().Last().Cost() < shortest.SearchStates().Last().Cost())
+            {
+                shortest = candidate;
             }
         }
         
         ShowPath(shortest);
 
-        return Convert.ToString(shortest.Nodes().Count - 1);
+        return Convert.ToString(shortest.SearchStates().Count - 1);
     }
 }
 
-internal class GridNode : Node
+internal class StepState : SearchState
 {
+    private (int, char)[,] _grid;
     private int _x;
     private int _y;
-    private int _height;
-    private GridNode[,] _grid;
 
-    public GridNode(GridNode[,] grid, int height, string id, string name, int weight) : base(id, name, weight)
+    public StepState((int, char)[,] grid, int x, int y, int gain, int cost) : base("id", gain, cost, 9999)
     {
-        _height = height;
-        _x = Convert.ToInt32(id.Split(',')[0]);
-        _y = Convert.ToInt32(id.Split(',')[1]);
+        _x = x;
+        _y = y;
         _grid = grid;
+
+        _id = $"{_x},{_y}";
     }
 
     public int X()
@@ -147,51 +151,51 @@ internal class GridNode : Node
         return _y;
     }
 
-    public int Height()
+    public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
     {
-        return _height;
-    }
-
-    public override List<(INode, int)> AdjacentNodes()
-    {
-        var neighbors = new List<(INode, int)>();
+        var neighbors = new List<ISearchState>();
 
         // top
-        if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Height() - Height() < 2)
+        if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Item1 -_grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y + 1}")
         {
-            neighbors.Add((_grid[_x, _y + 1], 0));
+            neighbors.Add(new StepState(_grid, _x, _y + 1, _grid[_x, _y + 1].Item1, Cost() + 1));
         }
         // bottom
-        if (_y - 1 >= 0  && _grid[_x, _y - 1].Height() - Height() < 2)
+        if (_y - 1 >= 0  && _grid[_x, _y - 1].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y - 1}")
         {
-            neighbors.Add((_grid[_x, _y - 1], 0));
+            neighbors.Add(new StepState(_grid, _x, _y - 1, _grid[_x, _y - 1].Item1, Cost() + 1));
         }
         // left
-        if (_x - 1 >= 0 && _grid[_x - 1, _y].Height() - Height() < 2)
+        if (_x - 1 >= 0 && _grid[_x - 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x - 1},{_y}")
         {
-            neighbors.Add((_grid[_x - 1, _y], 0));
+            neighbors.Add(new StepState(_grid, _x - 1, _y, _grid[_x - 1, _y].Item1, Cost() + 1));
         }
         // right
-        if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Height() - Height() < 2)
+        if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x + 1},{_y}")
         {
-            neighbors.Add((_grid[_x + 1, _y], 0));
+            neighbors.Add(new StepState(_grid, _x + 1, _y, _grid[_x + 1, _y].Item1, Cost() + 1));
         }
 
         return neighbors;
     }
+
+    public override string ToString()
+    {
+        return _id;
+    }
 }
 
-internal class GridNodeHeuristic : Heuristic
+internal class StepStateHeuristic : Heuristic
 {
-    private GridNode _end;
-    public GridNodeHeuristic(GridNode end)
+    private StepState _end;
+    public StepStateHeuristic(StepState end)
     {
         _end = end;
     }
     
-    public override int Cost(INode node, IPath path)
+    public override int Cost(ISearchState node, ISearchPath path)
     {
-        var n = (GridNode) node;
+        var n = (StepState) node;
         return (Math.Abs(_end.X() - n.X()) + Math.Abs(_end.Y() - n.Y()));
     } 
 }
