@@ -18,12 +18,10 @@ public class BFS
         _verbose = verbose;
     }
 
-    public List<ISearchPath> FindPaths(int trimHandicap=0)
+    public ISearchPath FindPath()
     {
-        var paths = new List<ISearchPath>();
-
-        var candidates = new Queue<ISearchPath>();
-        candidates.Enqueue(_start);
+        var candidates = new PriorityQueue<ISearchPath, int>();
+        candidates.Enqueue(_start, 0);
 
         var currentBest = _start;
 
@@ -37,9 +35,10 @@ public class BFS
             if (candidate.Cost() >= _maxCost)
             {
                 // reached max depth...add candidate to list of paths
-                paths.Add(candidate);
-                if (_verbose) { Console.WriteLine($"completed : {candidate}"); }
-
+                if (candidate.Gain() > currentBest.Gain())
+                {
+                    currentBest = candidate;
+                }
                 completed++;
                 continue;
             }
@@ -49,26 +48,19 @@ public class BFS
                 var potentialCandidate = candidate.CreateCopy();
                 potentialCandidate.Add(nextState);
                 
-                if (potentialCandidate.Gain() < currentBest.Gain() - trimHandicap && (potentialCandidate.Cost() > currentBest.Cost() || potentialCandidate.Depth() > currentBest.Depth()))
+                // trim this candidate if it has less gains and potential gains than the current candidate
+                if (potentialCandidate.Gain() < currentBest.Gain() && potentialCandidate.Gain() + potentialCandidate.PotentialGain() < currentBest.Gain())
                 {
-                    // trim this potential candidate as it has less gains for higher cost than any of the best
-                    if (_verbose) { Console.WriteLine($"trimmed : {potentialCandidate}"); }
                     trimmed++;
                     continue;
                 }
-                if (potentialCandidate.Gain() > currentBest.Gain())
-                {
-                    currentBest = potentialCandidate;
-                    if (_verbose) { Console.WriteLine($"best candidate : {potentialCandidate}"); }
-                }
-
-                candidates.Enqueue(potentialCandidate);
+                
+                candidates.Enqueue(potentialCandidate, -potentialCandidate.Gain());
             }
             i++;
-            if (_verbose && i % 1000L == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
+            if (_verbose && i % 5000L == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
         } while (candidates.Count > 0);
 
-        paths.Sort();
-        return paths;
+        return currentBest;
     }
 }

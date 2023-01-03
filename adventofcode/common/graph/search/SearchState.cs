@@ -16,8 +16,10 @@ public abstract class SearchState : ISearchState
     }
 
     public string Id() { return _id; }
+    public int Cost() { return _cost; } 
     public int Gain() { return _gain; }
-    public int Cost() { return _cost; }
+    public virtual int PotentialGain() { return 0; }
+
     public int MaxCost() { return _maxCost; }
     
     public int CompareTo(ISearchState? s)
@@ -63,12 +65,12 @@ public abstract class SearchState : ISearchState
     
     public override int GetHashCode()
     {
-        return Gain() * 13 + Cost() * 37 + Id().GetHashCode();
+        return Id().GetHashCode();
     }
 
     public override string ToString()
     {
-        return $"{_gain}({_cost}/{_maxCost})";
+        return $"{_gain}:{_cost}:{_maxCost}";
     }
     
     public abstract List<ISearchState> NextSearchStates(ISearchState? previousSearchState);

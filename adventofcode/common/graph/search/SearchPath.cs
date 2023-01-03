@@ -18,8 +18,9 @@ public class SearchPath : ISearchPath
     }
 
     public int Depth() { return _depth; }
-    public int Gain() { return _searchStates.Count > 0 ? _searchStates.Last().Gain() : 0; }
     public int Cost() { return _searchStates.Count > 0 ? _searchStates.Last().Cost() : 0; }
+    public int Gain() { return _searchStates.Count > 0 ? _searchStates.Last().Gain() : 0; }
+    public int PotentialGain() { return _searchStates.Count > 0 ? _searchStates.Last().PotentialGain() : 0; }
 
     public List<ISearchState> SearchStates() { return _searchStates; }
 
@@ -61,6 +62,6 @@ public class SearchPath : ISearchPath
     
     public override string ToString()
     {
-        return $"[{_searchStates.Last().Gain()}][{_searchStates.Last().Cost()}]({_depth})" + string.Join("->", _searchStates);
+        return $"[{Gain()}:{Cost()}:{_depth}] = " + string.Join(" -> ", _searchStates);
     }
 }

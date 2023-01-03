@@ -18,6 +18,8 @@ public class Day12 : Solution
         _grid = new (int, char)[maxX, maxY];
         _lowestPoints = new List<(int, int)>();
 
+        var start = (-1, -1);
+        var end = (-1, -1);
         var y = 0;
         foreach (var line in input)
         {
@@ -27,11 +29,11 @@ public class Day12 : Solution
                 switch (character)
                 {
                     case 'S':
-                        _start = new StepState(_grid, x, y, 1, 0);
+                        start = (x, y);
                         _grid[x, y] = (1, character);
                         break;
                     case 'E':
-                        _end = new StepState(_grid, x, y,26, 0);
+                        end = (x, y);
                         _grid[x, y] = (26, character);
                         break;
                     default:
@@ -49,6 +51,8 @@ public class Day12 : Solution
             }
             y++;
         }
+        _end = new StepState(_grid, end.Item1, end.Item2, end.Item1, end.Item2, 26, 0);
+        _start = new StepState(_grid, start.Item1, start.Item2, end.Item1, end.Item2, 1, 0);
 
         if (_start is null)
         {
@@ -92,7 +96,7 @@ public class Day12 : Solution
     {
         var start = new SearchPath();
         start.Add(_start);
-        var astar = new AStar(start, _end, new StepStateHeuristic(_end));
+        var astar = new AStar(start, _end);
         var shortest = astar.FindPath();
         
         ShowPath(shortest);
@@ -104,14 +108,14 @@ public class Day12 : Solution
     {
         var start = new SearchPath();
         start.Add(_start);
-        var astar = new AStar(start, _end, new StepStateHeuristic(_end));
+        var astar = new AStar(start, _end);
         var shortest = astar.FindPath();
         
         foreach (var (x, y) in _lowestPoints)
         {
             start = new SearchPath();
-            start.Add(new StepState(_grid, x, y, _grid[x, y].Item1, 0));
-            astar = new AStar(start, _end, new StepStateHeuristic(_end));
+            start.Add(new StepState(_grid, x, y, _end.X(), _end.Y(),_grid[x, y].Item1, 0));
+            astar = new AStar(start, _end);
             var candidate = astar.FindPath();
 
             if (candidate.SearchStates().Last().Id() == _end.Id() && candidate.SearchStates().Last().Cost() < shortest.SearchStates().Last().Cost())
@@ -131,14 +135,16 @@ internal class StepState : SearchState
     private (int, char)[,] _grid;
     private int _x;
     private int _y;
+    private int _endX;
+    private int _endY;
 
-    public StepState((int, char)[,] grid, int x, int y, int gain, int cost) : base("id", gain, cost, 9999)
+    public StepState((int, char)[,] grid, int x, int y, int endX, int endY, int gain, int cost) : base($"{x},{y}", gain, cost, 9999)
     {
         _x = x;
         _y = y;
+        _endX = endX;
+        _endY = endY;
         _grid = grid;
-
-        _id = $"{_x},{_y}";
     }
 
     public int X()
@@ -151,6 +157,11 @@ internal class StepState : SearchState
         return _y;
     }
 
+    public override int PotentialGain()
+    {
+        return (Math.Abs(_endX - _x) + Math.Abs(_endY - _y));
+    }
+
     public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
     {
         var neighbors = new List<ISearchState>();
@@ -158,22 +169,22 @@ internal class StepState : SearchState
         // top
         if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Item1 -_grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y + 1}")
         {
-            neighbors.Add(new StepState(_grid, _x, _y + 1, _grid[_x, _y + 1].Item1, Cost() + 1));
+            neighbors.Add(new StepState(_grid, _x, _y + 1, _endX, _endY, _grid[_x, _y + 1].Item1, Cost() + 1));
         }
         // bottom
         if (_y - 1 >= 0  && _grid[_x, _y - 1].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y - 1}")
         {
-            neighbors.Add(new StepState(_grid, _x, _y - 1, _grid[_x, _y - 1].Item1, Cost() + 1));
+            neighbors.Add(new StepState(_grid, _x, _y - 1, _endX, _endY,_grid[_x, _y - 1].Item1, Cost() + 1));
         }
         // left
         if (_x - 1 >= 0 && _grid[_x - 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x - 1},{_y}")
         {
-            neighbors.Add(new StepState(_grid, _x - 1, _y, _grid[_x - 1, _y].Item1, Cost() + 1));
+            neighbors.Add(new StepState(_grid, _x - 1, _y, _endX, _endY,_grid[_x - 1, _y].Item1, Cost() + 1));
         }
         // right
         if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x + 1},{_y}")
         {
-            neighbors.Add(new StepState(_grid, _x + 1, _y, _grid[_x + 1, _y].Item1, Cost() + 1));
+            neighbors.Add(new StepState(_grid, _x + 1, _y, _endX, _endY,_grid[_x + 1, _y].Item1, Cost() + 1));
         }
 
         return neighbors;
@@ -183,19 +194,4 @@ internal class StepState : SearchState
     {
         return _id;
     }
-}
-
-internal class StepStateHeuristic : Heuristic
-{
-    private StepState _end;
-    public StepStateHeuristic(StepState end)
-    {
-        _end = end;
-    }
-    
-    public override int Cost(ISearchState node, ISearchPath path)
-    {
-        var n = (StepState) node;
-        return (Math.Abs(_end.X() - n.X()) + Math.Abs(_end.Y() - n.Y()));
-    } 
 }

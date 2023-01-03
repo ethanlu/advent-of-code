@@ -50,7 +50,7 @@ public class Day16 : Solution
                 {
                     var p = new SearchPath();
                     p.Add(new OptimizationState(start, 0, 0, 9999));
-                    var astar = new AStar(p, new OptimizationState(end, 0, 0, 9999), null);
+                    var astar = new AStar(p, new OptimizationState(end, 0, 0, 9999));
                     shortestPaths.Add(astar.FindPath());
                 }
             }
@@ -87,14 +87,14 @@ public class Day16 : Solution
         // with optimized valve graph, find best path using bfs
         var maxDepth = 30;
         var start = new SearchPath();
-        start.Add(new PressureState(new Dictionary<string, int>(optimizedValves.Keys.ToList().Select(k => new KeyValuePair<string, int>(k, 0))), optimizedValves["AA"], 0, 0, maxDepth));
+        start.Add(new PressureState(new Dictionary<INode, int>(optimizedValves.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValves["AA"], 0, 0, maxDepth));
         
         var bfs = new BFS(start, maxDepth);
-        var paths = bfs.FindPaths(100);
+        var path = bfs.FindPath();
+
+        Console.WriteLine($"Best path : {path}");
         
-        Console.WriteLine($"Best path : {paths.Last()}");
-        
-        return Convert.ToString(paths.Last().SearchStates().Last().Gain());
+        return Convert.ToString(path.Gain());
     }
 
     public override string PartTwo()
@@ -119,14 +119,14 @@ public class Day16 : Solution
         
             var maxDepth = 26;
             var start = new SearchPath();
-            start.Add(new PressureState(new Dictionary<string, int>(optimizedValvesYou.Keys.ToList().Select(k => new KeyValuePair<string, int>(k, 0))), optimizedValvesYou["AA"], 0, 0, maxDepth));
+            start.Add(new PressureState(new Dictionary<INode, int>(optimizedValvesYou.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValvesYou["AA"], 0, 0, maxDepth));
             var bfs = new BFS(start, maxDepth);
-            var you = (SearchPath) bfs.FindPaths(100).Last();
+            var you = (SearchPath) bfs.FindPath();
         
             start = new SearchPath();
-            start.Add(new PressureState(new Dictionary<string, int>(optimizedValvesElephant.Keys.ToList().Select(k => new KeyValuePair<string, int>(k, 0))), optimizedValvesElephant["AA"], 0, 0, maxDepth));
+            start.Add(new PressureState(new Dictionary<INode, int>(optimizedValvesElephant.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValvesElephant["AA"], 0, 0, maxDepth));
             bfs = new BFS(start, maxDepth);
-            var elephant = (SearchPath) bfs.FindPaths(100).Last();
+            var elephant = (SearchPath) bfs.FindPath();
         
             var currentScore = you.SearchStates().Last().Gain() + elephant.SearchStates().Last().Gain();
             if (bestScore < currentScore)
@@ -175,16 +175,21 @@ internal class OptimizationState : SearchState
 
 internal class PressureState : SearchState
 {
-    private Dictionary<string, int> _visitLog;
+    private Dictionary<INode, int> _visitLog;
     private INode _valve;
 
-    public PressureState(Dictionary<string, int> visitLog, INode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
+    public PressureState(Dictionary<INode, int> visitLog, INode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
     {
-        _visitLog = new Dictionary<string, int>(visitLog);
+        _visitLog = new Dictionary<INode, int>(visitLog);
         _valve = valve;
 
-        _visitLog[_valve.Id()]++;
-        _id = $"{_valve.Id()}.{_gain}.{_cost}.{_maxCost}";
+        _visitLog[_valve]++;
+    }
+
+    public override int PotentialGain()
+    {
+        // potential gain is all the unvisted nodes with pressure valves to open
+        return _visitLog.Aggregate(0, (acc, kv) => acc + (kv.Value == 0 && kv.Key.Weight() > 0 ? kv.Key.Weight() * (_maxCost - _cost) : 0));
     }
 
     public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
@@ -207,7 +212,7 @@ internal class PressureState : SearchState
             {
                 var cost = _cost + edgeWeight;
                 var gain = _gain;
-                if (_visitLog[node.Id()] == 0)
+                if (_visitLog[node] == 0)
                 {
                     // first visit to valve turns it on, so calculate total pressure based on remaining time
                     cost += 1;
