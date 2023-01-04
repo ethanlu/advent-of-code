@@ -74,7 +74,7 @@ internal class Demixer
             foreach (var (index, node) in _sequence)
             {
                 var shiftAmount = Convert.ToInt32(Math.Abs(node.Value) % (_length - 1));
-                if (shiftAmount % _length == 0)
+                if (shiftAmount == 0)
                 {
                     continue;
                 }
