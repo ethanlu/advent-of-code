@@ -106,75 +106,75 @@ public class Day15 : Solution
 
         return Convert.ToString(frequency);
     }
-}
 
-internal class Sensor
-{
-    private Point2D _sensorPoint2D;
-    private int _radius;
-
-    public Sensor(Point2D sensor, Point2D beacon)
+    internal class Sensor
     {
-        _sensorPoint2D = sensor;
-        _radius = Math.Abs(_sensorPoint2D.X() - beacon.X()) + Math.Abs(_sensorPoint2D.Y() - beacon.Y());
-    }
+        private Point2D _sensorPoint2D;
+        private int _radius;
 
-    public Interval? CoveragXAtY(int y)
-    {
-        if (y >= _sensorPoint2D.Y() - _radius && y <= _sensorPoint2D.Y() + _radius)
+        public Sensor(Point2D sensor, Point2D beacon)
         {
-            var diffY = Math.Abs(_sensorPoint2D.Y() - y);
-            var diffX = Math.Abs(_radius - diffY);
-            var minX = _sensorPoint2D.X() - diffX;
-            var maxX = _sensorPoint2D.X() + diffX;
-            
-            return new Interval(minX, maxX);
+            _sensorPoint2D = sensor;
+            _radius = Math.Abs(_sensorPoint2D.X() - beacon.X()) + Math.Abs(_sensorPoint2D.Y() - beacon.Y());
         }
 
-        return null;
-    }
-}
-
-internal class SignalCoverage
-{
-    private List<Interval> _intervals;
-
-    public SignalCoverage(List<Interval> intervals)
-    {
-        _intervals = new List<Interval>();
-
-        // combine overlapping coverages
-        intervals.Sort();
-        Interval? currentInterval = null;
-        foreach (var i in intervals)
+        public Interval? CoveragXAtY(int y)
         {
-            if (currentInterval is null)
+            if (y >= _sensorPoint2D.Y() - _radius && y <= _sensorPoint2D.Y() + _radius)
             {
-                currentInterval = i;
+                var diffY = Math.Abs(_sensorPoint2D.Y() - y);
+                var diffX = Math.Abs(_radius - diffY);
+                var minX = _sensorPoint2D.X() - diffX;
+                var maxX = _sensorPoint2D.X() + diffX;
+                
+                return new Interval(minX, maxX);
             }
-            else
+
+            return null;
+        }
+    }
+
+    internal class SignalCoverage
+    {
+        private List<Interval> _intervals;
+
+        public SignalCoverage(List<Interval> intervals)
+        {
+            _intervals = new List<Interval>();
+
+            // combine overlapping coverages
+            intervals.Sort();
+            Interval? currentInterval = null;
+            foreach (var i in intervals)
             {
-                var tmp = currentInterval.Union(i);
-                if (tmp is null)
+                if (currentInterval is null)
                 {
-                    _intervals.Add(currentInterval);
                     currentInterval = i;
                 }
                 else
                 {
-                    currentInterval = tmp;
+                    var tmp = currentInterval.Union(i);
+                    if (tmp is null)
+                    {
+                        _intervals.Add(currentInterval);
+                        currentInterval = i;
+                    }
+                    else
+                    {
+                        currentInterval = tmp;
+                    }
                 }
+            }
+
+            if (currentInterval is not null)
+            {
+                _intervals.Add(currentInterval);
             }
         }
 
-        if (currentInterval is not null)
+        public List<Interval> Intervals()
         {
-            _intervals.Add(currentInterval);
+            return _intervals;
         }
-    }
-
-    public List<Interval> Intervals()
-    {
-        return _intervals;
     }
 }

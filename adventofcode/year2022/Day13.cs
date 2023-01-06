@@ -60,73 +60,73 @@ public class Day13 : Solution
 
         return Convert.ToString(key1 * key2);
     }
-}
 
-internal class PacketComparer : IComparer<JsonElement>
-{
-    public int Compare(JsonElement a, JsonElement b)
+    internal class PacketComparer : IComparer<JsonElement>
     {
-        int _Compare(JsonElement[] left, JsonElement[] right)
+        public int Compare(JsonElement a, JsonElement b)
         {
-            for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
+            int _Compare(JsonElement[] left, JsonElement[] right)
             {
-                var l = left[i];
-                var r = right[i];
-                
-                if (l.ValueKind == r.ValueKind)
+                for (int i = 0; i < Math.Min(left.Length, right.Length); i++)
                 {
-                    switch (l.ValueKind)
+                    var l = left[i];
+                    var r = right[i];
+                    
+                    if (l.ValueKind == r.ValueKind)
                     {
-                        case JsonValueKind.Array:
-                            switch (_Compare(l.EnumerateArray().ToArray(), r.EnumerateArray().ToArray()))
-                            {
-                                case -1:
-                                    return -1;
-                                case 1:
+                        switch (l.ValueKind)
+                        {
+                            case JsonValueKind.Array:
+                                switch (_Compare(l.EnumerateArray().ToArray(), r.EnumerateArray().ToArray()))
+                                {
+                                    case -1:
+                                        return -1;
+                                    case 1:
+                                        return 1;
+                                }
+                                break;
+                            case JsonValueKind.Number:
+                                if (l.GetInt32() > r.GetInt32())
+                                {
                                     return 1;
-                            }
-                            break;
-                        case JsonValueKind.Number:
-                            if (l.GetInt32() > r.GetInt32())
-                            {
-                                return 1;
-                            }
-                            if (l.GetInt32() < r.GetInt32())
-                            {
-                                return -1;
-                            }
-                            break;
-                        default:
-                            throw new Exception($"Unhandled JSON type: {l.ValueKind}");
+                                }
+                                if (l.GetInt32() < r.GetInt32())
+                                {
+                                    return -1;
+                                }
+                                break;
+                            default:
+                                throw new Exception($"Unhandled JSON type: {l.ValueKind}");
+                        }
                     }
-                }
-                else
-                {
-                    switch (_Compare(
-                                l.ValueKind != JsonValueKind.Array ? new JsonElement[1]{l} : l.EnumerateArray().ToArray(), 
-                                r.ValueKind != JsonValueKind.Array ? new JsonElement[1]{r} : r.EnumerateArray().ToArray()))
+                    else
                     {
-                        case -1:
-                            return -1;
-                        case 1:
-                            return 1;
+                        switch (_Compare(
+                                    l.ValueKind != JsonValueKind.Array ? new JsonElement[1]{l} : l.EnumerateArray().ToArray(), 
+                                    r.ValueKind != JsonValueKind.Array ? new JsonElement[1]{r} : r.EnumerateArray().ToArray()))
+                        {
+                            case -1:
+                                return -1;
+                            case 1:
+                                return 1;
+                        }
                     }
                 }
+
+                // compare item length to determine order
+                if (left.Length > right.Length)
+                {
+                    return 1;
+                }
+                if (left.Length < right.Length)
+                {
+                    return -1;
+                }
+
+                return 0;
             }
 
-            // compare item length to determine order
-            if (left.Length > right.Length)
-            {
-                return 1;
-            }
-            if (left.Length < right.Length)
-            {
-                return -1;
-            }
-
-            return 0;
+            return  _Compare(a.EnumerateArray().ToArray(), b.EnumerateArray().ToArray());
         }
-
-        return  _Compare(a.EnumerateArray().ToArray(), b.EnumerateArray().ToArray());
     }
 }

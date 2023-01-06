@@ -147,86 +147,86 @@ public class Day16 : Solution
         
         return Convert.ToString(bestScore);
     }
-}
 
-internal class OptimizationState : SearchState
-{
-    private Node _valve;
-
-    public OptimizationState(Node valve, int gain, int cost, int maxCost) : base(valve.Id(), gain, cost, maxCost)
+    internal class OptimizationState : SearchState
     {
-        _valve = valve;
-    }
+        private Node _valve;
 
-    public Node Valve() { return _valve; }
-
-    public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
-    {
-        var states = new List<ISearchState>();
-
-        foreach (var (node, edge) in _valve.AdjacentNodes().Where(n => previousSearchState?.Id() != n.Item1.Id()))
+        public OptimizationState(Node valve, int gain, int cost, int maxCost) : base(valve.Id(), gain, cost, maxCost)
         {
-            states.Add(new OptimizationState((Node) node, _gain + node.Weight(), _cost + edge, _maxCost));
+            _valve = valve;
         }
 
-        return states;
-    }
-}
+        public Node Valve() { return _valve; }
 
-internal class PressureState : SearchState
-{
-    private Dictionary<INode, int> _visitLog;
-    private INode _valve;
-
-    public PressureState(Dictionary<INode, int> visitLog, INode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
-    {
-        _visitLog = new Dictionary<INode, int>(visitLog);
-        _valve = valve;
-
-        _visitLog[_valve]++;
-    }
-
-    public override int PotentialGain()
-    {
-        // potential gain is all the unvisted nodes with pressure valves to open
-        return _visitLog.Aggregate(0, (acc, kv) => acc + (kv.Value == 0 && kv.Key.Weight() > 0 ? kv.Key.Weight() * (_maxCost - _cost) : 0));
-    }
-
-    public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
-    {
-        var states = new List<ISearchState>();
-
-        if (_visitLog.Aggregate(true, (acc, kv) => acc && kv.Value > 0))
+        public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
         {
-            // all valves have been visited, so end prematurely
-            states.Add(new PressureState(_visitLog, _valve, _gain, _maxCost, _maxCost));
-            
+            var states = new List<ISearchState>();
+
+            foreach (var (node, edge) in _valve.AdjacentNodes().Where(n => previousSearchState?.Id() != n.Item1.Id()))
+            {
+                states.Add(new OptimizationState((Node) node, _gain + node.Weight(), _cost + edge, _maxCost));
+            }
+
             return states;
         }
-        
-        // otherwse, keep searching
-        foreach (var (node, edgeWeight) in _valve.AdjacentNodes())
-        {
-            // avoid previous search state unless it is the only option
-            if (previousSearchState?.Id() != node.Id() || _valve.AdjacentNodes().Count == 1)
-            {
-                var cost = _cost + edgeWeight;
-                var gain = _gain;
-                if (_visitLog[node] == 0)
-                {
-                    // first visit to valve turns it on, so calculate total pressure based on remaining time
-                    cost += 1;
-                    gain += node.Weight() * (_maxCost - cost);
-                }
-                states.Add(new PressureState(_visitLog, node, gain, cost, _maxCost));
-            }
-        }
-
-        return states;
     }
 
-    public override string ToString()
+    internal class PressureState : SearchState
     {
-        return $"[{_cost}]({_gain}){_valve.Id()}";
+        private Dictionary<INode, int> _visitLog;
+        private INode _valve;
+
+        public PressureState(Dictionary<INode, int> visitLog, INode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
+        {
+            _visitLog = new Dictionary<INode, int>(visitLog);
+            _valve = valve;
+
+            _visitLog[_valve]++;
+        }
+
+        public override int PotentialGain()
+        {
+            // potential gain is all the unvisted nodes with pressure valves to open
+            return _visitLog.Aggregate(0, (acc, kv) => acc + (kv.Value == 0 && kv.Key.Weight() > 0 ? kv.Key.Weight() * (_maxCost - _cost) : 0));
+        }
+
+        public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
+        {
+            var states = new List<ISearchState>();
+
+            if (_visitLog.Aggregate(true, (acc, kv) => acc && kv.Value > 0))
+            {
+                // all valves have been visited, so end prematurely
+                states.Add(new PressureState(_visitLog, _valve, _gain, _maxCost, _maxCost));
+                
+                return states;
+            }
+            
+            // otherwse, keep searching
+            foreach (var (node, edgeWeight) in _valve.AdjacentNodes())
+            {
+                // avoid previous search state unless it is the only option
+                if (previousSearchState?.Id() != node.Id() || _valve.AdjacentNodes().Count == 1)
+                {
+                    var cost = _cost + edgeWeight;
+                    var gain = _gain;
+                    if (_visitLog[node] == 0)
+                    {
+                        // first visit to valve turns it on, so calculate total pressure based on remaining time
+                        cost += 1;
+                        gain += node.Weight() * (_maxCost - cost);
+                    }
+                    states.Add(new PressureState(_visitLog, node, gain, cost, _maxCost));
+                }
+            }
+
+            return states;
+        }
+
+        public override string ToString()
+        {
+            return $"[{_cost}]({_gain}){_valve.Id()}";
+        }
     }
 }

@@ -46,153 +46,153 @@ public class Day10 : Solution
 
         return Convert.ToString("");
     }
-}
-
-internal enum State
-{
-    Fetch = 1,
-    Execute = 2,
-    End = 3
-}
-
-internal class Cpu
-{
-    private State _state;
-    private Crt _crt;
-    private string[] _instructions;
-    private int _instructionIndex;
-    private int _instructionCycle;
-    private Dictionary<int, int> _peekCycles;
-    private int _cycle;
-    private int _x;
-
-    public Cpu(string[] instructions)
+    
+    internal enum State
     {
-        _instructions = instructions;
-        
-        _crt = new Crt(6, 40);
-        _state = State.Fetch;
-        _x = 1;
-        _cycle = 0;
-        _peekCycles = new Dictionary<int, int>();
-        _instructionCycle = 0;
-        _instructionIndex = -1;
+        Fetch = 1,
+        Execute = 2,
+        End = 3
     }
 
-    public int X()
+    internal class Cpu
     {
-        return _x;
-    }
+        private State _state;
+        private Crt _crt;
+        private string[] _instructions;
+        private int _instructionIndex;
+        private int _instructionCycle;
+        private Dictionary<int, int> _peekCycles;
+        private int _cycle;
+        private int _x;
 
-    public Dictionary<int, int> PeekCycles()
-    {
-        return _peekCycles;
-    }
-
-    public Crt Crt()
-    {
-        return _crt;
-    }
-
-    public void AddPeekCycle(int cycle)
-    {
-        _peekCycles.Add(cycle, 0);
-    }
-
-    public void Run()
-    {
-        while (_state != State.End)
+        public Cpu(string[] instructions)
         {
-            _cycle++;
+            _instructions = instructions;
+            
+            _crt = new Crt(6, 40);
+            _state = State.Fetch;
+            _x = 1;
+            _cycle = 0;
+            _peekCycles = new Dictionary<int, int>();
+            _instructionCycle = 0;
+            _instructionIndex = -1;
+        }
 
-            if (_state == State.Fetch)
+        public int X()
+        {
+            return _x;
+        }
+
+        public Dictionary<int, int> PeekCycles()
+        {
+            return _peekCycles;
+        }
+
+        public Crt Crt()
+        {
+            return _crt;
+        }
+
+        public void AddPeekCycle(int cycle)
+        {
+            _peekCycles.Add(cycle, 0);
+        }
+
+        public void Run()
+        {
+            while (_state != State.End)
             {
-                // fetch next instruction
-                _instructionIndex++;
+                _cycle++;
 
-                _state = State.Execute;
-                if (_instructionIndex >= _instructions.Length)
+                if (_state == State.Fetch)
                 {
-                    _state = State.End;
-                    continue;
+                    // fetch next instruction
+                    _instructionIndex++;
+
+                    _state = State.Execute;
+                    if (_instructionIndex >= _instructions.Length)
+                    {
+                        _state = State.End;
+                        continue;
+                    }
                 }
-            }
-            
-            if (_peekCycles.ContainsKey(_cycle))
-            {
-                _peekCycles[_cycle] = _x;
-            }
-            
-            _crt.Draw(_cycle - 1, _x);
-
-            if (_state == State.Execute)
-            {
-                // process instruction
-                var instruction = _instructions[_instructionIndex].Split(' ');
-                switch (instruction[0])
+                
+                if (_peekCycles.ContainsKey(_cycle))
                 {
-                    case "noop":
-                        // no operation...ready to process next instruction
-                        _instructionCycle = 0;
-                        _state = State.Fetch;
-                        break;
-                    case "addx":
-                        // check current instruction execution
-                        if (_instructionCycle > 0)
-                        {
-                            _instructionCycle--;
+                    _peekCycles[_cycle] = _x;
+                }
+                
+                _crt.Draw(_cycle - 1, _x);
 
-                            if (_instructionCycle == 0)
+                if (_state == State.Execute)
+                {
+                    // process instruction
+                    var instruction = _instructions[_instructionIndex].Split(' ');
+                    switch (instruction[0])
+                    {
+                        case "noop":
+                            // no operation...ready to process next instruction
+                            _instructionCycle = 0;
+                            _state = State.Fetch;
+                            break;
+                        case "addx":
+                            // check current instruction execution
+                            if (_instructionCycle > 0)
                             {
-                                _x += Convert.ToInt32(instruction[1]);
-                                _state = State.Fetch;
+                                _instructionCycle--;
+
+                                if (_instructionCycle == 0)
+                                {
+                                    _x += Convert.ToInt32(instruction[1]);
+                                    _state = State.Fetch;
+                                }
                             }
-                        }
-                        else
-                        {
-                            _instructionCycle = 1;
-                        }
-                        break;
-                    default:
-                        throw new Exception($"Unrecognized instruction : {instruction[0]}");
+                            else
+                            {
+                                _instructionCycle = 1;
+                            }
+                            break;
+                        default:
+                            throw new Exception($"Unrecognized instruction : {instruction[0]}");
+                    }
                 }
             }
         }
     }
-}
 
-internal class Crt
-{
-    private int _rows;
-    private int _cols;
-    private char[,] _display;
-
-    public Crt(int rows, int cols)
+    internal class Crt
     {
-        _rows = rows;
-        _cols = cols;
-        _display = new char[_rows, (_cols)];
-    }
+        private int _rows;
+        private int _cols;
+        private char[,] _display;
 
-    public int Rows()
-    {
-        return _rows;
-    }
+        public Crt(int rows, int cols)
+        {
+            _rows = rows;
+            _cols = cols;
+            _display = new char[_rows, (_cols)];
+        }
 
-    public int Cols()
-    {
-        return _cols;
-    }
+        public int Rows()
+        {
+            return _rows;
+        }
 
-    public char Show(int row, int col)
-    {
-        return _display[row, col];
-    }
+        public int Cols()
+        {
+            return _cols;
+        }
 
-    public void Draw(int index, int position)
-    {
-        var row = index / _cols;
-        var col = index % _cols;
-        _display[row, col] = (col >= position - 1 && col <= position + 1) ? '#' : '.';
+        public char Show(int row, int col)
+        {
+            return _display[row, col];
+        }
+
+        public void Draw(int index, int position)
+        {
+            var row = index / _cols;
+            var col = index % _cols;
+            _display[row, col] = (col >= position - 1 && col <= position + 1) ? '#' : '.';
+        }
     }
 }

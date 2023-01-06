@@ -128,70 +128,70 @@ public class Day12 : Solution
 
         return Convert.ToString(shortest.SearchStates().Count - 1);
     }
-}
 
-internal class StepState : SearchState
-{
-    private (int, char)[,] _grid;
-    private int _x;
-    private int _y;
-    private int _endX;
-    private int _endY;
-
-    public StepState((int, char)[,] grid, int x, int y, int endX, int endY, int gain, int cost) : base($"{x},{y}", gain, cost, 9999)
+    internal class StepState : SearchState
     {
-        _x = x;
-        _y = y;
-        _endX = endX;
-        _endY = endY;
-        _grid = grid;
-    }
+        private (int, char)[,] _grid;
+        private int _x;
+        private int _y;
+        private int _endX;
+        private int _endY;
 
-    public int X()
-    {
-        return _x;
-    }
-
-    public int Y()
-    {
-        return _y;
-    }
-
-    public override int PotentialGain()
-    {
-        return (Math.Abs(_endX - _x) + Math.Abs(_endY - _y));
-    }
-
-    public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
-    {
-        var neighbors = new List<ISearchState>();
-
-        // top
-        if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Item1 -_grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y + 1}")
+        public StepState((int, char)[,] grid, int x, int y, int endX, int endY, int gain, int cost) : base($"{x},{y}", gain, cost, 9999)
         {
-            neighbors.Add(new StepState(_grid, _x, _y + 1, _endX, _endY, _grid[_x, _y + 1].Item1, Cost() + 1));
-        }
-        // bottom
-        if (_y - 1 >= 0  && _grid[_x, _y - 1].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y - 1}")
-        {
-            neighbors.Add(new StepState(_grid, _x, _y - 1, _endX, _endY,_grid[_x, _y - 1].Item1, Cost() + 1));
-        }
-        // left
-        if (_x - 1 >= 0 && _grid[_x - 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x - 1},{_y}")
-        {
-            neighbors.Add(new StepState(_grid, _x - 1, _y, _endX, _endY,_grid[_x - 1, _y].Item1, Cost() + 1));
-        }
-        // right
-        if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x + 1},{_y}")
-        {
-            neighbors.Add(new StepState(_grid, _x + 1, _y, _endX, _endY,_grid[_x + 1, _y].Item1, Cost() + 1));
+            _x = x;
+            _y = y;
+            _endX = endX;
+            _endY = endY;
+            _grid = grid;
         }
 
-        return neighbors;
-    }
+        public int X()
+        {
+            return _x;
+        }
 
-    public override string ToString()
-    {
-        return _id;
+        public int Y()
+        {
+            return _y;
+        }
+
+        public override int PotentialGain()
+        {
+            return (Math.Abs(_endX - _x) + Math.Abs(_endY - _y));
+        }
+
+        public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
+        {
+            var neighbors = new List<ISearchState>();
+
+            // top
+            if (_y + 1 < _grid.GetLength(1) && _grid[_x, _y + 1].Item1 -_grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y + 1}")
+            {
+                neighbors.Add(new StepState(_grid, _x, _y + 1, _endX, _endY, _grid[_x, _y + 1].Item1, Cost() + 1));
+            }
+            // bottom
+            if (_y - 1 >= 0  && _grid[_x, _y - 1].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x},{_y - 1}")
+            {
+                neighbors.Add(new StepState(_grid, _x, _y - 1, _endX, _endY,_grid[_x, _y - 1].Item1, Cost() + 1));
+            }
+            // left
+            if (_x - 1 >= 0 && _grid[_x - 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x - 1},{_y}")
+            {
+                neighbors.Add(new StepState(_grid, _x - 1, _y, _endX, _endY,_grid[_x - 1, _y].Item1, Cost() + 1));
+            }
+            // right
+            if (_x + 1 < _grid.GetLength(0) && _grid[_x + 1, _y].Item1 - _grid[_x, _y].Item1 < 2 && previousSearchState?.Id() != $"{_x + 1},{_y}")
+            {
+                neighbors.Add(new StepState(_grid, _x + 1, _y, _endX, _endY,_grid[_x + 1, _y].Item1, Cost() + 1));
+            }
+
+            return neighbors;
+        }
+
+        public override string ToString()
+        {
+            return _id;
+        }
     }
 }

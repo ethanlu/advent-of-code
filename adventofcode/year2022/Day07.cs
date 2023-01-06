@@ -111,70 +111,70 @@ public class Day07 : Solution
 
         return Convert.ToString(candidateDirectorySize.First());
     }
-}
-
-internal class File
-{
-    private long _size;
-
-    public File(long size)
-    {
-        _size = size;
-    }
-
-    public long Size()
-    {
-        return _size;
-    }
-}
-
-internal class Directory
-{
-    private long _size;
-    private Directory? _parent;
-    private Dictionary<string, Directory> _directories;
-    private Dictionary<string, File> _files;
-
-    public Directory(Directory? parent)
-    {
-        _size = -1L;
-        _parent = parent;
-        _directories = new Dictionary<string, Directory>();
-        _files = new Dictionary<string, File>();
-    }
-
-    public Directory? Parent()
-    {
-        return _parent;
-    }
-
-    public Dictionary<string, Directory> Directories()
-    {
-        return _directories;
-}
     
-    public Dictionary<string, File> Files()
+    internal class File
     {
-        return _files;
-}
+        private long _size;
 
-    public long Size()
-    {
-        if (_size < 0)
+        public File(long size)
         {
-            var total = 0L;
-            foreach (var f in _files)
-            {
-                total += f.Value.Size();
-            }
-            foreach (var d in _directories)
-            {
-                total += d.Value.Size();
-            }
-
-            _size = total;
+            _size = size;
         }
 
-        return _size;
+        public long Size()
+        {
+            return _size;
+        }
+    }
+
+    internal class Directory
+    {
+        private long _size;
+        private Directory? _parent;
+        private Dictionary<string, Directory> _directories;
+        private Dictionary<string, File> _files;
+
+        public Directory(Directory? parent)
+        {
+            _size = -1L;
+            _parent = parent;
+            _directories = new Dictionary<string, Directory>();
+            _files = new Dictionary<string, File>();
+        }
+
+        public Directory? Parent()
+        {
+            return _parent;
+        }
+
+        public Dictionary<string, Directory> Directories()
+        {
+            return _directories;
+        }
+    
+        public Dictionary<string, File> Files()
+        {
+            return _files;
+        }
+
+        public long Size()
+        {
+            if (_size < 0)
+            {
+                var total = 0L;
+                foreach (var f in _files)
+                {
+                    total += f.Value.Size();
+                }
+                foreach (var d in _directories)
+                {
+                    total += d.Value.Size();
+                }
+
+                _size = total;
+            }
+
+            return _size;
+        }
     }
 }

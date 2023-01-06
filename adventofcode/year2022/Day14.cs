@@ -56,193 +56,193 @@ public class Day14 : Solution
 
         return Convert.ToString(sands);
     }
-}
 
-internal class SandFall
-{
-    private const int Margin = 3;
-    
-    private char[,] _cave;
-    private int _width;
-    private int _height;
-    private Point2D _sandSource;
-    private bool _abyss;
-
-    public SandFall(HashSet<Point2D> rocks, Point2D sandSource, bool abyss)
+    internal class SandFall
     {
-        _abyss = abyss;
-        _width = 1000;
-        _height = 0;
-        foreach (var p in rocks)
-        {
-            _height = _height < p.Y() ? p.Y() : _height;
-        }
-        _height += 3;
+        private const int Margin = 3;
+        
+        private char[,] _cave;
+        private int _width;
+        private int _height;
+        private Point2D _sandSource;
+        private bool _abyss;
 
-        _sandSource = sandSource;
-        _cave = new char[_width, _height];
-        for (int y = 0; y < _height; y++)
+        public SandFall(HashSet<Point2D> rocks, Point2D sandSource, bool abyss)
         {
-            for (int x = 0; x < _width; x++)
+            _abyss = abyss;
+            _width = 1000;
+            _height = 0;
+            foreach (var p in rocks)
             {
-                if (rocks.Contains(new Point2D(x, y)))
+                _height = _height < p.Y() ? p.Y() : _height;
+            }
+            _height += 3;
+
+            _sandSource = sandSource;
+            _cave = new char[_width, _height];
+            for (int y = 0; y < _height; y++)
+            {
+                for (int x = 0; x < _width; x++)
                 {
-                    _cave[x, y] = '#';
-                }
-                else
-                {
-                    _cave[x, y] = '.';
+                    if (rocks.Contains(new Point2D(x, y)))
+                    {
+                        _cave[x, y] = '#';
+                    }
+                    else
+                    {
+                        _cave[x, y] = '.';
+                    }
                 }
             }
         }
-    }
 
-    public int Run()
-    {
-        var sandCount = 0;
-        var reachedEnd = false;
-        do
+        public int Run()
         {
-            int sandX = _sandSource.X();
-            int sandY = _sandSource.Y();
-
-            // drop a grain of sand until it comes to a stop
-            var atRest = false;
+            var sandCount = 0;
+            var reachedEnd = false;
             do
             {
-                // can move down?
-                if (sandY + 1 >= _height - 1)
+                int sandX = _sandSource.X();
+                int sandY = _sandSource.Y();
+
+                // drop a grain of sand until it comes to a stop
+                var atRest = false;
+                do
                 {
-                    if (_abyss)
+                    // can move down?
+                    if (sandY + 1 >= _height - 1)
+                    {
+                        if (_abyss)
+                        {
+                            reachedEnd = true;
+                            break;
+                        }
+                        else
+                        {
+                            atRest = true;
+                            continue;
+                        }
+                    }
+
+                    if (_cave[sandX, sandY + 1] == '.')
+                    {
+                        sandY++;
+                        continue;
+                    }
+
+                    // can move left and down?
+                    if (sandX - 1 < 0)
                     {
                         reachedEnd = true;
                         break;
                     }
-                    else
+
+                    if (_cave[sandX - 1, sandY + 1] == '.')
                     {
-                        atRest = true;
+                        sandX--;
+                        sandY++;
                         continue;
                     }
-                }
 
-                if (_cave[sandX, sandY + 1] == '.')
+                    // can move right and down?
+                    if (sandX + 1 >= _width)
+                    {
+                        reachedEnd = true;
+                        break;
+                    }
+
+                    if (_cave[sandX + 1, sandY + 1] == '.')
+                    {
+                        sandX++;
+                        sandY++;
+                        continue;
+                    }
+
+                    atRest = true;
+                } while (!atRest);
+
+                if (!reachedEnd || sandX == _sandSource.X() && sandY == _sandSource.Y())
                 {
-                    sandY++;
-                    continue;
+                    sandCount++;
+                    _cave[sandX, sandY] = 'o';
                 }
-
-                // can move left and down?
-                if (sandX - 1 < 0)
+                
+                // sand grain rests at sand source....treat it as the end
+                if (sandX == _sandSource.X() && sandY == _sandSource.Y())
                 {
                     reachedEnd = true;
-                    break;
                 }
 
-                if (_cave[sandX - 1, sandY + 1] == '.')
-                {
-                    sandX--;
-                    sandY++;
-                    continue;
-                }
+            } while (!reachedEnd);
 
-                // can move right and down?
-                if (sandX + 1 >= _width)
-                {
-                    reachedEnd = true;
-                    break;
-                }
-
-                if (_cave[sandX + 1, sandY + 1] == '.')
-                {
-                    sandX++;
-                    sandY++;
-                    continue;
-                }
-
-                atRest = true;
-            } while (!atRest);
-
-            if (!reachedEnd || sandX == _sandSource.X() && sandY == _sandSource.Y())
-            {
-                sandCount++;
-                _cave[sandX, sandY] = 'o';
-            }
-            
-            // sand grain rests at sand source....treat it as the end
-            if (sandX == _sandSource.X() && sandY == _sandSource.Y())
-            {
-                reachedEnd = true;
-            }
-
-        } while (!reachedEnd);
-
-        return sandCount;
-    }
-
-    public void ShowCave()
-    {
-        var minX = _width;
-        var minY = _height;
-        var maxX = 0;
-        var maxY = 0;
-
-        for (int y = 0; y < _height; y++)
-        {
-            for (int x = 0; x < _width; x++)
-            {
-                if (_cave[x, y] != '.')
-                {
-                    minX = minX > x ? x : minX;
-                    minY = minY > y ? y : minY;
-                    maxX = maxX < x ? x : maxX;
-                    maxY = maxY < y ? y : maxY;
-                }
-            }
+            return sandCount;
         }
 
-        minX = Math.Max(0, minX - Margin);
-        minY = Math.Max(0, minY - Margin);
-        maxX = Math.Min(_width, maxX + Margin + 1);
-        maxY = Math.Min(_height, maxY + Margin + 1);
-
-        var line = "";
-        for (int x = minX; x < maxX; x++)
+        public void ShowCave()
         {
-            if (_sandSource.X() == x)
-            {
-                line += _cave[x, minY] == '.' ? "+" : _cave[x, minY];
-            }
-            else
-            {
-                line += _cave[x, minY];
-            }
-        }
-        Console.WriteLine(line);
+            var minX = _width;
+            var minY = _height;
+            var maxX = 0;
+            var maxY = 0;
 
-        for (int y = minY + 1; y < maxY - 1; y++)
-        {
+            for (int y = 0; y < _height; y++)
+            {
+                for (int x = 0; x < _width; x++)
+                {
+                    if (_cave[x, y] != '.')
+                    {
+                        minX = minX > x ? x : minX;
+                        minY = minY > y ? y : minY;
+                        maxX = maxX < x ? x : maxX;
+                        maxY = maxY < y ? y : maxY;
+                    }
+                }
+            }
+
+            minX = Math.Max(0, minX - Margin);
+            minY = Math.Max(0, minY - Margin);
+            maxX = Math.Min(_width, maxX + Margin + 1);
+            maxY = Math.Min(_height, maxY + Margin + 1);
+
+            var line = "";
+            for (int x = minX; x < maxX; x++)
+            {
+                if (_sandSource.X() == x)
+                {
+                    line += _cave[x, minY] == '.' ? "+" : _cave[x, minY];
+                }
+                else
+                {
+                    line += _cave[x, minY];
+                }
+            }
+            Console.WriteLine(line);
+
+            for (int y = minY + 1; y < maxY - 1; y++)
+            {
+                line = "";
+                for (int x = minX; x < maxX; x++)
+                {
+                    line += _cave[x, y];
+                }
+                Console.WriteLine(line);
+            }
+
             line = "";
             for (int x = minX; x < maxX; x++)
             {
-                line += _cave[x, y];
+                if (_abyss)
+                {
+                    line += ".";
+                }
+                else
+                {
+                    line += "#";
+                }
             }
             Console.WriteLine(line);
-        }
 
-        line = "";
-        for (int x = minX; x < maxX; x++)
-        {
-            if (_abyss)
-            {
-                line += ".";
-            }
-            else
-            {
-                line += "#";
-            }
+            Console.WriteLine($"{maxX-minX}x{maxY-minY}");
         }
-        Console.WriteLine(line);
-
-        Console.WriteLine($"{maxX-minX}x{maxY-minY}");
     }
 }
