@@ -2,20 +2,23 @@ namespace adventofcode.common.graph.search;
 
 public class BFS
 {
-    private bool _verbose;
     private ISearchPath _start;
     private int _maxCost;
+    private bool _verbose;
+    private long _lap;
 
     public BFS(ISearchPath start, int maxCost)
     {
         _start = start;
         _maxCost = maxCost;
         _verbose = false;
+        _lap = 5000L;
     }
 
-    public void Verbose(bool verbose)
+    public void Verbose(bool verbose, long lap)
     {
         _verbose = verbose;
+        _lap = lap;
     }
 
     public ISearchPath FindPath()
@@ -58,7 +61,7 @@ public class BFS
                 candidates.Enqueue(potentialCandidate, -potentialCandidate.Gain());
             }
             i++;
-            if (_verbose && i % 5000L == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
+            if (_verbose && i % _lap == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
         } while (candidates.Count > 0);
 
         return currentBest;

@@ -48,6 +48,8 @@ public struct Point2D : IEquatable<Point2D>
     public static Point2D operator *(Point2D a, int b) => new Point2D(a.X() * b, a.Y() * b);
     public static Point2D operator /(Point2D a, int b) => new Point2D(a.X() / b, a.Y() / b);
     public static Point2D operator %(Point2D a, int b) => new Point2D(a.X() % b, a.Y() % b);
+    public static bool operator ==(Point2D a, Point2D b) => a.X() == b.X() && a.Y() == b.Y();
+    public static bool operator !=(Point2D a, Point2D b) => a.X() != b.X() || a.Y() != b.Y();
 
     public bool Equals(Point2D p)
     {

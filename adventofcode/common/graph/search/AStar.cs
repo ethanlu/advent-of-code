@@ -6,17 +6,21 @@ public class AStar
     private ISearchState _end;
     private HashSet<ISearchState> _visited;
     private bool _verbose;
+    private long _lap;
 
     public AStar(ISearchPath start, ISearchState end)
     {
         _start = start;
         _end = end;
         _visited = new HashSet<ISearchState>();
+        _verbose = false;
+        _lap = 5000L;
     }
 
-    public void Verbose(bool verbose)
+    public void Verbose(bool verbose, long lap)
     {
         _verbose = verbose;
+        _lap = lap;
     }
 
     public ISearchPath FindPath()
@@ -29,7 +33,6 @@ public class AStar
 
         var i = 0L;
         var trimmed = 0L;
-        var completed = 0L;
         do
         {
             var candidate = candidates.Dequeue();
@@ -43,16 +46,18 @@ public class AStar
 
             foreach (var nextState in candidate.SearchStates().Last().NextSearchStates(candidate.SearchStates().Count > 1 ? candidate.SearchStates()[candidate.SearchStates().Count - 2] : null))
             {
-                if (!_visited.Contains(nextState))
+                if (_visited.Contains(nextState))
                 {
-                    var nextPath = candidate.CreateCopy();
-                    nextPath.Add(nextState);
-                    candidates.Enqueue(nextPath, nextPath.Cost() + nextPath.Depth() + nextPath.PotentialGain());
-                    _visited.Add(nextState);
+                    trimmed++;
+                    continue;
                 }
+                var nextPath = candidate.CreateCopy();
+                nextPath.Add(nextState);
+                candidates.Enqueue(nextPath, nextPath.Cost() + nextPath.Depth() + nextPath.PotentialGain());
+                _visited.Add(nextState);
             }
             i++;
-            if (_verbose && i % 5000L == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {completed} : {trimmed}"); }
+            if (_verbose && i % _lap == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {trimmed}"); }
         } while (candidates.Count > 0);
 
         return shortest;

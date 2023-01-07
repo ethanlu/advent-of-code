@@ -57,6 +57,8 @@ public struct Point3D : IEquatable<Point3D>
     public static Point3D operator *(Point3D a, int b) => new Point3D(a.X() * b, a.Y() * b, a.Z() * b);
     public static Point3D operator /(Point3D a, int b) => new Point3D(a.X() / b, a.Y() / b, a.Z() / b);
     public static Point3D operator %(Point3D a, int b) => new Point3D(a.X() % b, a.Y() % b, a.Z() % b);
+    public static bool operator ==(Point3D a, Point3D b) => a.X() == b.X() && a.Y() == b.Y() && a.Z() == b.Z();
+    public static bool operator !=(Point3D a, Point3D b) => a.X() != b.X() || a.Y() != b.Y() || a.Z() != b.Z();
 
     public bool Equals(Point3D p)
     {
