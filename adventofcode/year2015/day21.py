@@ -6,10 +6,10 @@ import re
 
 class Day21(Solution):
     def _init(self):
-        boss_stats = 'Hit Points: 100,Damage: 8,Armor: 2'
-        self.boss_hp = int(re.match('.*Hit Points: (\d+)', boss_stats).group(1))
-        self.boss_damage = int(re.match('.*Damage: (\d+)', boss_stats).group(1))
-        self.boss_armor = int(re.match('.*Armor: (\d+)', boss_stats).group(1))
+        boss_stats = self._load_input_as_lines()
+        self.boss_hp = int(re.match('^Hit Points: (\d+)', boss_stats[0]).group(1))
+        self.boss_damage = int(re.match('^Damage: (\d+)', boss_stats[1]).group(1))
+        self.boss_armor = int(re.match('^Armor: (\d+)', boss_stats[2]).group(1))
 
         self.hp = 100
         self.damage = 0
@@ -73,14 +73,14 @@ class Day21(Solution):
             #print('\t\t PLAYER ATTACKS! ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
 
             if boss['hp'] <= 0:
-                print('\t\t PLAYER WINS! ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
+                #print('\t\t PLAYER WINS! ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
                 break
 
             player['hp'] -= max(boss['damage'] - player['armor'], 1)
             #print('\t\t BOSS ATTACKS!   ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
 
             if player['hp'] <= 0:
-                print('\t\t BOSS WINS! ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
+                #print('\t\t BOSS WINS! ==> boss hp : ' + str(boss['hp']) + ', player hp : ' + str(player['hp']))
                 break
 
         return player['hp'] > 0
@@ -95,9 +95,9 @@ class Day21(Solution):
 
         cheapest_victory = 0
         for allowed_equipment_slot in allowed_equipment_slots:
-            print('trying setup : ' + str(allowed_equipment_slot))
+            #print('trying setup : ' + str(allowed_equipment_slot))
             for gear_stats in self._all_possible_gear_stats(allowed_equipment_slot):
-                print('\t gears : ' + str(gear_stats))
+                #print('\t gears : ' + str(gear_stats))
                 gear_cost = gear_stats['cost']
                 boss = {'hp': self.boss_hp, 'damage': self.boss_damage, 'armor': self.boss_armor}
                 player = {'hp': self.hp, 'damage': self.damage + gear_stats['damage'], 'armor': self.armor + gear_stats['armor']}
@@ -117,9 +117,9 @@ class Day21(Solution):
 
         costliest_defeat = 0
         for allowed_equipment_slot in allowed_equipment_slots:
-            print('trying setup : ' + str(allowed_equipment_slot))
+            #print('trying setup : ' + str(allowed_equipment_slot))
             for gear_stats in self._all_possible_gear_stats(allowed_equipment_slot):
-                print('\t gears : ' + str(gear_stats))
+                #print('\t gears : ' + str(gear_stats))
                 gear_cost = gear_stats['cost']
                 boss = {'hp': self.boss_hp, 'damage': self.boss_damage, 'armor': self.boss_armor}
                 player = {'hp': self.hp, 'damage': self.damage + gear_stats['damage'], 'armor': self.armor + gear_stats['armor']}

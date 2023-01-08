@@ -6,7 +6,7 @@ import re
 
 class Day07(Solution):
     def _init(self):
-        self._circuits = map(lambda l: self._parse_circuit(l.strip()), self._load_input_as_lines())
+        self._circuits = list(map(lambda l: self._parse_circuit(l.strip()), self._load_input_as_lines()))
 
         self._wires = {}
         self._overrides = {}
@@ -73,7 +73,7 @@ class Day07(Solution):
     def _run_circuit(self):
         # use queue to go through each wire and evaluate each circuit
         circuits = deque('')
-        map(lambda c: circuits.append(c), self._circuits)
+        list(map(lambda c: circuits.append(c), self._circuits))
         while len(circuits) > 0:
             (operator, wire, sources) = circuits.popleft()
 

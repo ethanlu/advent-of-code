@@ -17,7 +17,7 @@ class Day12(Solution):
                 total += self._traverse(value, ignore_red)
         elif type(json_obj) == dict:
             if ignore_red:
-                red_properties = [property for property in json_obj if type(json_obj[property]) in ['unicode', 'str'] and json_obj[property] == 'red']
+                red_properties = [property for property in json_obj if isinstance(json_obj[property], str) and json_obj[property] == 'red']
                 if len(red_properties) == 0:
                     for property in json_obj:
                         total += self._traverse(json_obj[property], ignore_red)

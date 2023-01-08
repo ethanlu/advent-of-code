@@ -3,7 +3,7 @@ import re
 
 class Day25(Solution):
     def _init(self):
-        self.input = 'To continue, please consult the code grid in the manual.  Enter the code at row 2981, column 3075.'
+        self.input = self._load_input_as_string()
         r = re.match('To continue, please consult the code grid in the manual\.  Enter the code at row (\d+), column (\d+).', self.input)
 
         if r is None:

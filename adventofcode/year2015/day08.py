@@ -5,16 +5,18 @@ import re
 
 class Day08(Solution):
     def _init(self):
-        self._inputs = map(lambda l: l.strip(), self._load_input_as_lines())
+        self._inputs = list(map(lambda l: l.strip(), self._load_input_as_lines()))
 
         self._state = 0
         self._code_character_count = 0
         self._in_memory_character_count = 0
+        self._escape_character_count = 0
 
     def reset(self):
         self._state = 0
         self._code_character_count = 0
         self._in_memory_character_count = 0
+        self._escape_character_count = 0
 
     def part_one(self):
         for s in self._inputs:
@@ -83,8 +85,14 @@ class Day08(Solution):
         return self._code_character_count - self._in_memory_character_count
 
     def part_two(self):
+        self.reset()
         for s in self._inputs:
-            #print(s)
-            self._code_character_count += len(re.escape(s)) + 2
+            new_count = 2
+            for c in s:
+                new_count += 1
+                if c in ('"', '\\'):
+                    new_count += 1
+            #print(str(new_count) + " - " + str(len(s)))
+            self._code_character_count += new_count
             self._in_memory_character_count += len(s)
         return self._code_character_count - self._in_memory_character_count

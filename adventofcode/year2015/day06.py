@@ -5,7 +5,7 @@ import re
 
 class Day06(Solution):
     def _init(self):
-        self._instructions = map(lambda l: self._parse_instruction(l.strip()), self._load_input_as_lines())
+        self._instructions = list(map(lambda l: self._parse_instruction(l.strip()), self._load_input_as_lines()))
 
         self._light_grid = [[False for x in range(1000)] for x in range(1000)]
         self._brightness_grid = [[0 for x in range(1000)] for x in range(1000)]

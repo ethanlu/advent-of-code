@@ -16,11 +16,11 @@ class Day15(Solution):
                 raise Exception('invalid input : ' + l)
 
             self._ingredient_properties[r.group(1)] = {'capacity': int(r.group(2)),
-                                                      'durability': int(r.group(3)),
-                                                      'flavor': int(r.group(4)),
-                                                      'texture': int(r.group(5)),
-                                                      'calories': int(r.group(6))}
-            self._ingredients = self._ingredient_properties.keys()
+                                                       'durability': int(r.group(3)),
+                                                       'flavor': int(r.group(4)),
+                                                       'texture': int(r.group(5)),
+                                                       'calories': int(r.group(6))}
+            self._ingredients = list(self._ingredient_properties.keys())
 
     def _get_recipe_goodness(self, recipe, calories_requirement=None):
         capacity = 0
@@ -35,7 +35,7 @@ class Day15(Solution):
             texture += weight * self._ingredient_properties[self._ingredients[i]]['texture']
             calories += weight * self._ingredient_properties[self._ingredients[i]]['calories']
 
-        return max(capacity,0)*max(durability,0)*max(flavor,0)*max(texture,0)*(1 if calories_requirement is None or calories_requirement == calories else 0)
+        return max(capacity, 0) * max(durability, 0) * max(flavor, 0) * max(texture, 0) * (1 if calories_requirement is None or calories_requirement == calories else 0)
 
     def _generate_recipes(self, ingredient_sum, num_ingredients):
         # lazy load recipes
