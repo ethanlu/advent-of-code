@@ -34,7 +34,9 @@ class Day01(Solution):
                  'R': 'north'}
     }
 
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._input = self._load_input_as_string().split(', ')
 
     def part_one(self):

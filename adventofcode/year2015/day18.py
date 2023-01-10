@@ -2,7 +2,9 @@ from adventofcode import Solution
 
 
 class Day18(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._grid_dimension = 100
         self._corners_always_on = False
         self._state = []

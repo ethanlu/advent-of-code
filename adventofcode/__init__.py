@@ -8,8 +8,6 @@ class Solution(object):
         self._year = year
         self._day = day
 
-        self._init()
-
     def _load_input_as_string(self) -> str:
         file_path = os.path.join(os.path.dirname(__file__), f"../input/{self._year}/day{self._day}.txt")
         with open(file_path) as f:

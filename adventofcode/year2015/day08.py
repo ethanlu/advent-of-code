@@ -4,7 +4,9 @@ import re
 
 
 class Day08(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._inputs = list(map(lambda l: l.strip(), self._load_input_as_lines()))
 
         self._state = 0

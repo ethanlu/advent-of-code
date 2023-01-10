@@ -4,7 +4,9 @@ import hashlib
 
 
 class Day04(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._key = self._load_input_as_string()
 
     def _mine(self, l):

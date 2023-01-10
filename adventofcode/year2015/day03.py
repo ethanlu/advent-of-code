@@ -5,7 +5,9 @@ from typing import Set
 
 
 class Day03(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._directions = self._load_input_as_string()
 
     def _journey(self, directions) -> Set:

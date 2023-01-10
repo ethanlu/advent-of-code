@@ -2,7 +2,9 @@ from adventofcode import Solution
 
 
 class Day20(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._number = int(self._load_input_as_string())
 
     def _get_factors_sum(self, n, gift_factor, house_limit):

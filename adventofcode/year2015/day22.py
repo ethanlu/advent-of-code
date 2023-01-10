@@ -24,7 +24,9 @@ class BattleState(object):
 
 
 class Day22(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._boss_stats = self._load_input_as_lines()
         self.reset()
         self.hardmode = False
@@ -214,7 +216,7 @@ class Day22(Solution):
                 print('=============================================================================================')
             self._find_cheapest_victory(BattleState(self.player_hp, self.player_mana, self.boss_hp, self.boss_damage, 0, 0, 0, [], 0), spell)
 
-        return (self.best_state.total_mana_used, '->'.join(self.best_state.cast_sequence))
+        return (self.best_state.total_mana_used, '->'.join(self.best_state.cast_sequence))[0]
 
     def part_two(self):
         self.reset()
@@ -224,4 +226,4 @@ class Day22(Solution):
                 print('=============================================================================================')
             self._find_cheapest_victory(BattleState(self.player_hp, self.player_mana, self.boss_hp, self.boss_damage, 0, 0, 0, [], 0), spell)
 
-        return (self.best_state.total_mana_used, '->'.join(self.best_state.cast_sequence))
+        return (self.best_state.total_mana_used, '->'.join(self.best_state.cast_sequence))[0]

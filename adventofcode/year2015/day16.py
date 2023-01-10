@@ -4,7 +4,9 @@ import re
 
 
 class Day16(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._matching_properties = {'children': 3,
                                      'cats': 7,
                                      'samoyeds': 2,

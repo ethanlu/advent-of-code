@@ -3,7 +3,9 @@ from adventofcode import Solution
 
 
 class Day24(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self.weights = list(int(l) for l in self._load_input_as_lines())
 
     def _find_all_groups_of_size(self, group_size, group_weight):

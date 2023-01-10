@@ -8,7 +8,9 @@ class Day07(Solution):
     in_bracket_strings_regex = re.compile('\[([a-z]+)\]')
     out_bracket_strings_regex = re.compile('\[[a-z]+\]')
 
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._input = [l.strip() for l in self._load_input_as_lines()]
 
     def _is_abba(self, s):

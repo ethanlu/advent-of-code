@@ -4,7 +4,9 @@ import re
 
 
 class Day23(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self.instructions = list(self._load_input_as_lines())
         self.current_address = 0
         self.registers = {'a' : 0,
@@ -68,7 +70,7 @@ class Day23(Solution):
         while self.current_address >= 0 and self.current_address < len(self.instructions):
             self._execute_instruction()
 
-        return self.registers
+        return self.registers['b']
 
     def part_two(self):
         self._reset()
@@ -77,4 +79,4 @@ class Day23(Solution):
         while self.current_address >= 0 and self.current_address < len(self.instructions):
             self._execute_instruction()
 
-        return self.registers
+        return self.registers['b']

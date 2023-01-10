@@ -2,7 +2,9 @@ from adventofcode import Solution
 import re
 
 class Day25(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self.input = self._load_input_as_string()
         r = re.match('To continue, please consult the code grid in the manual\.  Enter the code at row (\d+), column (\d+).', self.input)
 

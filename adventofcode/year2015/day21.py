@@ -5,7 +5,9 @@ import re
 
 
 class Day21(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         boss_stats = self._load_input_as_lines()
         self.boss_hp = int(re.match('^Hit Points: (\d+)', boss_stats[0]).group(1))
         self.boss_damage = int(re.match('^Damage: (\d+)', boss_stats[1]).group(1))

@@ -5,7 +5,9 @@ import re
 
 
 class Day09(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         # set of all cities
         self._cities = set()
 

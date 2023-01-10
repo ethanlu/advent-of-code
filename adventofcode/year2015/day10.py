@@ -2,7 +2,9 @@ from adventofcode import Solution
 
 
 class Day10(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._start = list(map(lambda l: l.strip(), self._load_input_as_lines()))[0]
 
     def _do_look_say(self, number):

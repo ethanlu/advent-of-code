@@ -33,7 +33,9 @@ class Day10(Solution):
     bot_regex = re.compile('bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)')
     value_regex = re.compile('value (\d+) goes to bot (\d+)')
 
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._num_bots = -1
         self._num_outputs = -1
         self._value_instructions = []

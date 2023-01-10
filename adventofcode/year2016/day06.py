@@ -2,7 +2,9 @@ from adventofcode import Solution
 
 
 class Day06(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._input = self._load_input_as_lines()
 
     def _build_character_counts(self):

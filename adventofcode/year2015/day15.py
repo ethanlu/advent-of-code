@@ -5,7 +5,9 @@ import re
 class Day15(Solution):
     INGREDIENT_SUM = 100
 
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._ingredients = []
         self._ingredient_properties = {}
 

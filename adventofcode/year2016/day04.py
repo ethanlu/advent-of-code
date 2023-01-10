@@ -44,7 +44,9 @@ class Code(object):
 
 
 class Day04(Solution):
-    def _init(self):
+    def __init__(self, year: str, day: str):
+        super().__init__(year, day)
+
         self._input = [Code(l) for l in self._load_input_as_lines()]
 
     def part_one(self):
