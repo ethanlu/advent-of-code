@@ -1,5 +1,5 @@
 from itertools import cycle
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 from typing import Set
 

@@ -1,5 +1,5 @@
 from itertools import islice
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 import re
 

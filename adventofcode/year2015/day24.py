@@ -1,5 +1,5 @@
 from functools import reduce
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 
 class Day24(Solution):

@@ -1,4 +1,4 @@
-from adventofcode import Solution
+from adventofcode.common import Solution
 import re
 
 class Day25(Solution):

@@ -1,4 +1,4 @@
-from adventofcode import Solution
+from adventofcode.common import Solution
 from itertools import permutations
 
 import re

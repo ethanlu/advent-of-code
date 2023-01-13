@@ -1,5 +1,5 @@
 from collections import deque
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 import re
 

@@ -1,5 +1,5 @@
 from itertools import permutations
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 import re
 

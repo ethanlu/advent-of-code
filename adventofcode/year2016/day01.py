@@ -1,4 +1,4 @@
-from adventofcode import Solution
+from adventofcode.common import Solution
 
 class Position(object):
     def __init__(self, x, y):
