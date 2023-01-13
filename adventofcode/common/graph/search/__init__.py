@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from copy import copy
 from functools import total_ordering
 from queue import PriorityQueue
-from typing import List
+from typing import List, Type, TypeVar
 
 
 class SearchState(ABC):
@@ -46,14 +46,17 @@ class SearchState(ABC):
         return 0
 
     @abstractmethod
-    def next_search_states(self, previous_search_state: SearchState) -> List[SearchState]:
+    def next_search_states(self, previous_search_state: S) -> List[S]:
         raise Exception("implement in subclass")
+
+
+S = TypeVar('S', bound=SearchState)
 
 
 @total_ordering
 class SearchPath(object):
-    def __init__(self, start_state: SearchState):
-        self._search_states: List[SearchState] = [start_state]
+    def __init__(self, start_state: S):
+        self._search_states: List[S] = [start_state]
 
     def __eq__(self, other):
         return self.gain == other.gain if issubclass(type(other), SearchPath) else False
@@ -77,7 +80,7 @@ class SearchPath(object):
         cls = self.__class__
         clone = cls.__new__(cls)
         clone.__dict__.update(self.__dict__)
-        # create a new list, but keep references to same search state instances to save to save memory
+        # create a new list, but keep references to same search state instances to save memory
         clone._search_states = [search_state for search_state in self._search_states]
         return clone
 
@@ -109,12 +112,15 @@ class SearchPath(object):
         return self._search_states[-1]
 
     @property
-    def search_states(self) -> List[SearchState]:
+    def search_states(self) -> List[S]:
         return self._search_states
 
-    def add(self, search_state: SearchState) -> SearchPath:
+    def add(self, search_state: S) -> P:
         self._search_states.append(search_state)
         return self
+
+
+P = TypeVar('P', bound=SearchPath)
 
 
 class DebugMixin(object):
@@ -129,12 +135,12 @@ class DebugMixin(object):
 
 
 class AStar(DebugMixin):
-    def __init__(self, start_path: SearchPath, end: SearchState):
+    def __init__(self, start_path: P, end: S):
         super().__init__()
         self._start_path = start_path
         self._end = end
 
-    def find_path(self, ) -> SearchPath:
+    def find_path(self, ) -> P:
         best = self._start_path
         visited = {self._start_path.last}
 
@@ -168,12 +174,12 @@ class AStar(DebugMixin):
 
 
 class BFS(DebugMixin):
-    def __init__(self, start_path: SearchPath, max_cost: int):
+    def __init__(self, start_path: P, max_cost: int):
         super().__init__()
         self._start_path = start_path
         self._max_cost = max_cost
 
-    def find_path(self):
+    def find_path(self) -> P:
         best = self._start_path
 
         candidates = PriorityQueue()

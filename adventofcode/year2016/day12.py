@@ -47,7 +47,7 @@ class CPU(object):
 
             match instruction[0]:
                 case 'cpy':
-                    self._registers[instruction[2]] = self._registers[instruction[1]] if instruction[1] in self._registers.keys() else int(instruction[1])
+                    self._registers[instruction[2]] = self._registers[instruction[1]] if instruction[1] in self._registers else int(instruction[1])
                     index += 1
                 case 'inc':
                     self._registers[instruction[1]] += 1
@@ -56,7 +56,7 @@ class CPU(object):
                     self._registers[instruction[1]] -= 1
                     index += 1
                 case 'jnz':
-                    if instruction[1] in self._registers.keys():
+                    if instruction[1] in self._registers:
                         index += int(instruction[2]) if self._registers[instruction[1]] != 0 else 1
                     else:
                         index += int(instruction[2]) if int(instruction[1]) != 0 else 1
