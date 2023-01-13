@@ -5,7 +5,7 @@ class Day17(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._containers = [int(l.strip()) for l in self._load_input_as_lines()]
+        self._containers = [int(l) for l in self._load_input_as_lines()]
 
     def _find_combinations(self, required_total, current_total, current_container_index):
         if current_container_index == len(self._containers) - 1:

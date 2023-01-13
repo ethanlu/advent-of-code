@@ -11,7 +11,7 @@ class Day07(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._input = [l.strip() for l in self._load_input_as_lines()]
+        self._input = [l for l in self._load_input_as_lines()]
 
     def _is_abba(self, s):
         return sum([1 for a, b in self.abba_regex.findall(s) if a != b]) > 0

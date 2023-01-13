@@ -5,7 +5,7 @@ class Day02(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._input = [l.strip().split('x') for l in self._load_input_as_lines()]
+        self._input = [l.split('x') for l in self._load_input_as_lines()]
 
     def part_one(self):
         return sum([2*l*w + 2*w*h + 2*h*l + min(l*w, w*h, l*h) for (l, w, h) in map(lambda d: (int(d[0]), int(d[1]), int(d[2])), self._input)])

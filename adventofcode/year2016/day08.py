@@ -70,7 +70,7 @@ class Day08(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._input = [l.strip() for l in self._load_input_as_lines()]
+        self._input = [l for l in self._load_input_as_lines()]
 
     def part_one(self):
         # O(n) time complexity (n is number of lines in input)

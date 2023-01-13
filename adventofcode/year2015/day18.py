@@ -9,7 +9,7 @@ class Day18(Solution):
         self._corners_always_on = False
         self._state = []
 
-        self._initial_setup = "".join([l.strip() for l in self._load_input_as_lines()])
+        self._initial_setup = "".join(self._load_input_as_lines())
 
     def _force_always_on_check(self):
         if self._corners_always_on:

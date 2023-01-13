@@ -7,7 +7,7 @@ class Day08(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._inputs = list(map(lambda l: l.strip(), self._load_input_as_lines()))
+        self._inputs = self._load_input_as_lines()
 
         self._state = 0
         self._code_character_count = 0

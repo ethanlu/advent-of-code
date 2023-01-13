@@ -7,7 +7,7 @@ class Day23(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self.instructions = list(self._load_input_as_lines())
+        self.instructions = self._load_input_as_lines()
         self.current_address = 0
         self.registers = {'a' : 0,
                           'b' : 0}

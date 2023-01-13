@@ -8,7 +8,7 @@ class Day03(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._input = [(re.sub(' +', ' ', l)).strip().split(' ') for l in self._load_input_as_lines()]
+        self._input = [(re.sub(' +', ' ', l)).split(' ') for l in self._load_input_as_lines()]
 
     def _valid_triangle(self, l, w, h):
         return l + w > h and w + h > l and l + h > w

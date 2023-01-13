@@ -42,7 +42,7 @@ class Day10(Solution):
         self._bot_instructions = []
 
         for l in self._load_input_as_lines():
-            r = self.bot_regex.findall(l.strip())
+            r = self.bot_regex.findall(l)
             if r:
                 self._bot_instructions.append({'bot': int(r[0][0]), 'low_target': r[0][1], 'low_id': int(r[0][2]), 'high_target': r[0][3], 'high_id': int(r[0][4])})
 

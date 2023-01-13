@@ -7,7 +7,7 @@ class Day12(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._json_document = list(map(lambda l: json.loads(l.strip()), self._load_input_as_lines()))[0]
+        self._json_document = list(map(lambda l: json.loads(l), self._load_input_as_lines()))[0]
 
     def _traverse(self, json_obj, ignore_red=False):
         total = 0

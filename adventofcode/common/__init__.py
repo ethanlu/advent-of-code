@@ -16,7 +16,7 @@ class Solution(object):
     def _load_input_as_lines(self) -> List[str]:
         file_path = os.path.join(os.path.dirname(__file__), f"../../input/{self._year}/day{self._day}.txt")
         with open(file_path) as f:
-            return f.readlines()
+            return [line.strip() for line in f.readlines()]
 
     def _init(self):
         raise Exception("_init not implemented!")

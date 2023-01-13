@@ -8,7 +8,7 @@ class Day07(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._circuits = list(map(lambda l: self._parse_circuit(l.strip()), self._load_input_as_lines()))
+        self._circuits = list(map(lambda l: self._parse_circuit(l), self._load_input_as_lines()))
 
         self._wires = {}
         self._overrides = {}

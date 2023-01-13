@@ -7,7 +7,7 @@ class Day11(Solution):
     def __init__(self, year: str, day: str):
         super().__init__(year, day)
 
-        self._s = list(map(lambda l: l.strip(), self._load_input_as_lines()))[0]
+        self._s = self._load_input_as_lines()[0]
 
     def _is_valid(self, s):
         # must be 8 characters

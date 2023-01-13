@@ -9,7 +9,7 @@ class Day19(Solution):
 
         self._transformations = []
 
-        lines = [l.strip() for l in self._load_input_as_lines()]
+        lines = self._load_input_as_lines()
 
         self._final_molecule = lines[-1]
 
