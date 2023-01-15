@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from copy import copy
 from functools import total_ordering
 from queue import PriorityQueue
-from typing import List, Type, TypeVar
+from typing import List, TypeVar
 
 
 class SearchState(ABC):
