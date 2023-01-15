@@ -7,7 +7,7 @@ public class Box : IEquatable<Box>
     private readonly bool _invertedX;
     private readonly bool _invertedY;
     private readonly int _width;
-    private readonly int _heigiht;
+    private readonly int _height;
     private readonly Point2D _topLeft;
     private readonly Point2D _bottomRight;
     private readonly Point2D _topRight;
@@ -21,7 +21,7 @@ public class Box : IEquatable<Box>
         _bottomLeft = new Point2D(_topLeft.X(), _bottomRight.Y());
         
         _width = Math.Abs(_topRight.X() - _bottomLeft.X());
-        _heigiht = Math.Abs(_topLeft.Y() - _bottomRight.Y());
+        _height = Math.Abs(_topLeft.Y() - _bottomRight.Y());
         _invertedX = topLeft.X() > _topRight.X();
         _invertedY = topLeft.Y() < _bottomLeft.Y();
     }
