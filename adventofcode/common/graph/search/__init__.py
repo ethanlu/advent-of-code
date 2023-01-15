@@ -29,6 +29,10 @@ class SearchState(ABC):
     def fingerprint(self) -> str:
         return self._fingerprint
 
+    @fingerprint.setter
+    def fingerprint(self, fingerprint: str):
+        self._fingerprint = fingerprint
+
     @property
     def gain(self) -> int:
         return self._gain

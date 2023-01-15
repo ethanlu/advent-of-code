@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, SearchPath, SearchState
+from adventofcode.common.graph.search import AStar, SearchPath, SearchState, S
 from adventofcode.common.grid import Point2D
 from adventofcode.common.util import show_grid
 from functools import reduce
@@ -60,7 +60,7 @@ class MazeSearchState(SearchState):
     def potential_gain(self) -> int:
         return abs(self._position.x - self._target.x) + abs(self._position.y - self._target.y)
 
-    def next_search_states(self, previous_search_state: SearchState) -> List[SearchState]:
+    def next_search_states(self, previous_search_state: S) -> List[S]:
         return [MazeSearchState(self._cubicles, p, self._target, self.gain, self.cost + 1, self.max_cost) for p in self._cubicles.open_spaces(self._position)]
 
 

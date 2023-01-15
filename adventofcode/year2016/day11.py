@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, SearchPath, SearchState
+from adventofcode.common.graph.search import AStar, SearchPath, SearchState, S
 from copy import copy
 from functools import reduce
 from itertools import combinations
@@ -118,7 +118,7 @@ class StepSearchState(SearchState):
     def _hash(self) -> str:
         return str(self._current_floor) + ":" + ":".join(["{chip:05b}-{rtg:05b}".format(chip=floor.chips_hash, rtg=floor.rtgs_hash) for floor in self._floors])
 
-    def next_search_states(self, previous_search_state: SearchState) -> List[SearchState]:
+    def next_search_states(self, previous_search_state: S) -> List[S]:
         next_states = []
 
         # possible floors to move to based on current floor
