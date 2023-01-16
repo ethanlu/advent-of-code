@@ -24,7 +24,7 @@ class Scrambler(object):
 
     def _reverse(self, x: int, y: int) -> None:
         x, y = min(x, y), max(x, y)
-        # [items before x] + [items from x to y reversed] + [elements after y]
+        # [items before x] + [items from x to y reversed] + [items after y]
         self._password = (self._password[:x] if x > 0 else []) + list(reversed(self._password[x:(y + 1)])) + (self._password[(y + 1):] if y + 1 < len(self.password) else [])
 
     def _move(self, s: int, d: int) -> None:
