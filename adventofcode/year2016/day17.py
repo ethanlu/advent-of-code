@@ -93,7 +93,7 @@ class Day17(Solution):
     def part_two(self):
         start = Point2D(1, 1)
         start_state = LongestSearchState(start, self._input, 0, 0, maxCost)
-        bfs = BFS(SearchPath(start_state), maxCost)
+        bfs = BFS(SearchPath(start_state))
 
         bfs.verbose(True, 5000)
         longest = bfs.find_path()

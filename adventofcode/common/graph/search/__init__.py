@@ -178,10 +178,9 @@ class AStar(DebugMixin):
 
 
 class BFS(DebugMixin):
-    def __init__(self, start_path: P, max_cost: int):
+    def __init__(self, start_path: P):
         super().__init__()
         self._start_path = start_path
-        self._max_cost = max_cost
 
     def find_path(self) -> P:
         best = self._start_path
@@ -195,7 +194,7 @@ class BFS(DebugMixin):
             candidate: SearchPath = candidates.get()
 
             # candidate reached max cost limit, check if it is now the current best before continuing search
-            if candidate.cost >= self._max_cost:
+            if candidate.cost >= candidate.max_cost:
                 if candidate.gain > best.gain:
                     best = candidate
                 continue
