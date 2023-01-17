@@ -43,25 +43,21 @@ class CPU(object):
     def run(self) -> None:
         index = 0
         while index < len(self._instructions):
-            instruction = self._instructions[index].split(' ')
-
-            match instruction[0]:
-                case 'cpy':
-                    self._registers[instruction[2]] = self._registers[instruction[1]] if instruction[1] in self._registers else int(instruction[1])
+            match self._instructions[index].split(' '):
+                case 'cpy', x, y:
+                    self._registers[y] = self._registers[x] if x in self._registers else int(x)
                     index += 1
-                case 'inc':
-                    self._registers[instruction[1]] += 1
+                case 'inc', x:
+                    self._registers[x] += 1
                     index += 1
-                case 'dec':
-                    self._registers[instruction[1]] -= 1
+                case 'dec', x:
+                    self._registers[x] -= 1
                     index += 1
-                case 'jnz':
-                    if instruction[1] in self._registers:
-                        index += int(instruction[2]) if self._registers[instruction[1]] != 0 else 1
-                    else:
-                        index += int(instruction[2]) if int(instruction[1]) != 0 else 1
+                case 'jnz', x, y:
+                    x = self._registers[x] if x in self._registers else int(x)
+                    index += int(y) if x != 0 else 1
                 case _:
-                    raise Exception(f"Unrecognized instruction : {instruction[0]}")
+                    raise Exception(f"Unrecognized instruction : {self._instructions[index]}")
 
 
 class Day12(Solution):

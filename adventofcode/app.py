@@ -31,7 +31,7 @@ class App(object):
         s = perf_counter_ns()
         print(str(self._solution.part_one()))
         print(self._lapsed_time(perf_counter_ns() - s))
-
+        print(' ')
         print('-----part two-----')
         s = perf_counter_ns()
         print(str(self._solution.part_two()))
