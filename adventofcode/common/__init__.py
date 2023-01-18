@@ -9,12 +9,12 @@ class Solution(object):
         self._day = day
 
     def _load_input_as_string(self) -> str:
-        file_path = os.path.join(os.path.dirname(__file__), f"../../input/{self._year}/day{self._day}.txt")
+        file_path = f"{os.environ['ADVENT_OF_CODE_INPUT']}/{self._year}/day{self._day}.txt"
         with open(file_path) as f:
             return f.read().replace('\n', '').strip()
 
     def _load_input_as_lines(self) -> List[str]:
-        file_path = os.path.join(os.path.dirname(__file__), f"../../input/{self._year}/day{self._day}.txt")
+        file_path = f"{os.environ['ADVENT_OF_CODE_INPUT']}/{self._year}/day{self._day}.txt"
         with open(file_path) as f:
             return [line.strip() for line in f.readlines()]
 

@@ -1,7 +1,5 @@
 namespace adventofcode.common;
 
-using System.Text.RegularExpressions;
-
 public interface ISolution
 {
     string PartOne();
@@ -10,27 +8,26 @@ public interface ISolution
 
 public abstract class Solution : ISolution
 {
-    private readonly string _inputPath;
+    private readonly Uri _inputPath;
         
     protected Solution(string year, string day)
     {
-        var match = Regex.Match(AppDomain.CurrentDomain.BaseDirectory, @"^(.*/advent-of-code/adventofcode/)");
-        if (!match.Success)
+        if (Environment.GetEnvironmentVariable("ADVENT_OF_CODE_INPUT") is null)
         {
-            throw new Exception("Could not find base path for data file");
+            throw new Exception("ADVENT_OF_CODE_INPUT environment variable is not set");
         }
-            
-        _inputPath = $"{match.Groups[1]}../input/{year}/day{day}.txt";
+
+        _inputPath = new Uri($"{Environment.GetEnvironmentVariable("ADVENT_OF_CODE_INPUT")}/{year}/day{day}.txt");
     }
         
     protected string LoadInputAsString()
     {
-        return File.ReadAllText(_inputPath).Replace("\n", "").Trim();
+        return File.ReadAllText(_inputPath.AbsolutePath).Replace("\n", "").Trim();
     }
 
     protected string[] LoadInputAsLines()
     {
-        return File.ReadAllLines(_inputPath);
+        return File.ReadAllLines(_inputPath.AbsolutePath);
     }
 
     public abstract string PartOne();
