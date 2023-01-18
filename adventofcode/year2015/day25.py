@@ -51,4 +51,4 @@ class Day25(Solution):
         return self._get_code(self.row, self.column)
 
     def part_two(self):
-        pass
+        return "ᕕ( ᐛ )ᕗ"

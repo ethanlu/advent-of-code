@@ -129,4 +129,4 @@ class Day25(Solution):
         return cpu.a
 
     def part_two(self):
-        pass
+        return "ᕕ( ᐛ )ᕗ"
