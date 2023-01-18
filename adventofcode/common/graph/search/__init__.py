@@ -183,10 +183,10 @@ class BFS(DebugMixin):
         self._start_path = start_path
 
     def find_path(self) -> P:
-        best = self._start_path
+        best = None
 
         candidates = PriorityQueue()
-        candidates.put(best)
+        candidates.put(self._start_path)
 
         i = 1
         trimmed = 0
@@ -195,13 +195,13 @@ class BFS(DebugMixin):
 
             # candidate reached max cost limit, check if it is now the current best before continuing search
             if candidate.cost >= candidate.max_cost:
-                if candidate.gain > best.gain:
+                if best is None or candidate.gain > best.gain:
                     best = candidate
                 continue
 
             # continue search by getting current search state's next states and add to priority queue
             for next_search_state in candidate.last.next_search_states(candidate.last if candidate.depth > 0 else None):
-                if next_search_state.gain < best.gain and (next_search_state.potential_gain + next_search_state.gain) < best.gain:
+                if best is not None and next_search_state.gain < best.gain and (next_search_state.potential_gain + next_search_state.gain) < best.gain:
                     trimmed += 1
                     continue
 
@@ -209,6 +209,6 @@ class BFS(DebugMixin):
 
             i += 1
             if self._verbose and i % self._lap == 0:
-                print(f"{i} : ~{candidates.qsize()} : {trimmed} : ({best.gain}){best.last.fingerprint}")
+                print(f"{i} : ~{candidates.qsize()} : {trimmed} : " + (f"{best.gain}" + best.last.fingerprint if best is not None else '?'))
 
         return best
