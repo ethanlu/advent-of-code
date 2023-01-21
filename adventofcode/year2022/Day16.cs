@@ -163,7 +163,7 @@ public class Day16 : Solution
         {
             var states = new List<ISearchState>();
 
-            foreach (var (node, edge) in _valve.AdjacentNodes().Where(n => previousSearchState?.Id() != n.Item1.Id()))
+            foreach (var (node, edge) in _valve.AdjacentNodes().Where(kv => previousSearchState?.Id() != kv.Key.Id()))
             {
                 states.Add(new OptimizationState((Node) node, _gain + node.Weight(), _cost + edge, _maxCost));
             }

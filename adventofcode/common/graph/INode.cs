@@ -5,5 +5,7 @@ public interface INode : IComparable<INode>, IEquatable<INode>
     string Id();
     string Name();
     int Weight();
-    List<(INode, int)> AdjacentNodes();
+    INode? Parent();
+    INode SetParent(INode parent);
+    Dictionary<INode, int> AdjacentNodes();
 }

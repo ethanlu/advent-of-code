@@ -5,14 +5,15 @@ public class Node : INode
     protected string _id;
     protected string _name;
     protected int _weight;
-    protected List<(INode, int)> _adjacentNodes;
+    protected INode _parent;
+    protected Dictionary<INode, int> _adjacentNodes;
 
     public Node(string id, string name, int weight)
     {
         _id = id;
         _name = name;
         _weight = weight;
-        _adjacentNodes = new List<(INode, int)>();
+        _adjacentNodes = new Dictionary<INode, int>();
     }
 
     public string Id()
@@ -29,14 +30,26 @@ public class Node : INode
     {
         return _weight;
     }
-    
-    public INode AddNode(INode node, int edgeWeight)
+
+    public INode? Parent()
     {
-        _adjacentNodes.Add((node, edgeWeight));
+        return _parent;
+    }
+
+    public INode SetParent(INode parent)
+    {
+        _parent = parent;
         return this;
     }
 
-    public virtual List<(INode, int)> AdjacentNodes()
+    public INode AddNode(INode node, int edgeWeight)
+    {
+        _adjacentNodes.Add(node, edgeWeight);
+        node.SetParent(this);
+        return this;
+    }
+
+    public virtual Dictionary<INode, int> AdjacentNodes()
     {
         return _adjacentNodes;
     }
