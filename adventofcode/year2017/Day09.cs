@@ -27,12 +27,12 @@ public class Day09 : Solution
         return Convert.ToString(gs.GarbageScore());
     }
     
-    internal enum StreamState
+    private enum StreamState
     {
         Free = 0, Group = 1, Garbage = 2, Ignore = 3
     }
 
-    internal class GarbageStream
+    private class GarbageStream
     {
         private string _stream;
         private int _groupScore;

@@ -27,7 +27,7 @@ public class Day08 : Solution
         return Convert.ToString(cpu.Largest());
     }
 
-    internal class CPU
+    private class CPU
     {
         private List<string> _instructions;
         private Dictionary<string, int> _registers;

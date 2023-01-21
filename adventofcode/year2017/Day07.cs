@@ -40,7 +40,7 @@ public class Day07 : Solution
         return Convert.ToString(tower.FindImbalance(tower.Root(), 0));
     }
 
-    internal class ProgramTower
+    private class ProgramTower
     {
         private Dictionary<string, Node> _programs;
         private Node _root;

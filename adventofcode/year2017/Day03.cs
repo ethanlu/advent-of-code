@@ -37,12 +37,12 @@ public class Day03 : Solution
         return Convert.ToString(db.ValueAt(dataPointer));
     }
     
-    internal enum Direction
+    private enum Direction
     {
         Right = 0, Up = 1, Left = 2, Down = 3
     }
 
-    internal class SpiralDatabase
+    private class SpiralDatabase
     {
         private Dictionary<Point2D, int> _data;
         private Point2D _current;

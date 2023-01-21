@@ -28,7 +28,7 @@ public class Day06 : Solution
         return Convert.ToString(cycles);
     }
 
-    internal class MemoryRepair
+    private class MemoryRepair
     {
         private List<int> _memoryBanks;
 
