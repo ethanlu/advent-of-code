@@ -44,12 +44,20 @@ public class Node : INode
 
     public INode AddNode(INode node, int edgeWeight)
     {
-        _adjacentNodes.Add(node, edgeWeight);
+        if (_adjacentNodes.ContainsKey(node))
+        {
+            _adjacentNodes[node] = edgeWeight;
+        }
+        else
+        {
+            _adjacentNodes.Add(node, edgeWeight);
+        }
+
         node.SetParent(this);
         return this;
     }
 
-    public virtual Dictionary<INode, int> AdjacentNodes()
+    public Dictionary<INode, int> AdjacentNodes()
     {
         return _adjacentNodes;
     }
