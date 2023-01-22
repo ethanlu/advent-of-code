@@ -31,7 +31,7 @@ public class Day25 : Solution
         return Convert.ToString("ᕕ( ᐛ )ᕗ");
     }
 
-    internal class Conversion
+    private class Conversion
     {
         private static (char, char) AddSnafuDigit(char a, char b)
         {

@@ -31,7 +31,7 @@ public class Day20 : Solution
         return Convert.ToString(coordinates);
     }
 
-    internal class Demixer
+    private class Demixer
     {
         private Dictionary<int, LinkedListNode<long>> _sequence;
         private LinkedList<long> _mix;

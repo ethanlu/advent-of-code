@@ -60,7 +60,7 @@ public class Day11 : Solution
         return Convert.ToString(total);
     }
 
-    internal class Game
+    private class Game
     {
         private List<Monkey> _monkeys;
 
@@ -110,7 +110,7 @@ public class Day11 : Solution
         }
     }
 
-    internal class Monkey
+    private class Monkey
     {
         private Queue<long> _items;
         private string _operation;

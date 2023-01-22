@@ -112,7 +112,7 @@ public class Day07 : Solution
         return Convert.ToString(candidateDirectorySize.First());
     }
     
-    internal class File
+    private class File
     {
         private long _size;
 
@@ -127,7 +127,7 @@ public class Day07 : Solution
         }
     }
 
-    internal class Directory
+    private class Directory
     {
         private long _size;
         private Directory? _parent;

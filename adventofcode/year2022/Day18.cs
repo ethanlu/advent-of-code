@@ -31,7 +31,7 @@ public class Day18 : Solution
         return Convert.ToString(lava.ExteriorSurfaceArea());
     }
 
-    internal class Lava
+    private class Lava
     {
         private Dictionary<Point3D, Point3D> _droplets;
         private HashSet<Point3D> _knownOutsidePoints;

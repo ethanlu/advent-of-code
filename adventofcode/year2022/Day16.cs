@@ -148,7 +148,7 @@ public class Day16 : Solution
         return Convert.ToString(bestScore);
     }
 
-    internal class OptimizationState : SearchState
+    private class OptimizationState : SearchState
     {
         private Node _valve;
 
@@ -172,7 +172,7 @@ public class Day16 : Solution
         }
     }
 
-    internal class PressureState : SearchState
+    private class PressureState : SearchState
     {
         private Dictionary<INode, int> _visitLog;
         private INode _valve;

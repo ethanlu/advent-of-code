@@ -107,7 +107,7 @@ public class Day15 : Solution
         return Convert.ToString(frequency);
     }
 
-    internal class Sensor
+    private class Sensor
     {
         private Point2D _sensorPoint2D;
         private int _radius;
@@ -134,7 +134,7 @@ public class Day15 : Solution
         }
     }
 
-    internal class SignalCoverage
+    private class SignalCoverage
     {
         private List<Interval> _intervals;
 

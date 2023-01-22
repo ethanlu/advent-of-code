@@ -56,7 +56,7 @@ public class Day17 : Solution
         return Convert.ToString(rockHeight);
     }
 
-    internal readonly struct SimulationState
+    private readonly struct SimulationState
     {
         public SimulationState(int rockHash, int step, long rockCount, long rockHeight)
         {
@@ -72,7 +72,7 @@ public class Day17 : Solution
         public long RockHeight { get; }
     }
 
-    internal class Block
+    private class Block
     {
         private List<Point2D> _rocks;
         private int _height;
@@ -148,7 +148,7 @@ public class Day17 : Solution
         }
     }
 
-    internal class RockFall
+    private class RockFall
     {
         const int Height = 10000;
         private const int PagninationThreshold = 10;

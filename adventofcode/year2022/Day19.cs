@@ -97,7 +97,7 @@ public class Day19 : Solution
         return Convert.ToString(qualityLevel);
     }
     
-    internal static class K
+    private static class K
     {
         public const string Ore = "ore";
         public const string Clay = "clay";
@@ -105,7 +105,7 @@ public class Day19 : Solution
         public const string Geode = "geode";
     }
 
-    internal class Robot
+    private class Robot
     {
         private Dictionary<string, int> _resourceCost;
 
@@ -117,7 +117,7 @@ public class Day19 : Solution
         public int Cost(string resource) { return _resourceCost[resource]; }
     }
 
-    internal class BluePrint
+    private class BluePrint
     {
         private int _id;
         private Dictionary<string, Robot> _blueprints;
@@ -142,7 +142,7 @@ public class Day19 : Solution
         public int MaxResourceRobotNeeded(string resource) { return _maxResourceCost[resource]; }
     }
 
-    internal class BuildState : SearchState
+    private class BuildState : SearchState
     {
         private Dictionary<string, int> _resources;
         private Dictionary<string, int> _robots;

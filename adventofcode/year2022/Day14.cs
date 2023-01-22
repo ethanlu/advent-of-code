@@ -57,7 +57,7 @@ public class Day14 : Solution
         return Convert.ToString(sands);
     }
 
-    internal class SandFall
+    private class SandFall
     {
         private const int Margin = 3;
         

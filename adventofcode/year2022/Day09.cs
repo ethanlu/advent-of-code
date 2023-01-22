@@ -37,7 +37,7 @@ public class Day09 : Solution
         return Convert.ToString(visible);
     }
 
-    internal class Knot
+    private class Knot
     {
         private (int X, int Y) _position;
 
@@ -63,7 +63,7 @@ public class Day09 : Solution
         }
     }
 
-    internal class Rope
+    private class Rope
     {
         private List<Knot> _knots;
         private Dictionary<string, int> _tailLog;

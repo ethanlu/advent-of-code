@@ -61,7 +61,7 @@ public class Day13 : Solution
         return Convert.ToString(key1 * key2);
     }
 
-    internal class PacketComparer : IComparer<JsonElement>
+    private class PacketComparer : IComparer<JsonElement>
     {
         public int Compare(JsonElement a, JsonElement b)
         {

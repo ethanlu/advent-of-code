@@ -59,7 +59,7 @@ public class Day22 : Solution
         int Walk();
     }
 
-    internal abstract class Map : IMap
+    private abstract class Map : IMap
     {
         protected int _height;
         protected int _width;
@@ -207,7 +207,7 @@ public class Day22 : Solution
         protected abstract (Point2D, Direction) NextMove(Point2D position);
     }
 
-    internal class FlatMap : Map
+    private class FlatMap : Map
     {
         public FlatMap(List<string> mapRows, string moves) : base (mapRows, moves) { }
 
@@ -265,7 +265,7 @@ public class Day22 : Solution
         }
     }
 
-    internal class CubeMap : Map
+    private class CubeMap : Map
     {
         protected List<(Box, Dictionary<Direction, Direction>, Dictionary<Direction, Func<Point2D, Point2D>>)> _wrapMaps;
 
@@ -322,7 +322,7 @@ public class Day22 : Solution
         }
     }
 
-    internal class BigCubeMap : CubeMap
+    private class BigCubeMap : CubeMap
     {
         public BigCubeMap(List<string> mapRows, string moves, bool sampleMap=false) : base(mapRows, moves)
         {
@@ -439,7 +439,7 @@ public class Day22 : Solution
         }
     }
 
-    internal class SmallCubeMap : CubeMap
+    private class SmallCubeMap : CubeMap
     {
         public SmallCubeMap(List<string> mapRows, string moves) : base(mapRows, moves)
         {

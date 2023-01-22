@@ -47,14 +47,14 @@ public class Day10 : Solution
         return Convert.ToString("");
     }
     
-    internal enum State
+    private enum State
     {
         Fetch = 1,
         Execute = 2,
         End = 3
     }
 
-    internal class Cpu
+    private class Cpu
     {
         private State _state;
         private Crt _crt;
@@ -160,7 +160,7 @@ public class Day10 : Solution
         }
     }
 
-    internal class Crt
+    private class Crt
     {
         private int _rows;
         private int _cols;

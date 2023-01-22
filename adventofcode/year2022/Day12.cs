@@ -129,7 +129,7 @@ public class Day12 : Solution
         return Convert.ToString(shortest.SearchStates().Count - 1);
     }
 
-    internal class StepState : SearchState
+    private class StepState : SearchState
     {
         private (int, char)[,] _grid;
         private int _x;

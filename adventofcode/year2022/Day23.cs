@@ -42,12 +42,12 @@ public class Day23 : Solution
         return Convert.ToString(emptyTiles);
     }
     
-    internal enum Direction
+    private enum Direction
     {
         North = 0,  South = 1, West = 2, East = 3
     }
 
-    internal class PlantSimulation
+    private class PlantSimulation
     {
         private HashSet<Point2D> _plantTiles;
 

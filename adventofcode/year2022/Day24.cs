@@ -84,12 +84,12 @@ public class Day24 : Solution
         return Convert.ToString(shortest.Cost());
     }
 
-    internal enum Action
+    private enum Action
     {
         Up = 0, Down = 1, Left = 2, Right = 3, Wait=4
     }
 
-    internal class Valley
+    private class Valley
     {
         private int _maxX;
         private int _maxY;
@@ -294,7 +294,7 @@ public class Day24 : Solution
         }
     }
 
-    internal class ExpeditionState : SearchState
+    private class ExpeditionState : SearchState
     {
         private static Valley _valley = null;
         private static Point2D _end = new Point2D(0, 0);

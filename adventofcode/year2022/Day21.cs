@@ -32,7 +32,7 @@ public class Day21 : Solution
         return Convert.ToString(human);
     }
         
-    internal class Riddle
+    private class Riddle
     {
         private Dictionary<string, long> _answered;
         private Dictionary<string, (string, char, string)> _waiting;
