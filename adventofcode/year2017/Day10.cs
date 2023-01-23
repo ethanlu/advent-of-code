@@ -20,16 +20,12 @@ public class Day10 : Solution
 
     public override string PartTwo()
     {
-        var knothash = new KnotHash(_input.ToCharArray().Select(x => (int) x).Concat(new List<int>(){17, 31, 73, 47, 23}).ToArray(), 256);
-        foreach (var round in Enumerable.Range(1, 64))
-        {
-            knothash.Round();
-        }
+        var knothash = new KnotHash(_input, 256);
 
         return Convert.ToString(knothash.GenerateHash());
     }
 
-    private class KnotHash
+    internal class KnotHash
     {
         private List<int> _lengths;
         private int[] _data;
@@ -39,6 +35,19 @@ public class Day10 : Solution
         public KnotHash(int[] lengths, int marks)
         {
             _lengths = new List<int>(lengths);
+            _data = new int[marks];
+            _position = 0;
+            _skip = 0;
+
+            for (int i = 0; i < marks; i++)
+            {
+                _data[i] = i;
+            }
+        }
+
+        public KnotHash(string input, int marks)
+        {
+            _lengths = new List<int>(input.ToCharArray().Select(x => (int) x).Concat(new List<int>(){17, 31, 73, 47, 23}).ToArray());
             _data = new int[marks];
             _position = 0;
             _skip = 0;
@@ -81,7 +90,12 @@ public class Day10 : Solution
 
         public string GenerateHash()
         {
-            var denseHash = new int[16];
+            foreach (var round in Enumerable.Range(1, 64))
+            {
+                Round();
+            }
+
+            var denseHash = new int[_data.Length / 16];
             for (int i = 0; i < _data.Length; i += 16)
             {
                 denseHash[i / 16] = Enumerable.Range(i + 1, 15).Select(index => _data[index]).Aggregate(_data[i], (acc, n) => acc ^ n);
