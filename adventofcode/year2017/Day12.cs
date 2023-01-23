@@ -1,5 +1,6 @@
 using adventofcode.common;
 using adventofcode.common.graph;
+using adventofcode.common.graph.search;
 
 namespace adventofcode.year2017;
 
@@ -31,33 +32,10 @@ public class Day12 : Solution
         }
     }
 
-    private List<Node> SpanningTree(Node start)
-    {
-        var reachable = new List<Node>(){start};
-        var visited = new HashSet<Node>(){start};
-        var remaining = new Queue<Node>();
-        remaining.Enqueue(start);
-
-        while (remaining.Count > 0)
-        {
-            var node = remaining.Dequeue();
-            foreach (var neighbor in node.AdjacentNodes())
-            {
-                if (!visited.Contains(neighbor.Key))
-                {
-                    visited.Add((Node) neighbor.Key);
-                    reachable.Add((Node) neighbor.Key);
-                    remaining.Enqueue((Node) neighbor.Key);
-                }
-            }
-        }
-
-        return reachable;
-    }
-
     public override string PartOne()
     {
-        var reachable = SpanningTree(_programs["0"]);
+        var ff = new FloodFill(new GroupSearchState(_programs["0"], 0, 0, 99999));
+        var reachable = ff.Fill();
 
         return Convert.ToString(reachable.Count);
     }
@@ -74,9 +52,10 @@ public class Day12 : Solution
             
             if (!processed.Contains(candidate))
             {
-                foreach (var node in SpanningTree(candidate))
+                var ff = new FloodFill(new GroupSearchState(candidate, 0, 0, 99999));
+                foreach (GroupSearchState gs in ff.Fill())
                 {
-                    processed.Add(node);
+                    processed.Add(gs.Program());
                 }
                 
                 groups++;
@@ -84,5 +63,29 @@ public class Day12 : Solution
         }
 
         return Convert.ToString(groups);
+    }
+
+    private class GroupSearchState : SearchState
+    {
+        private Node _program;
+        
+        public GroupSearchState(Node program, int gain, int cost, int maxCost) : base(program.Id(), gain, cost, maxCost)
+        {
+            _program = program;
+        }
+
+        public Node Program() { return _program; }
+
+        public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
+        {
+            var states = new List<ISearchState>();
+            
+            foreach (var neighbor in _program.AdjacentNodes())
+            {
+                states.Add(new GroupSearchState((Node) neighbor.Key, _gain, _cost, _maxCost));
+            }
+
+            return states;
+        }
     }
 }
