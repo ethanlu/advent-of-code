@@ -6,28 +6,29 @@ namespace adventofcode.year2017;
 
 public class Day12 : Solution
 {
-    private Dictionary<string, Node> _programs;
+    private Dictionary<string, DirectedGraphNode> _programs;
     
     public Day12(string year, string day) : base(year, day)
     {
-        _programs = new Dictionary<string, Node>();
+        _programs = new Dictionary<string, DirectedGraphNode>();
         foreach (var line in LoadInputAsLines())
         {
             var tmp = line.Split(" <-> ");
 
             if (!_programs.ContainsKey(tmp[0]))
             {
-                _programs.Add(tmp[0], new Node(tmp[0], tmp[0], 0));
+                _programs.Add(tmp[0], new DirectedGraphNode(tmp[0], tmp[0], 0));
             }
 
             foreach (var link in tmp[1].Split(", "))
             {
                 if (!_programs.ContainsKey(link))
                 {
-                    _programs.Add(link, new Node(link, link, 0));
+                    _programs.Add(link, new DirectedGraphNode(link, link, 0));
                 }
 
                 _programs[tmp[0]].AddNode(_programs[link], 0);
+                _programs[link].AddNode(_programs[tmp[0]], 0);
             }
         }
     }
@@ -42,8 +43,8 @@ public class Day12 : Solution
 
     public override string PartTwo()
     {
-        var remaining = new Queue<Node>(_programs.Values);
-        var processed = new HashSet<Node>();
+        var remaining = new Queue<DirectedGraphNode>(_programs.Values);
+        var processed = new HashSet<DirectedGraphNode>();
 
         var groups = 0;
         while (remaining.Count > 0)
@@ -67,14 +68,14 @@ public class Day12 : Solution
 
     private class GroupSearchState : SearchState
     {
-        private Node _program;
+        private DirectedGraphNode _program;
         
-        public GroupSearchState(Node program, int gain, int cost, int maxCost) : base(program.Id(), gain, cost, maxCost)
+        public GroupSearchState(DirectedGraphNode program, int gain, int cost, int maxCost) : base(program.Id(), gain, cost, maxCost)
         {
             _program = program;
         }
 
-        public Node Program() { return _program; }
+        public DirectedGraphNode Program() { return _program; }
 
         public override List<ISearchState> NextSearchStates(ISearchState? previousSearchState)
         {
@@ -82,7 +83,7 @@ public class Day12 : Solution
             
             foreach (var neighbor in _program.AdjacentNodes())
             {
-                states.Add(new GroupSearchState((Node) neighbor.Key, _gain, _cost, _maxCost));
+                states.Add(new GroupSearchState((DirectedGraphNode) neighbor.Key, _gain, _cost, _maxCost));
             }
 
             return states;

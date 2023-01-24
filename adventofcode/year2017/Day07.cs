@@ -42,76 +42,76 @@ public class Day07 : Solution
 
     private class ProgramTower
     {
-        private Dictionary<string, Node> _programs;
-        private Node _root;
+        private Dictionary<string, TreeNode> _programs;
+        private TreeNode _root;
         
         public ProgramTower(List<(string, int)> programs, List<(string, List<string>)> supports)
         {
-            int TotalChildrenWeight(Node node)
+            int TotalChildrenWeight(TreeNode node)
             {
-                if (node.AdjacentNodes().Count == 0)
+                if (node.Children().Count == 0)
                 {
                     return node.Weight();
                 }
                 
-                foreach (var child in node.AdjacentNodes())
+                foreach (var (child, descendentWeight) in node.Children())
                 {
-                    if (child.Value == 0)
+                    if (descendentWeight == 0)
                     {
-                        node.AddNode(child.Key, TotalChildrenWeight((Node) child.Key));
+                        node.AddChild(child, TotalChildrenWeight(child));
                     }
                 }
 
-                return node.Weight() + node.AdjacentNodes().Values.Sum();
+                return node.Weight() + node.Children().Values.Select(s => s).Sum();
             }
 
-            _programs = new Dictionary<string, Node>(programs.Select(tuple => new KeyValuePair<string, Node>(tuple.Item1, new Node(tuple.Item1, tuple.Item1, tuple.Item2))));
+            _programs = new Dictionary<string, TreeNode>(programs.Select(tuple => new KeyValuePair<string, TreeNode>(tuple.Item1, new TreeNode(tuple.Item1, tuple.Item1, tuple.Item2))));
 
-            foreach (var (name, children) in supports)
+            foreach (var (parent, children) in supports)
             {
                 foreach (var child in children)
                 {
-                    _programs[name].AddNode(_programs[child], 0);
+                    _programs[parent].AddChild(_programs[child], 0);
                 }
             }
 
             _root = _programs.First().Value;
             while (_root.Parent() is not null)
             {
-                _root = (Node) _root.Parent()!;
+                _root = _root.Parent()!;
             }
 
             TotalChildrenWeight(_root);
         }
 
-        public Node Root()
+        public TreeNode Root()
         {
             return _root;
         }
 
-        public int FindImbalance(Node node, int delta)
+        public int FindImbalance(TreeNode node, int delta)
         {
-            var childWeights = new Dictionary<int, List<Node>>();
-            foreach (var kv in node.AdjacentNodes())
+            var descendentWeights = new Dictionary<int, List<TreeNode>>();
+            foreach (var (child, descendentWeight) in node.Children())
             {
-                if (!childWeights.ContainsKey(kv.Value))
+                if (!descendentWeights.ContainsKey(descendentWeight))
                 {
-                    childWeights.Add(kv.Value, new List<Node>());
+                    descendentWeights.Add(descendentWeight, new List<TreeNode>());
                 }
-                childWeights[kv.Value].Add((Node) kv.Key);
+                descendentWeights[descendentWeight].Add(child);
             }
 
-            if (childWeights.Count > 1)
+            if (descendentWeights.Count > 1)
             {
-                var tmp = childWeights.ToList();
+                var tmp = descendentWeights.ToList();
                 var diff = tmp[0].Value.Count > 1 ? tmp[0].Key - tmp[1].Key : tmp[1].Key - tmp[0].Key;
                 var targetWeight = tmp[0].Value.Count > 1 ? tmp[0].Key : tmp[1].Key;
 
-                foreach (var child in node.AdjacentNodes())
+                foreach (var (child, descendentWeight) in node.Children())
                 {
-                    if (child.Value != targetWeight)
+                    if (descendentWeight != targetWeight)
                     {
-                        return FindImbalance((Node) child.Key, diff);
+                        return FindImbalance(child, diff);
                     }
                 }
             }

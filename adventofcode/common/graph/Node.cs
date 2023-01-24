@@ -2,18 +2,15 @@ namespace adventofcode.common.graph;
 
 public class Node : INode
 {
-    protected string _id;
-    protected string _name;
-    protected int _weight;
-    protected INode _parent;
-    protected Dictionary<INode, int> _adjacentNodes;
+    private string _id;
+    private string _name;
+    private int _weight;
 
     public Node(string id, string name, int weight)
     {
         _id = id;
         _name = name;
         _weight = weight;
-        _adjacentNodes = new Dictionary<INode, int>();
     }
 
     public string Id()
@@ -31,37 +28,6 @@ public class Node : INode
         return _weight;
     }
 
-    public INode? Parent()
-    {
-        return _parent;
-    }
-
-    public INode SetParent(INode parent)
-    {
-        _parent = parent;
-        return this;
-    }
-
-    public INode AddNode(INode node, int edgeWeight)
-    {
-        if (_adjacentNodes.ContainsKey(node))
-        {
-            _adjacentNodes[node] = edgeWeight;
-        }
-        else
-        {
-            _adjacentNodes.Add(node, edgeWeight);
-        }
-
-        node.SetParent(this);
-        return this;
-    }
-
-    public Dictionary<INode, int> AdjacentNodes()
-    {
-        return _adjacentNodes;
-    }
-    
     public int CompareTo(INode? n)
     {
         if (n is null)

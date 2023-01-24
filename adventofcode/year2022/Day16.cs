@@ -8,19 +8,19 @@ namespace adventofcode.year2022;
 
 public class Day16 : Solution
 {
-    private Dictionary<string, Node> _valves;
-    private List<Node> _importantValves;
+    private Dictionary<string, DirectedGraphNode> _valves;
+    private List<DirectedGraphNode> _importantValves;
 
     public Day16(string year, string day) : base(year, day)
     {
         var input = LoadInputAsLines();
 
-        _valves = new Dictionary<string, Node>();
-        _importantValves = new List<Node>();
+        _valves = new Dictionary<string, DirectedGraphNode>();
+        _importantValves = new List<DirectedGraphNode>();
         foreach (var line in input)
         {
             var match = Regex.Match(line, @"^Valve ([A-Z]{2}) has flow rate=(\d+);");
-            var valve = new Node(match.Groups[1].Value, match.Groups[1].Value, Convert.ToInt32(match.Groups[2].Value));
+            var valve = new DirectedGraphNode(match.Groups[1].Value, match.Groups[1].Value, Convert.ToInt32(match.Groups[2].Value));
             _valves.Add(match.Groups[1].Value, valve);
 
             if (valve.Weight() != 0)
@@ -38,7 +38,7 @@ public class Day16 : Solution
         }
     }
 
-    private Dictionary<string, Node> OptimizeValves(List<Node> inputValves)
+    private Dictionary<string, DirectedGraphNode> OptimizeValves(List<DirectedGraphNode> inputValves)
     {
         // optimize graph by running shortest path between all valve nodes that have a flow rate > 0 and build a new graph based on the paths
         var shortestPaths = new List<ISearchPath>();
@@ -56,7 +56,7 @@ public class Day16 : Solution
             }
         }
         
-        var optimizedValves = new Dictionary<string, Node>();
+        var optimizedValves = new Dictionary<string, DirectedGraphNode>();
         foreach (var p in shortestPaths)
         {
             var firstNode = ((OptimizationState) p.SearchStates().First()).Valve();
@@ -64,11 +64,11 @@ public class Day16 : Solution
             
             if (!optimizedValves.ContainsKey(firstNode.Id()))
             {
-                optimizedValves.Add(firstNode.Id(), new Node(firstNode.Id(), firstNode.Name(), firstNode.Weight()));
+                optimizedValves.Add(firstNode.Id(), new DirectedGraphNode(firstNode.Id(), firstNode.Name(), firstNode.Weight()));
             }
             if (!optimizedValves.ContainsKey(lastNode.Id()))
             {
-                optimizedValves.Add(lastNode.Id(), new Node(lastNode.Id(), lastNode.Name(), lastNode.Weight()));
+                optimizedValves.Add(lastNode.Id(), new DirectedGraphNode(lastNode.Id(), lastNode.Name(), lastNode.Weight()));
             }
 
             optimizedValves[firstNode.Id()].AddNode(optimizedValves[lastNode.Id()], p.SearchStates().Count - 1);
@@ -80,14 +80,14 @@ public class Day16 : Solution
     public override string PartOne()
     {
         // optimize the graph to only be a graph of valve nodes with flow rate > 0 and the starting valve node
-        var valves = new List<Node>(_importantValves);
+        var valves = new List<DirectedGraphNode>(_importantValves);
         valves.Add(_valves["AA"]);
         var optimizedValves = OptimizeValves(valves);
         
         // with optimized valve graph, find best path using bfs
         var maxDepth = 30;
         var start = new SearchPath();
-        start.Add(new PressureState(new Dictionary<INode, int>(optimizedValves.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValves["AA"], 0, 0, maxDepth));
+        start.Add(new PressureState(new Dictionary<DirectedGraphNode, int>(optimizedValves.Values.ToList().Select(v => new KeyValuePair<DirectedGraphNode, int>(v, 0))), optimizedValves["AA"], 0, 0, maxDepth));
         
         var bfs = new BFS(start, maxDepth);
         var path = bfs.FindPath();
@@ -103,11 +103,11 @@ public class Day16 : Solution
         var bestScore = 0;
         SearchPath? youBest = null;
         SearchPath? elephantBest = null;
-        foreach (var combination in IterTools<Node>.Combination(_importantValves, _importantValves.Count / 2))
+        foreach (var combination in IterTools<DirectedGraphNode>.Combination(_importantValves, _importantValves.Count / 2))
         {
-            var valvesYou = new List<Node>(combination);
+            var valvesYou = new List<DirectedGraphNode>(combination);
             var handledByYou = combination.ToHashSet();
-            var valvesElephant = new List<Node>(_importantValves.Select(x => x).Where(x =>!handledByYou.Contains(x)));
+            var valvesElephant = new List<DirectedGraphNode>(_importantValves.Select(x => x).Where(x =>!handledByYou.Contains(x)));
             valvesYou.Add(_valves["AA"]);
             valvesElephant.Add(_valves["AA"]);
             
@@ -119,12 +119,12 @@ public class Day16 : Solution
         
             var maxDepth = 26;
             var start = new SearchPath();
-            start.Add(new PressureState(new Dictionary<INode, int>(optimizedValvesYou.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValvesYou["AA"], 0, 0, maxDepth));
+            start.Add(new PressureState(new Dictionary<DirectedGraphNode, int>(optimizedValvesYou.Values.ToList().Select(v => new KeyValuePair<DirectedGraphNode, int>(v, 0))), optimizedValvesYou["AA"], 0, 0, maxDepth));
             var bfs = new BFS(start, maxDepth);
             var you = (SearchPath) bfs.FindPath();
         
             start = new SearchPath();
-            start.Add(new PressureState(new Dictionary<INode, int>(optimizedValvesElephant.Values.ToList().Select(v => new KeyValuePair<INode, int>(v, 0))), optimizedValvesElephant["AA"], 0, 0, maxDepth));
+            start.Add(new PressureState(new Dictionary<DirectedGraphNode, int>(optimizedValvesElephant.Values.ToList().Select(v => new KeyValuePair<DirectedGraphNode, int>(v, 0))), optimizedValvesElephant["AA"], 0, 0, maxDepth));
             bfs = new BFS(start, maxDepth);
             var elephant = (SearchPath) bfs.FindPath();
         
@@ -150,9 +150,9 @@ public class Day16 : Solution
 
     private class OptimizationState : SearchState
     {
-        private Node _valve;
+        private DirectedGraphNode _valve;
 
-        public OptimizationState(Node valve, int gain, int cost, int maxCost) : base(valve.Id(), gain, cost, maxCost)
+        public OptimizationState(DirectedGraphNode valve, int gain, int cost, int maxCost) : base(valve.Id(), gain, cost, maxCost)
         {
             _valve = valve;
         }
@@ -165,7 +165,7 @@ public class Day16 : Solution
 
             foreach (var (node, edge) in _valve.AdjacentNodes().Where(kv => previousSearchState?.Id() != kv.Key.Id()))
             {
-                states.Add(new OptimizationState((Node) node, _gain + node.Weight(), _cost + edge, _maxCost));
+                states.Add(new OptimizationState((DirectedGraphNode) node, _gain + node.Weight(), _cost + edge, _maxCost));
             }
 
             return states;
@@ -174,12 +174,12 @@ public class Day16 : Solution
 
     private class PressureState : SearchState
     {
-        private Dictionary<INode, int> _visitLog;
-        private INode _valve;
+        private Dictionary<DirectedGraphNode, int> _visitLog;
+        private DirectedGraphNode _valve;
 
-        public PressureState(Dictionary<INode, int> visitLog, INode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
+        public PressureState(Dictionary<DirectedGraphNode, int> visitLog, DirectedGraphNode valve, int gain, int cost, int maxDepth) : base(valve.Id(), gain, cost, maxDepth)
         {
-            _visitLog = new Dictionary<INode, int>(visitLog);
+            _visitLog = new Dictionary<DirectedGraphNode, int>(visitLog);
             _valve = valve;
 
             _visitLog[_valve]++;
