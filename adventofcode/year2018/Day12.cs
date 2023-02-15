@@ -130,7 +130,9 @@ public class Day12 : Solution
                 if (_cache.ContainsKey(hash))
                 {
                     var (min, generation) = _cache[hash];
-                    var genSkip = generations - generations % g;
+                    //var genSkip = generations - generations % g;
+                    var diff = g - generation;
+                    var genSkip = generations - ((generations - g) % diff);
                 
                     var offset = (_minPot - min) * (genSkip - g);
                     Console.WriteLine($"Cycle detected at generation {generation} and skipping to generation {genSkip} and offsetting {offset} pots");
