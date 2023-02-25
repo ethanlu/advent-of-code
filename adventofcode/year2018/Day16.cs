@@ -53,7 +53,7 @@ public class Day16 : Solution
 
     public override string PartOne()
     {
-        var cpu = new NumericCPU();
+        var cpu = new NumericCPU(4);
         var commands = cpu.Commands();
 
         var sampleCount = 0;
@@ -74,7 +74,7 @@ public class Day16 : Solution
 
     public override string PartTwo()
     {
-        var cpu = new NumericCPU();
+        var cpu = new NumericCPU(4);
         var commands = cpu.Commands();
         
         var candidates = new Dictionary<int, HashSet<string>>();
@@ -146,13 +146,17 @@ public class Day16 : Solution
         public List<int> Instruction() { return _instruction; }
     }
 
-    private class NumericCPU
+    internal class NumericCPU
     {
-        private List<int> _registers;
+        protected List<int> _registers;
 
-        public NumericCPU()
+        public NumericCPU(int numRegisters)
         {
-            _registers = new List<int>() {0, 0, 0, 0};
+            _registers = new List<int>();
+            foreach (var i in Enumerable.Range(1, numRegisters))
+            {
+                _registers.Add(0);
+            }
         }
 
         public ImmutableList<string> Commands()
