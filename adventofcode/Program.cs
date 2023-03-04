@@ -50,10 +50,15 @@ internal class Program
             throw new ArgumentException("Day must be DD");
         }
         var day = args[1];
-
-        ISolution solution = LoadSolution(year, day);
+        
         var timer = new Stopwatch();
         
+        Console.WriteLine("-----init-----");
+        timer.Start();
+        ISolution solution = LoadSolution(year, day);
+        timer.Stop();
+        Time(timer.Elapsed);
+
         Console.WriteLine("-----part one-----");
         timer.Start();
         Console.WriteLine(solution.PartOne());
