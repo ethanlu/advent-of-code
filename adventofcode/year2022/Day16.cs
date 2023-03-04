@@ -33,7 +33,7 @@ public class Day16 : Solution
             var match = Regex.Match(line, @"^Valve ([A-Z]{2}) has flow rate=\d+; tunnels? leads? to valves? ([A-Z,\s]+)$");
             foreach (var neighbor in match.Groups[2].Value.Split(", "))
             {
-                _valves[match.Groups[1].Value].AddNode(_valves[neighbor], 0);
+                _valves[match.Groups[1].Value].AddNode(_valves[neighbor], 1);
             }
         }
     }
@@ -48,10 +48,12 @@ public class Day16 : Solution
             {
                 if (!start.Equals(end))
                 {
-                    var p = new SearchPath();
-                    p.Add(new OptimizationState(start, 0, 0, 9999));
-                    var astar = new AStar(p, new OptimizationState(end, 0, 0, 9999));
-                    shortestPaths.Add(astar.FindPath());
+                    var astar = new AStar(new OptimizationState(start, 0, 0, 9999), new OptimizationState(end, 0, 0, 9999));
+                    var path = astar.FindPath();
+                    if (path.Depth() > 0)
+                    {
+                        shortestPaths.Add(path);
+                    }
                 }
             }
         }
@@ -110,10 +112,7 @@ public class Day16 : Solution
             var valvesElephant = new List<DirectedGraphNode>(_importantValves.Select(x => x).Where(x =>!handledByYou.Contains(x)));
             valvesYou.Add(_valves["AA"]);
             valvesElephant.Add(_valves["AA"]);
-            
-            Console.WriteLine("#######################");
-            Console.WriteLine($"Combination : {string.Join("-", valvesYou)} / {string.Join("-", valvesElephant)}");
-        
+
             var optimizedValvesYou = OptimizeValves(valvesYou);
             var optimizedValvesElephant = OptimizeValves(valvesElephant);
         
@@ -132,19 +131,16 @@ public class Day16 : Solution
             if (bestScore < currentScore)
             {
                 bestScore = currentScore;
-                youBest = you;
-                elephantBest = elephant;
+
+                Console.WriteLine("#######################");
+                Console.WriteLine($"Current Best Score : {bestScore} ");
+                Console.WriteLine($"Combination : {string.Join("-", valvesYou)} / {string.Join("-", valvesElephant)}");
+                Console.WriteLine($"You        : {you} ");
+                Console.WriteLine($"Elephant   : {elephant} ");
             }
-            
-            Console.WriteLine($"You        : {you} ");
-            Console.WriteLine($"Elephant   : {elephant} ");
-            Console.WriteLine($"Score      : {currentScore} ");
-            Console.WriteLine($"Best Score : {bestScore} ");
         }
-        
-        Console.WriteLine(youBest!.ToString());
-        Console.WriteLine(elephantBest!.ToString());
-        
+        Console.WriteLine("");
+
         return Convert.ToString(bestScore);
     }
 
@@ -163,9 +159,9 @@ public class Day16 : Solution
         {
             var states = new List<ISearchState>();
 
-            foreach (var (node, edge) in _valve.AdjacentNodes().Where(kv => previousSearchState?.Id() != kv.Key.Id()))
+            foreach (var (node, edge) in _valve.AdjacentNodes())
             {
-                states.Add(new OptimizationState((DirectedGraphNode) node, _gain + node.Weight(), _cost + edge, _maxCost));
+                states.Add(new OptimizationState(node, _gain + node.Weight(), _cost + edge, _maxCost));
             }
 
             return states;

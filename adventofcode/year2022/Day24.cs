@@ -23,11 +23,10 @@ public class Day24 : Solution
     public override string PartOne()
     {
         var valley = new Valley(_input);
-        var start = new ExpeditionState(valley, _start, _end, "S", 0, 0, valley.BlizzardCycle());
-        var end = new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle());
-        var path = new SearchPath();
-        path.Add(start);
-        var astar = new AStar(path, end);
+        var astar = new AStar(
+            new ExpeditionState(valley, _start, _end, "S", 0, 0, valley.BlizzardCycle()),
+            new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle())
+        );
         var shortest = astar.FindPath();
 
         var finalState = (ExpeditionState) shortest.SearchStates().Last();
@@ -43,11 +42,10 @@ public class Day24 : Solution
         var valley = new Valley(_input);
 
         // start to end
-        var start = new ExpeditionState(valley, _start, _end, "S", 0, 0, valley.BlizzardCycle());
-        var end = new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle());
-        var path = new SearchPath();
-        path.Add(start);
-        var astar = new AStar(path, end);
+        var astar = new AStar(
+            new ExpeditionState(valley, _start, _end, "S", 0, 0, valley.BlizzardCycle()),
+            new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle())
+        );
         var shortest = astar.FindPath();
 
         var finalState = (ExpeditionState) shortest.SearchStates().Last();
@@ -56,11 +54,10 @@ public class Day24 : Solution
         Console.WriteLine(shortest);
         
         // go back to start from end to pick up snack
-        start = new ExpeditionState(valley, _end, _start, "S", 0, finalState.Cost(), valley.BlizzardCycle());
-        end = new ExpeditionState(valley, _end, _start,"E", 0, 0, valley.BlizzardCycle());
-        path = new SearchPath();
-        path.Add(start);
-        astar = new AStar(path, end);
+        astar = new AStar(
+            new ExpeditionState(valley, _end, _start, "S", 0, finalState.Cost(), valley.BlizzardCycle()),
+            new ExpeditionState(valley, _end, _start,"E", 0, 0, valley.BlizzardCycle())
+        );
         shortest = astar.FindPath();
         
         finalState = (ExpeditionState) shortest.SearchStates().Last();
@@ -69,11 +66,10 @@ public class Day24 : Solution
         Console.WriteLine(shortest);
         
         // start to end again
-        start = new ExpeditionState(valley, _start, _end, "S", 0, finalState.Cost(), valley.BlizzardCycle());
-        end = new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle());
-        path = new SearchPath();
-        path.Add(start);
-        astar = new AStar(path, end);
+        astar = new AStar(
+            new ExpeditionState(valley, _start, _end, "S", 0, finalState.Cost(), valley.BlizzardCycle()),
+            new ExpeditionState(valley, _start, _end, "E", 0, 0, valley.BlizzardCycle())
+        );
         shortest = astar.FindPath();
 
         finalState = (ExpeditionState) shortest.SearchStates().Last();

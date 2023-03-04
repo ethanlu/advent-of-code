@@ -94,9 +94,7 @@ public class Day12 : Solution
 
     public override string PartOne()
     {
-        var start = new SearchPath();
-        start.Add(_start);
-        var astar = new AStar(start, _end);
+        var astar = new AStar(_start, _end);
         var shortest = astar.FindPath();
         
         ShowPath(shortest);
@@ -106,19 +104,16 @@ public class Day12 : Solution
 
     public override string PartTwo()
     {
-        var start = new SearchPath();
-        start.Add(_start);
-        var astar = new AStar(start, _end);
+        var astar = new AStar(_start, _end);
         var shortest = astar.FindPath();
         
         foreach (var (x, y) in _lowestPoints)
         {
-            start = new SearchPath();
-            start.Add(new StepState(_grid, x, y, _end.X(), _end.Y(),_grid[x, y].Item1, 0));
+            var start = new StepState(_grid, x, y, _end.X(), _end.Y(),_grid[x, y].Item1, 0);
             astar = new AStar(start, _end);
             var candidate = astar.FindPath();
 
-            if (candidate.SearchStates().Last().Id() == _end.Id() && candidate.SearchStates().Last().Cost() < shortest.SearchStates().Last().Cost())
+            if (candidate.SearchStates().Count > 0 && candidate.Cost() < shortest.Cost())
             {
                 shortest = candidate;
             }

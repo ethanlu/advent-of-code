@@ -2,19 +2,23 @@ namespace adventofcode.common.graph.search;
 
 public class AStar
 {
-    private ISearchPath _start;
+    private Dictionary<ISearchState, ISearchState> _shortestPrevious;
+    private Dictionary<ISearchState, int> _score;
+    private ISearchState _start;
     private ISearchState _end;
-    private HashSet<ISearchState> _visited;
     private bool _verbose;
     private long _lap;
 
-    public AStar(ISearchPath start, ISearchState end)
+    public AStar(ISearchState start, ISearchState end)
     {
+        _shortestPrevious = new Dictionary<ISearchState, ISearchState>();
+        _score = new Dictionary<ISearchState, int>();
         _start = start;
         _end = end;
-        _visited = new HashSet<ISearchState>();
         _verbose = false;
         _lap = 5000L;
+        
+        _score.Add(_start, 0);
     }
 
     public void Verbose(bool verbose, long lap)
@@ -25,41 +29,68 @@ public class AStar
 
     public ISearchPath FindPath()
     {
-        var shortest = _start;
-        _visited.Add(shortest.SearchStates().Last());
-        
-        var candidates = new PriorityQueue<ISearchPath, int>();
-        candidates.Enqueue(shortest, shortest.Cost() + shortest.Depth() + shortest.SearchStates().Last().PotentialGain());
+        var candidates = new PriorityQueue<ISearchState, int>();
+        candidates.Enqueue(_start, _start.Cost() + _start.PotentialGain());
 
         var i = 0L;
         var trimmed = 0L;
-        do
+
+        while (candidates.Count > 0)
         {
             var candidate = candidates.Dequeue();
-
-            if (candidate.SearchStates().Last().Id() == _end.Id())
-            {
-                // destination reached
-                shortest = candidate;
-                break;
-            }
-
-            foreach (var nextState in candidate.SearchStates().Last().NextSearchStates(candidate.SearchStates().Count > 1 ? candidate.SearchStates()[candidate.SearchStates().Count - 2] : null))
-            {
-                if (_visited.Contains(nextState))
+            if (candidate.Id() == _end.Id())
+            {   // destination reached...build shortest path
+                var sequence = new Stack<ISearchState>();
+                var current = candidate;
+                while (_shortestPrevious.ContainsKey(current))
                 {
-                    trimmed++;
-                    continue;
+                    sequence.Push(current);
+                    current = _shortestPrevious[current];
                 }
-                var nextPath = candidate.CreateCopy();
-                nextPath.Add(nextState);
-                candidates.Enqueue(nextPath, nextPath.Cost() + nextPath.Depth() + nextPath.PotentialGain());
-                _visited.Add(nextState);
+                sequence.Push(_start);
+
+                var path = new SearchPath();
+                while (sequence.Count > 0)
+                {
+                    path.Add(sequence.Pop());
+                }
+
+                return path;
             }
+
+            foreach (var nextState in candidate.NextSearchStates(null))
+            {
+                var visited = true;
+                if (!_score.ContainsKey(nextState))
+                {
+                    _score.Add(nextState, int.MaxValue);
+                    visited = false;
+                }
+                
+                var nextStateScore = _score[candidate] + nextState.Cost();
+                if (nextStateScore < _score[nextState])
+                {
+                    _score[nextState] = nextStateScore;
+
+                    if (!_shortestPrevious.ContainsKey(nextState))
+                    {
+                        _shortestPrevious.Add(nextState, candidate);
+                    }
+                    _shortestPrevious[nextState] = candidate;
+
+                    if (!visited)
+                    {
+                        candidates.Enqueue(nextState, nextState.Cost() + nextState.PotentialGain());
+                        continue;
+                    }
+                }
+                trimmed++;
+            }
+            
             i++;
             if (_verbose && i % _lap == 0L) { Console.WriteLine($"{i} : {candidates.Count} : {trimmed}"); }
-        } while (candidates.Count > 0);
+        }
 
-        return shortest;
+        return new SearchPath();
     }
 }

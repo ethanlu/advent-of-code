@@ -28,10 +28,7 @@ public class Day20 : Solution
         {
             if (!_shortestPaths.ContainsKey(room))
             {
-                var start = new SearchPath();
-                start.Add(new RoomSearchState(_rm.Map(), new Point2D(0, 0), 0, 0, 99999));
-                var astar = new AStar(start, new RoomSearchState(_rm.Map(), room, 0, 0, 99999));
-
+                var astar = new AStar(new RoomSearchState(_rm.Map(), new Point2D(0, 0), 0, 0, 99999), new RoomSearchState(_rm.Map(), room, 0, 0, 99999));
                 var path = astar.FindPath();
 
                 for (int l = 0; l < path.SearchStates().Count; l++)

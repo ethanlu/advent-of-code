@@ -237,12 +237,11 @@ public class Day15 : Solution
                                         if (_map.ContainsKey(startPosition) && _map[startPosition] == '.' && !occupied.Contains(startPosition))
                                         {
                                             var end = new MeleeSearchState(_map, occupied, targetPosition, 0, 0, 99999);
-                                            var start = new SearchPath();
-                                            start.Add(new MeleeSearchState(_map, occupied, startPosition, 0, 0, 99999));
+                                            var start = new MeleeSearchState(_map, occupied, startPosition, 0, 0, 99999);
                                             var bfs = new AStar(start, end);
                                             var path = bfs.FindPath();
 
-                                            if (path.SearchStates().Last().Id() == end.Id())
+                                            if (path.SearchStates().Count > 0)
                                             {   // path found....replace shortest path of all targets if it is shortest
                                                 if (shortest is null || shortest.Cost() > path.Cost())
                                                 {
