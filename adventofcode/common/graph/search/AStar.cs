@@ -60,11 +60,9 @@ public class AStar
 
             foreach (var nextState in candidate.NextSearchStates(null))
             {
-                var visited = true;
                 if (!_score.ContainsKey(nextState))
                 {
                     _score.Add(nextState, int.MaxValue);
-                    visited = false;
                 }
                 
                 if (nextState.Cost() < _score[nextState])
@@ -76,12 +74,9 @@ public class AStar
                         _shortestPrevious.Add(nextState, candidate);
                     }
                     _shortestPrevious[nextState] = candidate;
-
-                    if (!visited)
-                    {
-                        candidates.Enqueue(nextState, nextState.Cost() + nextState.PotentialGain());
-                        continue;
-                    }
+                    
+                    candidates.Enqueue(nextState, nextState.Cost() + nextState.PotentialGain());
+                    continue;
                 }
                 trimmed++;
             }

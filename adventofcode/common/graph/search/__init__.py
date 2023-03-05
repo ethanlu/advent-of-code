@@ -181,15 +181,11 @@ class AStar(DebugMixin):
 
             # continue search by getting current search state's next states and add to priority queue
             for next_search_state in candidate.next_search_states():
-                visited = next_search_state in scores.keys()
-
-                if not visited or next_search_state.cost < scores[next_search_state]:
+                if next_search_state not in scores.keys() or next_search_state.cost < scores[next_search_state]:
                     scores[next_search_state] = next_search_state.cost
                     shortest_previous[next_search_state] = candidate
-
-                    if not visited:
-                        candidates.put(next_search_state)
-                        continue
+                    candidates.put(next_search_state)
+                    continue
 
                 trimmed += 1
 
