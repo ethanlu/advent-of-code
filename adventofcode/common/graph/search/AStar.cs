@@ -67,10 +67,9 @@ public class AStar
                     visited = false;
                 }
                 
-                var nextStateScore = _score[candidate] + nextState.Cost();
-                if (nextStateScore < _score[nextState])
+                if (nextState.Cost() < _score[nextState])
                 {
-                    _score[nextState] = nextStateScore;
+                    _score[nextState] = nextState.Cost();
 
                     if (!_shortestPrevious.ContainsKey(nextState))
                     {

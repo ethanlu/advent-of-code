@@ -183,8 +183,8 @@ class AStar(DebugMixin):
             for next_search_state in candidate.next_search_states():
                 visited = next_search_state in scores.keys()
 
-                if not visited or scores[candidate] + next_search_state.cost < scores[next_search_state]:
-                    scores[next_search_state] = scores[candidate] + next_search_state.cost
+                if not visited or next_search_state.cost < scores[next_search_state]:
+                    scores[next_search_state] = next_search_state.cost
                     shortest_previous[next_search_state] = candidate
 
                     if not visited:
