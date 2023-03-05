@@ -25,8 +25,12 @@ class App(object):
         solution_path = f"adventofcode.year{year}.{solution_name.lower()}"
         module = importlib.import_module(solution_path)
         clss = getattr(module, solution_name)
-        self._solution: Solution = clss(year, day)
 
+        print('-----init-----')
+        s = perf_counter_ns()
+        self._solution: Solution = clss(year, day)
+        print(self._lapsed_time(perf_counter_ns() - s))
+        print(' ')
         print('-----part one-----')
         s = perf_counter_ns()
         print(str(self._solution.part_one()))
