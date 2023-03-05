@@ -1,7 +1,8 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from collections import deque
 from copy import copy
-from functools import total_ordering
+from functools import reduce, total_ordering
 from queue import PriorityQueue
 from typing import List, TypeVar
 
@@ -18,6 +19,18 @@ class SearchState(ABC):
 
     def __ne__(self, other):
         return self.fingerprint != other.fingerprint if issubclass(type(other), SearchState) else True
+
+    def __lt__(self, other):
+        return (self.cost + self.potential_gain) < (other.cost + other.potential_gain)
+
+    def __le__(self, other):
+        return (self.cost + self.potential_gain) <= (other.cost + other.potential_gain)
+
+    def __gt__(self, other):
+        return (self.cost + self.potential_gain) > (other.cost + other.potential_gain)
+
+    def __ge__(self, other):
+        return (self.cost + self.potential_gain) >= (other.cost + other.potential_gain)
 
     def __hash__(self):
         return hash(self.fingerprint)
@@ -50,7 +63,7 @@ class SearchState(ABC):
         return 0
 
     @abstractmethod
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         raise Exception("implement in subclass")
 
 
@@ -139,42 +152,52 @@ class DebugMixin(object):
 
 
 class AStar(DebugMixin):
-    def __init__(self, start_path: P, end: S):
+    def __init__(self, start: S, end: S):
         super().__init__()
-        self._start_path = start_path
+        self._start = start
         self._end = end
 
     def find_path(self, ) -> P:
-        best = self._start_path
-        visited = {self._start_path.last}
+        scores = {self._start: 0}
+        shortest_previous = {}
 
         candidates = PriorityQueue()
-        candidates.put(best)
+        candidates.put(self._start)
 
         i = 1
         trimmed = 0
         while not candidates.empty():
-            candidate: SearchPath = candidates.get()
+            candidate: S = candidates.get()
 
-            # found end, end search
-            if candidate.last == self._end:
-                best = candidate
-                break
+            if candidate == self._end:
+                # reached end...build shortest path and return
+                sequence = deque([])
+                current = candidate
+                while current in shortest_previous.keys():
+                    sequence.appendleft(current)
+                    current = shortest_previous[current]
+
+                return reduce(lambda path, state: path.add(state), sequence, SearchPath(self._start))
 
             # continue search by getting current search state's next states and add to priority queue
-            for next_search_state in candidate.last.next_search_states(candidate.last if candidate.depth > 0 else None):
-                if next_search_state in visited:
-                    trimmed += 1
-                    continue
+            for next_search_state in candidate.next_search_states():
+                visited = next_search_state in scores.keys()
 
-                visited.add(next_search_state)
-                candidates.put(copy(candidate).add(next_search_state))
+                if not visited or scores[candidate] + next_search_state.cost < scores[next_search_state]:
+                    scores[next_search_state] = scores[candidate] + next_search_state.cost
+                    shortest_previous[next_search_state] = candidate
+
+                    if not visited:
+                        candidates.put(next_search_state)
+                        continue
+
+                trimmed += 1
 
             i += 1
             if self._verbose and i % self._lap == 0:
-                print(f"{i} : ~{candidates.qsize()} : {trimmed} : ({candidate.gain}){candidate.last.fingerprint}")
+                print(f"{i} : ~{candidates.qsize()} : {trimmed}")
 
-        return best
+        return SearchPath(self._start)
 
 
 class BFS(DebugMixin):
@@ -200,7 +223,7 @@ class BFS(DebugMixin):
                 continue
 
             # continue search by getting current search state's next states and add to priority queue
-            for next_search_state in candidate.last.next_search_states(candidate.last if candidate.depth > 0 else None):
+            for next_search_state in candidate.last.next_search_states():
                 if best is not None and next_search_state.gain < best.gain and (next_search_state.potential_gain + next_search_state.gain) < best.gain:
                     trimmed += 1
                     continue

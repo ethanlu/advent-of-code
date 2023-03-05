@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, SearchPath, SearchState, S
+from adventofcode.common.graph.search import AStar, SearchState, S
 from adventofcode.common.util import show_grid
 from functools import reduce
 from itertools import permutations
@@ -103,7 +103,7 @@ class DataSearchState(SearchState):
     def y(self):
         return self._y
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
 
         if self._data_cluster.node_at(self._x, self._y - 1) is not None and self._data_cluster.node_at(self._x, self._y - 1).use_percent < 90:
@@ -139,7 +139,7 @@ class Day22(Solution):
         empty_node = dc.empty_node
         start = DataSearchState(dc, empty_node.x, empty_node.y, 0, 0, 99999)
         end = DataSearchState(dc, dc.max_x - 1, 0, 0, 0, 99999)
-        astar = AStar(SearchPath(start), end)
+        astar = AStar(start, end)
         astar.verbose(True, 1000)
 
         # shortest path to move the empty data node to the left of the G node

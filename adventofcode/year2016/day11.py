@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, SearchPath, SearchState, S
+from adventofcode.common.graph.search import AStar, SearchState, S
 from copy import copy
 from functools import reduce
 from itertools import combinations
@@ -111,14 +111,12 @@ class StepSearchState(SearchState):
     @property
     def potential_gain(self) -> int:
         # number of chips and generators remaining on first, second, and third floor with floors further away from 4th counting less
-        return (self._floors[0].chips_count + self._floors[0].rtgs_count) * 2 + \
-               (self._floors[1].chips_count + self._floors[1].rtgs_count) * 4 + \
-               (self._floors[2].chips_count + self._floors[2].rtgs_count) * 8
+        return (self._floors[0].chips_count + self._floors[0].rtgs_count) + (self._floors[1].chips_count + self._floors[1].rtgs_count) + (self._floors[2].chips_count + self._floors[2].rtgs_count)
 
     def _hash(self) -> str:
         return str(self._current_floor) + ":" + ":".join(["{chip:05b}-{rtg:05b}".format(chip=floor.chips_hash, rtg=floor.rtgs_hash) for floor in self._floors])
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         next_states = []
 
         # possible floors to move to based on current floor
@@ -206,7 +204,7 @@ class Day11(Solution):
         start_state = StepSearchState(isotopes, start_floors, 0, 0, 0, 99999)
         end_state = StepSearchState(isotopes, end_floors, 3, 0, 0, 99999)
 
-        astar = AStar(SearchPath(start_state), end_state)
+        astar = AStar(start_state, end_state)
         astar.verbose(True, 5000)
 
         shortest = astar.find_path()
@@ -225,8 +223,8 @@ class Day11(Solution):
         start_state = StepSearchState(isotopes, start_floors, 0, 0, 0, 99999)
         end_state = StepSearchState(isotopes, end_floors, 3, 0, 0, 99999)
 
-        astar = AStar(SearchPath(start_state), end_state)
-        astar.verbose(True, 50000)
+        astar = AStar(start_state, end_state)
+        astar.verbose(True, 100000)
 
         shortest = astar.find_path()
         print(f"{shortest}")

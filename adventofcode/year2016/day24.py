@@ -35,7 +35,7 @@ class LocationSearchState(SearchState):
         self._x = x
         self._y = y
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
 
         if self._maze.position(self._x + 1, self._y) != '#':
@@ -63,7 +63,7 @@ class EveryLocationSearchState(SearchState):
         #  assume potential gain is the shortest path from current location to next multiplied by remaining locations
         return -(len(self._remaining) * (min([self._shortest_lookup[f"{self._current_location}-{location}"] for location in self._remaining]) if len(self._remaining) > 0 else 0))
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
 
         for target_location in self._remaining:
@@ -84,7 +84,7 @@ class EveryLocationAndBackSearchState(EveryLocationSearchState):
         #  assume potential gain is the shortest path from current location to next multiplied by remaining locations
         return -((len(self._remaining) + 1) * (min([self._shortest_lookup[f"{self._current_location}-{location}"] for location in self._remaining]) if len(self._remaining) > 0 else 0))
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
 
         if len(self._remaining) == 0:
@@ -116,9 +116,10 @@ class Day24(Solution):
         # build lookup of the shortest paths between all locations
         self._shortest_lookup = {}
         for (start, end) in combinations(sorted(self._maze.locations.keys()), 2):
-            start_state = LocationSearchState(self._maze, self._maze.locations[start][0], self._maze.locations[start][1], 0, 0, 99999)
-            end_state = LocationSearchState(self._maze, self._maze.locations[end][0], self._maze.locations[end][1], 0, 0, 99999)
-            astar = AStar(SearchPath(start_state), end_state)
+            astar = AStar(
+                LocationSearchState(self._maze, self._maze.locations[start][0], self._maze.locations[start][1], 0, 0, 99999),
+                LocationSearchState(self._maze, self._maze.locations[end][0], self._maze.locations[end][1], 0, 0, 99999)
+            )
             shortest = astar.find_path().cost
 
             print(f"shortest from location {start} to location {end} : {shortest}")

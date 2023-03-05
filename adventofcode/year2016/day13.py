@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, SearchPath, SearchState, S
+from adventofcode.common.graph.search import AStar, SearchState, S
 from adventofcode.common.grid import Point2D
 from adventofcode.common.util import show_grid
 from functools import reduce
@@ -60,7 +60,7 @@ class MazeSearchState(SearchState):
     def potential_gain(self) -> int:
         return abs(self._position.x - self._target.x) + abs(self._position.y - self._target.y)
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         return [MazeSearchState(self._cubicles, p, self._target, self.gain, self.cost + 1, self.max_cost) for p in self._cubicles.open_spaces(self._position)]
 
 
@@ -73,10 +73,8 @@ class Day13(Solution):
         start_point = Point2D(1, 1)
         end_point = Point2D(31, 39)
         cubicles = Cubicles(start_point, self._input)
-        start_state = MazeSearchState(cubicles, start_point, end_point, 0, 0, 99999)
-        end_state = MazeSearchState(cubicles, end_point, end_point, 0, 0, 99999)
 
-        astar = AStar(SearchPath(start_state), end_state)
+        astar = AStar(MazeSearchState(cubicles, start_point, end_point, 0, 0, 99999), MazeSearchState(cubicles, end_point, end_point, 0, 0, 99999))
         astar.verbose(True, 1000)
 
         shortest = astar.find_path()
@@ -105,7 +103,7 @@ class Day13(Solution):
             if sp.x < 0 or sp.y < 0 or cubicles.lookup(sp) != cubicles.SPACE:
                 continue
 
-            astar = AStar(SearchPath(MazeSearchState(cubicles, sp, end_point, 0, 0, 99999)), end_state)
+            astar = AStar(MazeSearchState(cubicles, sp, end_point, 0, 0, 99999), end_state)
             astar.verbose(True, 1000)
 
             shortest = astar.find_path()

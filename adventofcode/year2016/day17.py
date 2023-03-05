@@ -29,7 +29,7 @@ class ShortestSearchState(SearchState):
     def potential_gain(self) -> int:
         return self._position.x + self._position.y
 
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
         for d, i in directions.items():
             if self._door_hash[i] not in open_doors:
@@ -47,7 +47,7 @@ class ShortestSearchState(SearchState):
 
 
 class LongestSearchState(ShortestSearchState):
-    def next_search_states(self, previous_search_state: S) -> List[S]:
+    def next_search_states(self) -> List[S]:
         states = []
         for d, i in directions.items():
             if self._door_hash[i] not in open_doors:
@@ -81,7 +81,7 @@ class Day17(Solution):
         start_state = ShortestSearchState(start, self._input, 0, 0, maxCost)
         end_state = ShortestSearchState(end, '', 0, 0, maxCost)
         end_state.fingerprint = f"{end}"
-        astar = AStar(SearchPath(start_state), end_state)
+        astar = AStar(start_state, end_state)
 
         astar.verbose(True, 1000)
         shortest = astar.find_path()
