@@ -267,11 +267,11 @@ public class Day22 : Solution
 
     private class CubeMap : Map
     {
-        protected List<(Box, Dictionary<Direction, Direction>, Dictionary<Direction, Func<Point2D, Point2D>>)> _wrapMaps;
+        protected List<(Box2D, Dictionary<Direction, Direction>, Dictionary<Direction, Func<Point2D, Point2D>>)> _wrapMaps;
 
         public CubeMap(List<string> mapRows, string moves, bool sampleMap=false) : base(mapRows, moves)
         {
-            _wrapMaps = new List<(Box, Dictionary<Direction, Direction>, Dictionary<Direction, Func<Point2D, Point2D>>)>();
+            _wrapMaps = new List<(Box2D, Dictionary<Direction, Direction>, Dictionary<Direction, Func<Point2D, Point2D>>)>();
         }
         
         protected override (Point2D, Direction) NextMove(Point2D position)
@@ -335,7 +335,7 @@ public class Day22 : Solution
             // 55
             // 55;
             _wrapMaps.Add(( // 0
-                new Box(new Point2D(50, 0), new Point2D(99, 49)),
+                new Box2D(new Point2D(50, 0), new Point2D(99, 49)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Right},
@@ -352,7 +352,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 1
-                new Box(new Point2D(100, 0), new Point2D(149, 49)),
+                new Box2D(new Point2D(100, 0), new Point2D(149, 49)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -369,7 +369,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 2
-                new Box(new Point2D(50, 50), new Point2D(99, 99)),
+                new Box2D(new Point2D(50, 50), new Point2D(99, 99)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -386,7 +386,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 3
-                new Box(new Point2D(0, 100), new Point2D(49, 149)),
+                new Box2D(new Point2D(0, 100), new Point2D(49, 149)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Right},
@@ -403,7 +403,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 4
-                new Box(new Point2D(50, 100), new Point2D(99, 149)),
+                new Box2D(new Point2D(50, 100), new Point2D(99, 149)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -420,7 +420,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 5
-                new Box(new Point2D(0, 150), new Point2D(49, 199)),
+                new Box2D(new Point2D(0, 150), new Point2D(49, 199)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -450,7 +450,7 @@ public class Day22 : Solution
             //     4455
             //     4455
             _wrapMaps.Add(( // 0
-                new Box(new Point2D(8, 0), new Point2D(11, 3)),
+                new Box2D(new Point2D(8, 0), new Point2D(11, 3)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Down},
@@ -467,7 +467,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 1
-                new Box(new Point2D(0, 4), new Point2D(3, 7)),
+                new Box2D(new Point2D(0, 4), new Point2D(3, 7)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Down},
@@ -484,7 +484,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 2
-                new Box(new Point2D(4, 4), new Point2D(7, 7)),
+                new Box2D(new Point2D(4, 4), new Point2D(7, 7)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Right},
@@ -501,7 +501,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 3
-                new Box(new Point2D(8, 4), new Point2D(11, 7)),
+                new Box2D(new Point2D(8, 4), new Point2D(11, 7)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -518,7 +518,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 4
-                new Box(new Point2D(8, 8), new Point2D(11, 11)),
+                new Box2D(new Point2D(8, 8), new Point2D(11, 11)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Up},
@@ -535,7 +535,7 @@ public class Day22 : Solution
                 }
             ));
             _wrapMaps.Add(( // 5
-                new Box(new Point2D(12, 8), new Point2D(15, 11)),
+                new Box2D(new Point2D(12, 8), new Point2D(15, 11)),
                 new Dictionary<Direction, Direction>()
                 {
                     {Direction.Up, Direction.Left},

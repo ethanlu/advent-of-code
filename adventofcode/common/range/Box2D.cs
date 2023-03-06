@@ -2,7 +2,7 @@ using adventofcode.common.grid;
 
 namespace adventofcode.common.range;
 
-public class Box : IEquatable<Box>
+public class Box2D : IEquatable<Box2D>
 {
     private readonly bool _invertedX;
     private readonly bool _invertedY;
@@ -13,7 +13,7 @@ public class Box : IEquatable<Box>
     private readonly Point2D _topRight;
     private readonly Point2D _bottomLeft;
     
-    public Box(Point2D topLeft, Point2D bottomRight)
+    public Box2D(Point2D topLeft, Point2D bottomRight)
     {
         _topLeft = topLeft;
         _bottomRight = bottomRight;
@@ -35,7 +35,7 @@ public class Box : IEquatable<Box>
     public int Height() { return _height; }
     public int Area() { return _width * _height; }
 
-    public bool Overlaps(Box other)
+    public bool Overlaps(Box2D other)
     {
         if ((Contains(other.TopLeft()) || Contains(other.TopRight()) || Contains(other.BottomLeft()) || Contains(other.BottomRight())) ||
             (other.Contains(TopLeft()) || other.Contains(TopRight()) || other.Contains(BottomLeft()) || other.Contains(BottomRight())))
@@ -43,7 +43,7 @@ public class Box : IEquatable<Box>
             return true;
         }
 
-        foreach (var (a, b) in new List<(Box, Box)>(){(this, other), (other, this)})
+        foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
         {
             if ((Math.Min(b.TopLeft().Y(), b.BottomLeft().Y()) <= a.TopLeft().Y() && Math.Max(b.TopLeft().Y(), b.BottomLeft().Y()) >= a.TopLeft().Y()) &&
                 (Math.Min(a.TopLeft().X(), a.TopRight().X()) <= b.TopLeft().X() && Math.Max(a.TopLeft().X(), a.TopRight().X()) >= b.TopLeft().X()))
@@ -62,12 +62,12 @@ public class Box : IEquatable<Box>
         return withinX && withinY;
     }
 
-    public bool Contains(Box b)
+    public bool Contains(Box2D b)
     {
         return Contains(b.TopLeft()) && Contains(b.TopRight()) && Contains(b.BottomLeft()) && Contains(b.BottomRight());
     }
 
-    public Box? Intersect(Box other)
+    public Box2D? Intersect(Box2D other)
     {
         if (Overlaps(other))
         {
@@ -78,7 +78,7 @@ public class Box : IEquatable<Box>
             }
             else
             {
-                foreach (var (a, b) in new List<(Box, Box)>(){(this, other), (other, this)})
+                foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
                 {
                     if ((Math.Min(b.TopLeft().Y(), b.BottomLeft().Y()) <= a.TopLeft().Y() && Math.Max(b.TopLeft().Y(), b.BottomLeft().Y()) >= a.TopLeft().Y()) &&
                         (Math.Min(a.TopLeft().X(), a.TopRight().X()) <= b.TopLeft().X() && Math.Max(a.TopLeft().X(), a.TopRight().X()) >= b.TopLeft().X()))
@@ -95,7 +95,7 @@ public class Box : IEquatable<Box>
             }
             else
             {
-                foreach (var (a, b) in new List<(Box, Box)>(){(this, other), (other, this)})
+                foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
                 {
                     if ((Math.Min(b.TopRight().Y(), b.BottomRight().Y()) <= a.BottomRight().Y() && Math.Max(b.TopRight().Y(), b.BottomRight().Y()) >= a.BottomRight().Y()) &&
                         (Math.Min(a.BottomLeft().X(), a.BottomRight().X()) <= b.BottomRight().X() && Math.Max(a.BottomLeft().X(), a.BottomRight().X()) >= b.BottomRight().X()))
@@ -105,20 +105,20 @@ public class Box : IEquatable<Box>
                 }
             }
 
-            return new Box(topLeft ?? new Point2D(0, 0), bottomRight ?? new Point2D(0, 0));
+            return new Box2D(topLeft ?? new Point2D(0, 0), bottomRight ?? new Point2D(0, 0));
         }
 
         return null;
     }
 
-    public bool Equals(Box? b)
+    public bool Equals(Box2D? b)
     {
         return b is not null && _topLeft.Equals(b.TopLeft()) && _bottomRight.Equals(b.BottomRight()) && _topRight.Equals(b.TopRight()) && _bottomLeft.Equals(b.BottomLeft());
     }
     
     public override bool Equals(Object? obj)
     {
-        return obj is Box && Equals((Box) obj);
+        return obj is Box2D && Equals((Box2D) obj);
     }
     
     public override int GetHashCode()

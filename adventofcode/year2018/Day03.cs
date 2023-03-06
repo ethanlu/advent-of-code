@@ -8,24 +8,24 @@ namespace adventofcode.year2018;
 
 public class Day03 : Solution
 {
-    private Dictionary<int, Box> _squares;
+    private Dictionary<int, Box2D> _squares;
     
     public Day03(string year, string day) : base(year, day)
     {
-        _squares = new Dictionary<int, Box>();
+        _squares = new Dictionary<int, Box2D>();
         foreach (var line in LoadInputAsLines())
         {
             var match = Regex.Match(line, @"#(\d+) @ (\d+),(\d+): (\d+)x(\d+)");
             var topLeft = new Point2D(Convert.ToInt32(match.Groups[2].Value), Convert.ToInt32(match.Groups[3].Value));
             var bottomRight = topLeft + new Point2D(Convert.ToInt32(match.Groups[4].Value), Convert.ToInt32(match.Groups[5].Value));
-            _squares.Add(Convert.ToInt32(match.Groups[1].Value), new Box(topLeft, bottomRight));
+            _squares.Add(Convert.ToInt32(match.Groups[1].Value), new Box2D(topLeft, bottomRight));
         }
     }
 
     public override string PartOne()
     {
         var overlaps = new HashSet<Point2D>();
-        foreach (var combination in IterTools<Box>.Combination(_squares.Values.ToList(), 2))
+        foreach (var combination in IterTools<Box2D>.Combination(_squares.Values.ToList(), 2))
         {
             var intersection = combination[0].Intersect(combination[1]);
             if (intersection is not null)
