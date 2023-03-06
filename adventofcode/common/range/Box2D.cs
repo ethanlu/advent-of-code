@@ -34,7 +34,7 @@ public class Box2D : IEquatable<Box2D>
 
     public int Width() { return _width; }
     public int Height() { return _height; }
-    public int Area() { return _width * _height; }
+    public long Area() { return _width * _height; }
 
     public bool Overlaps(Box2D other)
     {
