@@ -4,14 +4,14 @@ namespace adventofcode.common.range;
 
 public class Box2D : IEquatable<Box2D>
 {
-    private readonly bool _invertedX;
-    private readonly bool _invertedY;
     private readonly int _width;
     private readonly int _height;
     private readonly Point2D _topLeft;
     private readonly Point2D _bottomRight;
     private readonly Point2D _topRight;
     private readonly Point2D _bottomLeft;
+    private readonly Interval _xInterval;
+    private readonly Interval _yInterval;
     
     public Box2D(Point2D topLeft, Point2D bottomRight)
     {
@@ -22,8 +22,9 @@ public class Box2D : IEquatable<Box2D>
         
         _width = Math.Abs(_topRight.X() - _bottomLeft.X());
         _height = Math.Abs(_topLeft.Y() - _bottomRight.Y());
-        _invertedX = topLeft.X() > _topRight.X();
-        _invertedY = topLeft.Y() < _bottomLeft.Y();
+
+        _xInterval = new Interval(Math.Min(_topLeft.X(), _bottomRight.X()), Math.Max(_topLeft.X(), _bottomRight.X()));
+        _yInterval = new Interval(Math.Min(_topLeft.Y(), _bottomRight.Y()), Math.Max(_topLeft.Y(), _bottomRight.Y()));
     }
 
     public Point2D TopLeft() { return _topLeft; }
@@ -37,29 +38,12 @@ public class Box2D : IEquatable<Box2D>
 
     public bool Overlaps(Box2D other)
     {
-        if ((Contains(other.TopLeft()) || Contains(other.TopRight()) || Contains(other.BottomLeft()) || Contains(other.BottomRight())) ||
-            (other.Contains(TopLeft()) || other.Contains(TopRight()) || other.Contains(BottomLeft()) || other.Contains(BottomRight())))
-        {
-            return true;
-        }
-
-        foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
-        {
-            if ((Math.Min(b.TopLeft().Y(), b.BottomLeft().Y()) <= a.TopLeft().Y() && Math.Max(b.TopLeft().Y(), b.BottomLeft().Y()) >= a.TopLeft().Y()) &&
-                (Math.Min(a.TopLeft().X(), a.TopRight().X()) <= b.TopLeft().X() && Math.Max(a.TopLeft().X(), a.TopRight().X()) >= b.TopLeft().X()))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return _xInterval.Overlaps(other._xInterval) && _yInterval.Overlaps(other._yInterval);
     }
 
     public bool Contains(Point2D p)
     {
-        var withinX = _invertedX ? (_topLeft.X() >= p.X() && _bottomRight.X() <= p.X()) : (_topLeft.X() <= p.X() && _bottomRight.X() >= p.X());
-        var withinY = _invertedY ? (_bottomLeft.Y() >= p.Y() && _topRight.Y() <= p.Y()) : (_bottomLeft.Y() <= p.Y() && _topRight.Y() >= p.Y());
-        return withinX && withinY;
+        return _xInterval.Contains(p.X()) && _yInterval.Contains(p.Y());
     }
 
     public bool Contains(Box2D b)
@@ -71,41 +55,17 @@ public class Box2D : IEquatable<Box2D>
     {
         if (Overlaps(other))
         {
-            Point2D? topLeft = null;
-            if (Contains(other.TopLeft()) || other.Contains(TopLeft()))
-            {
-                topLeft = Contains(other.TopLeft()) ? other.TopLeft() : TopLeft();
+            var xIntersect = _xInterval.Intersect(other._xInterval)!;
+            var yIntersect = _yInterval.Intersect(other._yInterval)!;
+
+            if (_topLeft.Y() > _bottomRight.Y())
+            {   // standard Y-axis 
+                return new Box2D(new Point2D(xIntersect.Left(), yIntersect.Right()), new Point2D(xIntersect.Right(), yIntersect.Left()));
             }
             else
-            {
-                foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
-                {
-                    if ((Math.Min(b.TopLeft().Y(), b.BottomLeft().Y()) <= a.TopLeft().Y() && Math.Max(b.TopLeft().Y(), b.BottomLeft().Y()) >= a.TopLeft().Y()) &&
-                        (Math.Min(a.TopLeft().X(), a.TopRight().X()) <= b.TopLeft().X() && Math.Max(a.TopLeft().X(), a.TopRight().X()) >= b.TopLeft().X()))
-                    {
-                        topLeft = new Point2D(b.TopLeft().X(), a.TopLeft().Y());
-                    }
-                }
+            {   // inverted Y-axis
+                return new Box2D(new Point2D(xIntersect.Left(), yIntersect.Left()), new Point2D(xIntersect.Right(), yIntersect.Right()));
             }
-
-            Point2D? bottomRight = null;
-            if (Contains(other.BottomRight()) || other.Contains(BottomRight()))
-            {
-                bottomRight = Contains(other.BottomRight()) ? other.BottomRight() : BottomRight();
-            }
-            else
-            {
-                foreach (var (a, b) in new List<(Box2D, Box2D)>(){(this, other), (other, this)})
-                {
-                    if ((Math.Min(b.TopRight().Y(), b.BottomRight().Y()) <= a.BottomRight().Y() && Math.Max(b.TopRight().Y(), b.BottomRight().Y()) >= a.BottomRight().Y()) &&
-                        (Math.Min(a.BottomLeft().X(), a.BottomRight().X()) <= b.BottomRight().X() && Math.Max(a.BottomLeft().X(), a.BottomRight().X()) >= b.BottomRight().X()))
-                    {
-                        bottomRight = new Point2D(b.BottomRight().X(), a.BottomRight().Y());
-                    }
-                }
-            }
-
-            return new Box2D(topLeft ?? new Point2D(0, 0), bottomRight ?? new Point2D(0, 0));
         }
 
         return null;

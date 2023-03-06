@@ -42,12 +42,12 @@ class Interval(object):
         return self._right
 
     def overlaps(self, other: Interval):
-        return not (self.right < other.left or self._left > other.right)
+        return self._left <= other.right and self.right >= other.left
 
     def contains(self, other: Union[Interval, int]):
         match other:
             case Interval():
-                return (self.left <= other.left and self.right >= other.right) or (other.left <= self._left and other.right >= self.right)
+                return self.left <= other.left and self.right >= other.right
             case int():
                 return self.left <= other <= self.right
             case _:

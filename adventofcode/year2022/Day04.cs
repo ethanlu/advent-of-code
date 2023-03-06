@@ -22,7 +22,7 @@ public class Day04 : Solution
             var interval1 = new Interval(Convert.ToInt32(match.Groups[1].ToString()), Convert.ToInt32(match.Groups[2].ToString()));
             var interval2 = new Interval(Convert.ToInt32(match.Groups[3].ToString()), Convert.ToInt32(match.Groups[4].ToString()));
 
-            overlap += interval1.Contains(interval2) ? 1 : 0;
+            overlap += interval1.Contains(interval2) || interval2.Contains(interval1) ? 1 : 0;
         }
         
         return Convert.ToString(overlap);
