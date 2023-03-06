@@ -51,7 +51,7 @@ public class Box3D : IEquatable<Box3D>
     public int Width() { return _width; }
     public int Height() { return _height; }
     public int Depth() { return _depth; }
-    public long Volume() { return _width * _height * _depth; }
+    public int Volume() { return _width * _height * _depth; }
 
     public bool Overlaps(Box3D other)
     {
