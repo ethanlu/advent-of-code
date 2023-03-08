@@ -26,26 +26,11 @@ public struct Point3D : IEquatable<Point3D>
         _y = Convert.ToInt32(y);
         _z = Convert.ToInt32(z);
     }
-    
-    public (int, int, int) Coordinate()
-    {
-        return (_x, _y, _z);
-    }
 
-    public int X()
-    {
-        return _x;
-    }
-
-    public int Y()
-    {
-        return _y;
-    }
-    
-    public int Z()
-    {
-        return _z;
-    }
+    public int X() { return _x; }
+    public int Y() { return _y; }
+    public int Z() { return _z; }
+    public int Magnitude() { return Math.Abs(_x) + Math.Abs(_y) + Math.Abs(_z); }
     
     public static Point3D operator +(Point3D a, Point3D b) => new Point3D(a.X() + b.X(), a.Y() + b.Y(), a.Z() + b.Z());
     public static Point3D operator -(Point3D a, Point3D b) => new Point3D(a.X() - b.X(), a.Y() - b.Y(), a.Z() - b.Z());

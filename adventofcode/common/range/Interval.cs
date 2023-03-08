@@ -11,15 +11,9 @@ public class Interval : IComparable<Interval>, IEquatable<Interval>
         _right = right;
     }
 
-    public int Left()
-    {
-        return _left;
-    }
-
-    public int Right()
-    {
-        return _right;
-    }
+    public int Left() { return _left; }
+    public int Right() { return _right; }
+    public int Length() { return _right - _left; }
 
     public bool Overlaps(Interval interval)
     {

@@ -22,22 +22,11 @@ public struct Point2D : IEquatable<Point2D>
         _x = Convert.ToInt32(x);
         _y = Convert.ToInt32(y);
     }
-    
-    public (int, int) Coordinate()
-    {
-        return (_x, _y);
-    }
 
-    public int X()
-    {
-        return _x;
-    }
+    public int X() { return _x; }
+    public int Y() { return _y; }
+    public int Magnitude() { return Math.Abs(_x) + Math.Abs(_y); }
 
-    public int Y()
-    {
-        return _y;
-    }
-    
     public static Point2D operator +(Point2D a, Point2D b) => new Point2D(a.X() + b.X(), a.Y() + b.Y());
     public static Point2D operator -(Point2D a, Point2D b) => new Point2D(a.X() - b.X(), a.Y() - b.Y());
     public static Point2D operator *(Point2D a, Point2D b) => new Point2D(a.X() * b.X(), a.Y() * b.Y());

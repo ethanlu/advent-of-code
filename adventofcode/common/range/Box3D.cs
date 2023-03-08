@@ -48,6 +48,10 @@ public class Box3D : IEquatable<Box3D>
     public Point3D RightBottomBack() { return _rightBottomBack; }
     public Point3D RightTopFront() { return _rightTopFront; }
     public Point3D RightTopBack() { return _rightTopBack; }
+    public Interval XInterval() { return _xInterval; }
+    public Interval YInterval() { return _yInterval; }
+    public Interval ZInterval() { return _zInterval; }
+
     public int Width() { return _width; }
     public int Height() { return _height; }
     public int Depth() { return _depth; }

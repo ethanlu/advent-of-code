@@ -31,7 +31,8 @@ public class Box2D : IEquatable<Box2D>
     public Point2D BottomRight() { return _bottomRight; }
     public Point2D TopRight() { return _topRight; }
     public Point2D BottomLeft() { return _bottomLeft; }
-
+    public Interval XInterval() { return _xInterval; }
+    public Interval YInterval() { return _yInterval; }
     public int Width() { return _width; }
     public int Height() { return _height; }
     public int Area() { return _width * _height; }
