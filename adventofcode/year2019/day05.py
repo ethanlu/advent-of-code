@@ -1,84 +1,60 @@
 from __future__ import annotations
 from adventofcode.common import Solution
+from adventofcode.year2019.day02 import IntCodeCPU
 from typing import List
 
 
-class IntCodeCPUV2(object):
-    def __init__(self, instructions: List[int], input: int):
+class IntCodeCPUV2(IntCodeCPU):
+    def __init__(self, instructions: List[int], verbose: bool = False):
+        super().__init__(instructions, verbose)
         self._instructions = [i for i in instructions]
-        self._input_value = input
+        self._input_value = 0
         self._output_codes = []
 
-    def set_position(self, position: int, value: int) -> None:
-        self._instructions[position] = value
+    def add_input(self, value: int):
+        self._input_value = value
 
-    def position(self, i: int) -> int:
-        return self._instructions[i]
-
-    def run(self, verbose: bool) -> List[int]:
-        i = 0
-        while True:
-            parameter0 = str(self._instructions[i]).strip('-').zfill(5)
-            opcode = int(parameter0[-2:])
-            match opcode:
-                case 1:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 4)]} : address[{self._instructions[i + 3]}] = {parameter1} + {parameter2}")
-                    self._instructions[self._instructions[i + 3]] = parameter1 + parameter2
-                    i += 4
-                case 2:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 4)]} : address[{self._instructions[i + 3]}] = {parameter1} * {parameter2}")
-                    self._instructions[self._instructions[i + 3]] = parameter1 * parameter2
-                    i += 4
-                case 3:
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 2)]} : address[{self._instructions[i + 1]}] = {self._input_value}")
-                    self._instructions[self._instructions[i + 1]] = self._input_value
-                    i += 2
-                case 4:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 2)]} : {parameter1}")
-                        print(f"offset : {self._instructions[self._instructions[i + 1]]}")
-                    self._output_codes.append(parameter1)
-                    i += 2
-                case 5:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    i = parameter2 if parameter1 != 0 else i + 3
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 3)]} : pointer = {i}")
-                case 6:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    i = parameter2 if parameter1 == 0 else i + 3
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 3)]} : pointer = {i}")
-                case 7:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    self._instructions[self._instructions[i + 3]] = 1 if parameter1 < parameter2 else 0
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 4)]} : address[{self._instructions[i + 3]}] = {self._instructions[self._instructions[i + 3]]}")
-                    i += 4
-                case 8:
-                    parameter1 = self._instructions[self._instructions[i + 1]] if int(parameter0[-3]) == 0 else self._instructions[i + 1]
-                    parameter2 = self._instructions[self._instructions[i + 2]] if int(parameter0[-4]) == 0 else self._instructions[i + 2]
-                    self._instructions[self._instructions[i + 3]] = 1 if parameter1 == parameter2 else 0
-                    if verbose:
-                        print(f"{i}: {self._instructions[i:(i + 4)]} : address[{self._instructions[i + 3]}] = {self._instructions[self._instructions[i + 3]]}")
-                    i += 4
-                case 99:
-                    break
-                case _:
-                    raise Exception(f"Invalid command {self._instructions[i]} @ {i}")
-
+    def get_output(self) -> List[int]:
         return self._output_codes
+
+    def _operation3(self):
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : address[{self._instructions[self._index + 1]}] = {self._input_value}")
+        self._instructions[self._instructions[self._index + 1]] = self._input_value
+        self._index += 2
+
+    def _operation4(self):
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : {self._get_parameter1()}")
+            print(f"offset : {self._instructions[self._instructions[self._index + 1]]}")
+        self._output_codes.append(self._get_parameter1())
+        self._index += 2
+
+    def _operation5(self):
+        next_index = self._get_parameter2() if self._get_parameter1() != 0 else self._index + 3
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 3)]} : pointer = {next_index}")
+        self._index = next_index
+
+    def _operation6(self):
+        next_index = self._get_parameter2() if self._get_parameter1() == 0 else self._index + 3
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 3)]} : pointer = {next_index}")
+        self._index = next_index
+
+    def _operation7(self):
+        value = 1 if self._get_parameter1() < self._get_parameter2() else 0
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {value}")
+        self._instructions[self._instructions[self._index + 3]] = value
+        self._index += 4
+
+    def _operation8(self):
+        value = 1 if self._get_parameter1() == self._get_parameter2() else 0
+        if self._verbose:
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {value}")
+        self._instructions[self._instructions[self._index + 3]] = value
+        self._index += 4
 
 
 class Day05(Solution):
@@ -87,13 +63,15 @@ class Day05(Solution):
         self._input = [int(i) for i in self._load_input_as_string().split(',')]
 
     def part_one(self):
-        cpu = IntCodeCPUV2(self._input, 1)
-        output = cpu.run(True)
-        print(output)
-        return output[-1]
+        cpu = IntCodeCPUV2(self._input, True)
+        cpu.add_input(1)
+        cpu.run()
+        print(cpu.get_output())
+        return cpu.get_output()[-1]
 
     def part_two(self):
-        cpu = IntCodeCPUV2(self._input, 5)
-        output = cpu.run(True)
-        print(output)
-        return output[-1]
+        cpu = IntCodeCPUV2(self._input, True)
+        cpu.add_input(5)
+        cpu.run()
+        print(cpu.get_output())
+        return cpu.get_output()[-1]
