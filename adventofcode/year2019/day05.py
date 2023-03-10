@@ -1,6 +1,7 @@
 from __future__ import annotations
 from adventofcode.common import Solution
 from adventofcode.year2019.day02 import IntCodeCPU
+from collections import deque
 from typing import List
 
 
@@ -8,26 +9,28 @@ class IntCodeCPUV2(IntCodeCPU):
     def __init__(self, instructions: List[int], verbose: bool = False):
         super().__init__(instructions, verbose)
         self._instructions = [i for i in instructions]
-        self._input_value = 0
-        self._output_codes = []
+        self._inputs = deque([])
+        self._output = 0
 
     def add_input(self, value: int):
-        self._input_value = value
+        self._inputs.append(value)
 
-    def get_output(self) -> List[int]:
-        return self._output_codes
+    def get_output(self) -> int:
+        return self._output
 
     def _operation3(self):
+        value = self._inputs.popleft()
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : address[{self._instructions[self._index + 1]}] = {self._input_value}")
-        self._instructions[self._instructions[self._index + 1]] = self._input_value
+            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : address[{self._instructions[self._index + 1]}] = {value}")
+        self._instructions[self._instructions[self._index + 1]] = value
         self._index += 2
 
     def _operation4(self):
         if self._verbose:
             print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : {self._get_parameter1()}")
             print(f"offset : {self._instructions[self._instructions[self._index + 1]]}")
-        self._output_codes.append(self._get_parameter1())
+        self._output = self._get_parameter1()
+        self._paused = True
         self._index += 2
 
     def _operation5(self):
@@ -65,13 +68,21 @@ class Day05(Solution):
     def part_one(self):
         cpu = IntCodeCPUV2(self._input, True)
         cpu.add_input(1)
-        cpu.run()
-        print(cpu.get_output())
-        return cpu.get_output()[-1]
+        outputs = []
+        while not cpu.halted:
+            cpu.run()
+            if not cpu.halted:
+                outputs.append(cpu.get_output())
+        print(outputs)
+        return outputs[-1]
 
     def part_two(self):
         cpu = IntCodeCPUV2(self._input, True)
         cpu.add_input(5)
-        cpu.run()
-        print(cpu.get_output())
-        return cpu.get_output()[-1]
+        outputs = []
+        while not cpu.halted:
+            cpu.run()
+            if not cpu.halted:
+                outputs.append(cpu.get_output())
+        print(outputs)
+        return outputs[-1]

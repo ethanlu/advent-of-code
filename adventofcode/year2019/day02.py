@@ -8,12 +8,22 @@ class IntCodeCPU(object):
     def __init__(self, instructions: List[int], verbose: bool = False):
         self._instructions = [i for i in instructions]
         self._index = 0
+        self._paused = False
+        self._halted = False
         self._verbose = verbose
+
+    @property
+    def paused(self) -> bool:
+        return self._paused
+
+    @property
+    def halted(self) -> bool:
+        return self._halted
 
     def set_position(self, position: int, value: int) -> None:
         self._instructions[position] = value
 
-    def position(self, i: int) -> int:
+    def value_at(self, i: int) -> int:
         return self._instructions[i]
 
     def _get_operation_details(self) -> str:
@@ -37,13 +47,13 @@ class IntCodeCPU(object):
         self._instructions[self._instructions[self._index + 3]] = self._get_parameter1() * self._get_parameter2()
         self._index += 4
 
-    def run(self) -> None:
-        self._index = 0
-        while True:
-            opcode = int(self._get_operation_details()[-2:])
-            if opcode == 99:
-                break
+    def _operation99(self) -> None:
+        self._halted = True
 
+    def run(self) -> None:
+        self._paused = False
+        while not self._paused and not self._halted:
+            opcode = int(self._get_operation_details()[-2:])
             operation = f"_operation{opcode}"
             if hasattr(self, operation):
                 getattr(self, operation)()
@@ -61,7 +71,7 @@ class Day02(Solution):
         cpu.set_position(1, 12)
         cpu.set_position(2, 2)
         cpu.run()
-        return cpu.position(0)
+        return cpu.value_at(0)
 
     def part_two(self):
         noun = verb = None
@@ -71,7 +81,7 @@ class Day02(Solution):
             cpu.set_position(2, v)
             cpu.run()
 
-            if cpu.position(0) == 19690720:
+            if cpu.value_at(0) == 19690720:
                 noun = n
                 verb = v
                 break
