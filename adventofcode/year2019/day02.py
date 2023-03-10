@@ -7,6 +7,7 @@ from typing import List
 class IntCodeCPU(object):
     def __init__(self, instructions: List[int]):
         self._instructions = [i for i in instructions]
+        self._index = 0
 
     def set_position(self, position: int, value: int) -> None:
         self._instructions[position] = value
@@ -14,19 +15,35 @@ class IntCodeCPU(object):
     def position(self, i: int) -> int:
         return self._instructions[i]
 
+    def _get_opcode(self) -> int:
+        return int(str(self._instructions[self._index]).strip('-').zfill(5)[-2:])
+
+    def _get_parameter1(self) -> int:
+        return self._instructions[self._instructions[self._index + 1]]
+
+    def _get_parameter2(self) -> int:
+        return self._instructions[self._instructions[self._index + 2]]
+
+    def _operation1(self) -> None:
+        self._instructions[self._instructions[self._index + 3]] = self._get_parameter1() + self._get_parameter2()
+        self._index += 4
+
+    def _operation2(self) -> None:
+        self._instructions[self._instructions[self._index + 3]] = self._get_parameter1() * self._get_parameter2()
+        self._index += 4
+
     def run(self) -> None:
-        i = 0
+        self._index = 0
         while True:
-            match self._instructions[i]:
-                case 1:
-                    self._instructions[self._instructions[i + 3]] = self._instructions[self._instructions[i + 1]] + self._instructions[self._instructions[i + 2]]
-                case 2:
-                    self._instructions[self._instructions[i + 3]] = self._instructions[self._instructions[i + 1]] * self._instructions[self._instructions[i + 2]]
-                case 99:
-                    break
-                case _:
-                    raise Exception(f"Invalid command {self._instructions[i]} @ {i}")
-            i += 4
+            opcode = self._get_opcode()
+            if opcode == 99:
+                break
+
+            operation = f"_operation{opcode}"
+            if hasattr(self, operation):
+                getattr(self, operation)()
+            else:
+                raise Exception(f"Invalid opcode {self._instructions[self._index]} @ {self._index}")
 
 
 class Day02(Solution):
