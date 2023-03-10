@@ -5,7 +5,7 @@ from adventofcode.common.graph import LinkedListNode
 
 class Elf(LinkedListNode):
     def __init__(self, index: int, presents: int):
-        super().__init__()
+        super().__init__(f"{index}")
         self._index = index
         self._presents = presents
 
