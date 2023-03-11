@@ -5,10 +5,9 @@ from collections import deque
 from typing import List
 
 
-class IntCodeCPUV2(IntCodeCPU):
+class IntCodeCPUModified(IntCodeCPU):
     def __init__(self, instructions: List[int], verbose: bool = False):
         super().__init__(instructions, verbose)
-        self._instructions = [i for i in instructions]
         self._inputs = deque([])
         self._output = 0
 
@@ -19,45 +18,56 @@ class IntCodeCPUV2(IntCodeCPU):
         return self._output
 
     def _operation3(self):
+        param1 = self._get_parameter_index(1)
         value = self._inputs.popleft()
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : address[{self._instructions[self._index + 1]}] = {value}")
-        self._instructions[self._instructions[self._index + 1]] = value
-        self._index += 2
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 2)]} : address[{param1}] = {value}")
+        self.write_memory(param1, value)
+        self._instruction_index += 2
 
     def _operation4(self):
+        param1 = self.read_memory(self._get_parameter_index(1))
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 2)]} : {self._get_parameter1()}")
-            print(f"offset : {self._instructions[self._instructions[self._index + 1]]}")
-        self._output = self._get_parameter1()
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 2)]} : output address[{param1}]")
+        self._output = param1
         self._paused = True
-        self._index += 2
+        self._instruction_index += 2
 
     def _operation5(self):
-        next_index = self._get_parameter2() if self._get_parameter1() != 0 else self._index + 3
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        next_index = param2 if param1 != 0 else self._instruction_index + 3
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 3)]} : pointer = {next_index}")
-        self._index = next_index
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 3)]} : pointer = {next_index}")
+        self._instruction_index = next_index
 
     def _operation6(self):
-        next_index = self._get_parameter2() if self._get_parameter1() == 0 else self._index + 3
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        next_index = param2 if param1 == 0 else self._instruction_index + 3
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 3)]} : pointer = {next_index}")
-        self._index = next_index
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 3)]} : pointer = {next_index}")
+        self._instruction_index = next_index
 
     def _operation7(self):
-        value = 1 if self._get_parameter1() < self._get_parameter2() else 0
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        param3 = self._get_parameter_index(3)
+        value = 1 if param1 < param2 else 0
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {value}")
-        self._instructions[self._instructions[self._index + 3]] = value
-        self._index += 4
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 4)]} : address[{param3}] = {value}")
+        self.write_memory(param3, value)
+        self._instruction_index += 4
 
     def _operation8(self):
-        value = 1 if self._get_parameter1() == self._get_parameter2() else 0
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        param3 = self._get_parameter_index(3)
+        value = 1 if param1 == param2 else 0
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {value}")
-        self._instructions[self._instructions[self._index + 3]] = value
-        self._index += 4
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 4)]} : address[{param3}] = {value}")
+        self.write_memory(param3, value)
+        self._instruction_index += 4
 
 
 class Day05(Solution):
@@ -66,7 +76,7 @@ class Day05(Solution):
         self._input = [int(i) for i in self._load_input_as_string().split(',')]
 
     def part_one(self):
-        cpu = IntCodeCPUV2(self._input, True)
+        cpu = IntCodeCPUModified(self._input, True)
         cpu.add_input(1)
         outputs = []
         while not cpu.halted:
@@ -77,7 +87,7 @@ class Day05(Solution):
         return outputs[-1]
 
     def part_two(self):
-        cpu = IntCodeCPUV2(self._input, True)
+        cpu = IntCodeCPUModified(self._input, True)
         cpu.add_input(5)
         outputs = []
         while not cpu.halted:

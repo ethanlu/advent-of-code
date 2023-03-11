@@ -6,8 +6,9 @@ from typing import List
 
 class IntCodeCPU(object):
     def __init__(self, instructions: List[int], verbose: bool = False):
-        self._instructions = [i for i in instructions]
-        self._index = 0
+        self._memory = [i for i in instructions]
+        self._relative_base = 0
+        self._instruction_index = 0
         self._paused = False
         self._halted = False
         self._verbose = verbose
@@ -20,32 +21,48 @@ class IntCodeCPU(object):
     def halted(self) -> bool:
         return self._halted
 
-    def set_position(self, position: int, value: int) -> None:
-        self._instructions[position] = value
+    def read_memory(self, index: int):
+        if index >= len(self._memory):
+            self._memory = self._memory + [0 for _ in range(len(self._memory))]
+        return self._memory[index]
 
-    def value_at(self, i: int) -> int:
-        return self._instructions[i]
+    def write_memory(self, index: int, value: int) -> None:
+        if index >= len(self._memory):
+            self._memory = self._memory + [0 for _ in range(len(self._memory))]
+        self._memory[index] = value
 
     def _get_operation_details(self) -> str:
-        return str(self._instructions[self._index]).strip('-').zfill(5)
+        return str(self.read_memory(self._instruction_index)).strip('-').zfill(5)
 
-    def _get_parameter1(self) -> int:
-        return self._instructions[self._instructions[self._index + 1]] if int(self._get_operation_details()[-3]) == 0 else self._instructions[self._index + 1]
-
-    def _get_parameter2(self) -> int:
-        return self._instructions[self._instructions[self._index + 2]] if int(self._get_operation_details()[-4]) == 0 else self._instructions[self._index + 2]
+    def _get_parameter_index(self, parameter_index: int) -> int:
+        param_mode = int(self._get_operation_details()[-2 - parameter_index])
+        match param_mode:
+            case 0:
+                return self.read_memory(self._instruction_index + parameter_index)
+            case 1:
+                return self._instruction_index + parameter_index
+            case 2:
+                return self._relative_base + self.read_memory(self._instruction_index + parameter_index)
+            case _:
+                raise Exception(f"Invalid parameter mode : {param_mode}")
 
     def _operation1(self) -> None:
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        param3 = self._get_parameter_index(3)
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {self._get_parameter1()} + {self._get_parameter2()}")
-        self._instructions[self._instructions[self._index + 3]] = self._get_parameter1() + self._get_parameter2()
-        self._index += 4
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 4)]} : address[{param3}] = {param1} + {param2}")
+        self.write_memory(param3, param1 + param2)
+        self._instruction_index += 4
 
     def _operation2(self) -> None:
+        param1 = self.read_memory(self._get_parameter_index(1))
+        param2 = self.read_memory(self._get_parameter_index(2))
+        param3 = self._get_parameter_index(3)
         if self._verbose:
-            print(f"{self._index}: {self._instructions[self._index:(self._index + 4)]} : address[{self._instructions[self._index + 3]}] = {self._get_parameter1()} * {self._get_parameter2()}")
-        self._instructions[self._instructions[self._index + 3]] = self._get_parameter1() * self._get_parameter2()
-        self._index += 4
+            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 4)]} : address[{param3}] = {param1} * {param2}")
+        self.write_memory(param3, param1 * param2)
+        self._instruction_index += 4
 
     def _operation99(self) -> None:
         self._halted = True
@@ -58,7 +75,7 @@ class IntCodeCPU(object):
             if hasattr(self, operation):
                 getattr(self, operation)()
             else:
-                raise Exception(f"Invalid opcode {self._instructions[self._index]} @ {self._index}")
+                raise Exception(f"Invalid opcode {self._memory[self._instruction_index]} @ {self._instruction_index}")
 
 
 class Day02(Solution):
@@ -68,20 +85,20 @@ class Day02(Solution):
 
     def part_one(self):
         cpu = IntCodeCPU(self._input, True)
-        cpu.set_position(1, 12)
-        cpu.set_position(2, 2)
+        cpu.write_memory(1, 12)
+        cpu.write_memory(2, 2)
         cpu.run()
-        return cpu.value_at(0)
+        return cpu.read_memory(0)
 
     def part_two(self):
         noun = verb = None
         for (n, v) in permutations(range(100), 2):
             cpu = IntCodeCPU(self._input)
-            cpu.set_position(1, n)
-            cpu.set_position(2, v)
+            cpu.write_memory(1, n)
+            cpu.write_memory(2, v)
             cpu.run()
 
-            if cpu.value_at(0) == 19690720:
+            if cpu.read_memory(0) == 19690720:
                 noun = n
                 verb = v
                 break

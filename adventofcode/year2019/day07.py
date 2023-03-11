@@ -1,13 +1,13 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.year2019.day05 import IntCodeCPUV2
+from adventofcode.year2019.day05 import IntCodeCPUModified
 from itertools import permutations
 from typing import List
 
 
 class AmplifierSystem(object):
     def __init__(self, instructions: List[int], amplifiers: int):
-        self._amplifiers = [IntCodeCPUV2(instructions) for i in range(amplifiers)]
+        self._amplifiers = [IntCodeCPUModified(instructions) for i in range(amplifiers)]
 
     def set_phase(self, index: int, phase: int):
         self._amplifiers[index].add_input(phase)
