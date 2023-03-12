@@ -162,3 +162,7 @@ class Point3D(object):
     @property
     def y(self):
         return self._y
+
+    @property
+    def z(self):
+        return self._z
