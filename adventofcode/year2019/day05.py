@@ -11,8 +11,15 @@ class IntCodeCPUModified(IntCodeCPU):
         self._inputs = deque([])
         self._output = 0
 
+    @property
+    def is_input_empty(self) -> bool:
+        return len(self._inputs) == 0
+
     def add_input(self, value: int):
         self._inputs.append(value)
+
+    def clear_input(self):
+        self._inputs.clear()
 
     def get_output(self) -> int:
         return self._output
