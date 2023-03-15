@@ -53,9 +53,9 @@ class HullPaintingRobot(object):
         return painted
 
     def show(self) -> None:
-        for y in range(self._miny, self._maxy - self._miny + 1):
+        for y in range(self._miny, self._maxy + 1):
             row = []
-            for x in range(self._minx, self._maxx - self._minx + 1):
+            for x in range(self._minx, self._maxx + 1):
                 p = Point2D(x, y)
                 paint = self._panels[p] if p in self._panels.keys() else 0
                 row.append(' ' if paint == 0 else '#')

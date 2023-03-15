@@ -80,9 +80,9 @@ class ArcadeCabinet(object):
         maxx = reduce(lambda acc, p: acc if acc > p.x else p.x, self._screen.keys(), -sys.maxsize)
         miny = reduce(lambda acc, p: acc if acc < p.y else p.y, self._screen.keys(), sys.maxsize)
         maxy = reduce(lambda acc, p: acc if acc > p.y else p.y, self._screen.keys(), -sys.maxsize)
-        for y in range(miny, maxy - miny + 1):
+        for y in range(miny, maxy + 1):
             row = []
-            for x in range(minx, maxx - minx + 1):
+            for x in range(minx, maxx + 1):
                 p = Point2D(x, y)
                 if p in self._screen.keys():
                     row.append(self._tile_map[self._screen[p]])
