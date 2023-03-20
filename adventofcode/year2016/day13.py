@@ -46,8 +46,8 @@ class Cubicles(object):
 
 
 class MazeSearchState(SearchState):
-    def __init__(self, cubicles: Cubicles, position: Point2D, target: Point2D, gain: int, cost: int, max_cost: int):
-        super().__init__(str(position), gain, cost, max_cost)
+    def __init__(self, cubicles: Cubicles, position: Point2D, target: Point2D, gain: int, cost: int):
+        super().__init__(str(position), gain, cost)
         self._cubicles = cubicles
         self._position = position
         self._target = target
@@ -61,7 +61,7 @@ class MazeSearchState(SearchState):
         return abs(self._position.x - self._target.x) + abs(self._position.y - self._target.y)
 
     def next_search_states(self) -> List[S]:
-        return [MazeSearchState(self._cubicles, p, self._target, self.gain, self.cost + 1, self.max_cost) for p in self._cubicles.open_spaces(self._position)]
+        return [MazeSearchState(self._cubicles, p, self._target, self.gain, self.cost + 1) for p in self._cubicles.open_spaces(self._position)]
 
 
 class Day13(Solution):
@@ -74,7 +74,7 @@ class Day13(Solution):
         end_point = Point2D(31, 39)
         cubicles = Cubicles(start_point, self._input)
 
-        astar = AStar(MazeSearchState(cubicles, start_point, end_point, 0, 0, 99999), MazeSearchState(cubicles, end_point, end_point, 0, 0, 99999))
+        astar = AStar(MazeSearchState(cubicles, start_point, end_point, 0, 0), MazeSearchState(cubicles, end_point, end_point, 0, 0))
         astar.verbose(True, 1000)
 
         shortest = astar.find_path()
@@ -90,7 +90,7 @@ class Day13(Solution):
         start_point = Point2D(1, 1)
         end_point = Point2D(1, 1)
         cubicles = Cubicles(start_point, self._input)
-        end_state = MazeSearchState(cubicles, end_point, end_point, 0, 0, 99999)
+        end_state = MazeSearchState(cubicles, end_point, end_point, 0, 0)
 
         unique_points = set()
         start_points = {start_point}
@@ -103,7 +103,7 @@ class Day13(Solution):
             if sp.x < 0 or sp.y < 0 or cubicles.lookup(sp) != cubicles.SPACE:
                 continue
 
-            astar = AStar(MazeSearchState(cubicles, sp, end_point, 0, 0, 99999), end_state)
+            astar = AStar(MazeSearchState(cubicles, sp, end_point, 0, 0), end_state)
             astar.verbose(True, 1000)
 
             shortest = astar.find_path()

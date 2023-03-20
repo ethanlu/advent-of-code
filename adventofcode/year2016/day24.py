@@ -29,8 +29,8 @@ class DuctMaze(object):
 
 
 class LocationSearchState(SearchState):
-    def __init__(self, maze: DuctMaze, x: int, y: int, gain: int, cost: int, max_cost: int):
-        super().__init__(f"({x},{y}):{maze.position(x, y)}", gain, cost, max_cost)
+    def __init__(self, maze: DuctMaze, x: int, y: int, gain: int, cost: int):
+        super().__init__(f"({x},{y}):{maze.position(x, y)}", gain, cost)
         self._maze = maze
         self._x = x
         self._y = y
@@ -39,20 +39,20 @@ class LocationSearchState(SearchState):
         states = []
 
         if self._maze.position(self._x + 1, self._y) != '#':
-            states.append(LocationSearchState(self._maze, self._x + 1, self._y, self.gain, self.cost + 1, self.max_cost))
+            states.append(LocationSearchState(self._maze, self._x + 1, self._y, self.gain, self.cost + 1))
         if self._maze.position(self._x - 1, self._y) != '#':
-            states.append(LocationSearchState(self._maze, self._x - 1, self._y, self.gain, self.cost + 1, self.max_cost))
+            states.append(LocationSearchState(self._maze, self._x - 1, self._y, self.gain, self.cost + 1))
         if self._maze.position(self._x, self._y + 1) != '#':
-            states.append(LocationSearchState(self._maze, self._x, self._y + 1, self.gain, self.cost + 1, self.max_cost))
+            states.append(LocationSearchState(self._maze, self._x, self._y + 1, self.gain, self.cost + 1))
         if self._maze.position(self._x, self._y - 1) != '#':
-            states.append(LocationSearchState(self._maze, self._x, self._y - 1, self.gain, self.cost + 1, self.max_cost))
+            states.append(LocationSearchState(self._maze, self._x, self._y - 1, self.gain, self.cost + 1))
 
         return states
 
 
 class EveryLocationSearchState(SearchState):
-    def __init__(self, maze: DuctMaze, shortest_lookup: Dict[str, int], remaining: List[str], current_location: str, gain: int, cost: int, max_cost: int):
-        super().__init__(f"[{gain}]:{current_location}", gain, cost, max_cost)
+    def __init__(self, maze: DuctMaze, shortest_lookup: Dict[str, int], remaining: List[str], current_location: str, gain: int, cost: int):
+        super().__init__(f"[{gain}]:{current_location}", gain, cost)
         self._maze = maze
         self._shortest_lookup = shortest_lookup
         self._remaining = remaining
@@ -67,14 +67,15 @@ class EveryLocationSearchState(SearchState):
         states = []
 
         for target_location in self._remaining:
-            states.append(EveryLocationSearchState(
+            s = EveryLocationSearchState(
                 self._maze, self._shortest_lookup,
                 [location for location in self._remaining if location != target_location],
                 target_location,
-                self.gain - self._shortest_lookup[f"{self._current_location}-{target_location}"], self.cost + 1,
-                self.max_cost if len(self._remaining) > 1 else 0
-            ))
-
+                self.gain - self._shortest_lookup[f"{self._current_location}-{target_location}"], self.cost + 1
+            )
+            if len(self._remaining) <= 1:
+                s.complete()
+            states.append(s)
         return states
 
 
@@ -92,17 +93,15 @@ class EveryLocationAndBackSearchState(EveryLocationSearchState):
                 self._maze, self._shortest_lookup,
                 [],
                 '0',
-                self.gain - self._shortest_lookup[f"{self._current_location}-0"], self.cost + 1,
-                0
-            ))
+                self.gain - self._shortest_lookup[f"{self._current_location}-0"], self.cost + 1
+            ).complete())
         else:
             for target_location in self._remaining:
                 states.append(EveryLocationAndBackSearchState(
                     self._maze, self._shortest_lookup,
                     [location for location in self._remaining if location != target_location],
                     target_location,
-                    self.gain - self._shortest_lookup[f"{self._current_location}-{target_location}"], self.cost + 1,
-                    self.max_cost
+                    self.gain - self._shortest_lookup[f"{self._current_location}-{target_location}"], self.cost + 1
                 ))
 
         return states
@@ -117,8 +116,8 @@ class Day24(Solution):
         self._shortest_lookup = {}
         for (start, end) in combinations(sorted(self._maze.locations.keys()), 2):
             astar = AStar(
-                LocationSearchState(self._maze, self._maze.locations[start][0], self._maze.locations[start][1], 0, 0, 99999),
-                LocationSearchState(self._maze, self._maze.locations[end][0], self._maze.locations[end][1], 0, 0, 99999)
+                LocationSearchState(self._maze, self._maze.locations[start][0], self._maze.locations[start][1], 0, 0),
+                LocationSearchState(self._maze, self._maze.locations[end][0], self._maze.locations[end][1], 0, 0)
             )
             shortest = astar.find_path().cost
 
@@ -129,7 +128,7 @@ class Day24(Solution):
             self._shortest_lookup[f"{end}-{start}"] = shortest
 
     def part_one(self):
-        start_state = EveryLocationSearchState(self._maze, self._shortest_lookup, [location for location in self._maze.locations.keys() if location != '0'], '0', 0, 0, 99999)
+        start_state = EveryLocationSearchState(self._maze, self._shortest_lookup, [location for location in self._maze.locations.keys() if location != '0'], '0', 0, 0)
         bfs = BFS(SearchPath(start_state))
         bfs.verbose(True, 1000)
 
@@ -139,7 +138,7 @@ class Day24(Solution):
         return -shortest.gain
 
     def part_two(self):
-        start_state = EveryLocationAndBackSearchState(self._maze, self._shortest_lookup, [location for location in self._maze.locations.keys() if location != '0'], '0', 0, 0, 99999)
+        start_state = EveryLocationAndBackSearchState(self._maze, self._shortest_lookup, [location for location in self._maze.locations.keys() if location != '0'], '0', 0, 0)
         bfs = BFS(SearchPath(start_state))
         bfs.verbose(True, 1000)
 

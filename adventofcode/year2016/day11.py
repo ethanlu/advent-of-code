@@ -98,11 +98,11 @@ class Floor(object):
 
 
 class StepSearchState(SearchState):
-    def __init__(self, isotopes: Isotopes, floors: List[Floor], current_floor: int, gain: int, cost: int, max_cost: int):
+    def __init__(self, isotopes: Isotopes, floors: List[Floor], current_floor: int, gain: int, cost: int):
         self._isotopes = isotopes
         self._floors: List[Floor] = floors
         self._current_floor: int = current_floor
-        super().__init__(self._hash(), gain, cost, max_cost)
+        super().__init__(self._hash(), gain, cost)
 
     @property
     def floors(self):
@@ -167,7 +167,7 @@ class StepSearchState(SearchState):
                 floors[next_floor].add_rtg(rtg)
                 floors[self._current_floor].remove_rtg(rtg)
 
-            next_states.append(StepSearchState(self._isotopes, floors, next_floor, self.gain, self.cost + 1, self.max_cost))
+            next_states.append(StepSearchState(self._isotopes, floors, next_floor, self.gain, self.cost + 1))
 
         return next_states
 
@@ -201,8 +201,8 @@ class Day11(Solution):
         isotopes = self._build_isotope()
         start_floors, end_floors = self._build_floors(isotopes)
 
-        start_state = StepSearchState(isotopes, start_floors, 0, 0, 0, 99999)
-        end_state = StepSearchState(isotopes, end_floors, 3, 0, 0, 99999)
+        start_state = StepSearchState(isotopes, start_floors, 0, 0, 0)
+        end_state = StepSearchState(isotopes, end_floors, 3, 0, 0)
 
         astar = AStar(start_state, end_state)
         astar.verbose(True, 5000)
@@ -220,8 +220,8 @@ class Day11(Solution):
         start_floors[0].add_chip('dilithium')
         start_floors[0].add_rtg('dilithium')
 
-        start_state = StepSearchState(isotopes, start_floors, 0, 0, 0, 99999)
-        end_state = StepSearchState(isotopes, end_floors, 3, 0, 0, 99999)
+        start_state = StepSearchState(isotopes, start_floors, 0, 0, 0)
+        end_state = StepSearchState(isotopes, end_floors, 3, 0, 0)
 
         astar = AStar(start_state, end_state)
         astar.verbose(True, 100000)

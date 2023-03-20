@@ -89,8 +89,8 @@ class DataCluster(object):
 
 
 class DataSearchState(SearchState):
-    def __init__(self, data_cluster: DataCluster, x: int, y: int, gain: int, cost: int, max_cost: int):
-        super().__init__(f"{x},{y}", gain, cost, max_cost)
+    def __init__(self, data_cluster: DataCluster, x: int, y: int, gain: int, cost: int):
+        super().__init__(f"{x},{y}", gain, cost)
         self._data_cluster = data_cluster
         self._x = x
         self._y = y
@@ -107,13 +107,13 @@ class DataSearchState(SearchState):
         states = []
 
         if self._data_cluster.node_at(self._x, self._y - 1) is not None and self._data_cluster.node_at(self._x, self._y - 1).use_percent < 90:
-            states.append(DataSearchState(self._data_cluster, self._x, self._y - 1, self.gain, self.cost + 1, self.max_cost))
+            states.append(DataSearchState(self._data_cluster, self._x, self._y - 1, self.gain, self.cost + 1))
         if self._data_cluster.node_at(self._x, self._y + 1) is not None and self._data_cluster.node_at(self._x, self._y + 1).use_percent < 90:
-            states.append(DataSearchState(self._data_cluster, self._x, self._y + 1, self.gain, self.cost + 1, self.max_cost))
+            states.append(DataSearchState(self._data_cluster, self._x, self._y + 1, self.gain, self.cost + 1))
         if self._data_cluster.node_at(self._x - 1, self._y) is not None and self._data_cluster.node_at(self._x - 1, self._y).use_percent < 90:
-            states.append(DataSearchState(self._data_cluster, self._x - 1, self._y, self.gain, self.cost + 1, self.max_cost))
+            states.append(DataSearchState(self._data_cluster, self._x - 1, self._y, self.gain, self.cost + 1))
         if self._data_cluster.node_at(self._x + 1, self._y) is not None and self._data_cluster.node_at(self._x + 1, self._y).use_percent < 90:
-            states.append(DataSearchState(self._data_cluster, self._x + 1, self._y, self.gain, self.cost + 1, self.max_cost))
+            states.append(DataSearchState(self._data_cluster, self._x + 1, self._y, self.gain, self.cost + 1))
 
         return states
 
@@ -137,8 +137,8 @@ class Day22(Solution):
     def part_two(self):
         dc = DataCluster(self._nodes)
         empty_node = dc.empty_node
-        start = DataSearchState(dc, empty_node.x, empty_node.y, 0, 0, 99999)
-        end = DataSearchState(dc, dc.max_x - 1, 0, 0, 0, 99999)
+        start = DataSearchState(dc, empty_node.x, empty_node.y, 0, 0)
+        end = DataSearchState(dc, dc.max_x - 1, 0, 0, 0)
         astar = AStar(start, end)
         astar.verbose(True, 1000)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.graph.search import AStar, P, S, SearchState
+from adventofcode.common.graph.search import AStar, S, SearchState
 from adventofcode.common.grid import Point2D
 from adventofcode.year2019.day09 import IntCodeCPUComplete
 from collections import deque
@@ -14,8 +14,8 @@ directions = [(1, Point2D(0, -1)), (2, Point2D(0, 1)), (3, Point2D(-1, 0)), (4, 
 
 
 class OxygenSearchState(SearchState):
-    def __init__(self, map: Dict[Point2D, str], position: Point2D, gain: int, cost: int, max_cost: int):
-        super().__init__(f"{position}", gain, cost, max_cost)
+    def __init__(self, map: Dict[Point2D, str], position: Point2D, gain: int, cost: int):
+        super().__init__(f"{position}", gain, cost)
         self._map = map
         self._position = position
 
@@ -25,7 +25,7 @@ class OxygenSearchState(SearchState):
         for _, delta in directions:
             p = self._position + delta
             if p in self._map and self._map[p] in ('.', 'X', 'S'):
-                states.append(OxygenSearchState(self._map, p, self.gain + 1, self.cost + 1, self.max_cost))
+                states.append(OxygenSearchState(self._map, p, self.gain + 1, self.cost + 1))
 
         return states
 
@@ -117,7 +117,7 @@ class Day15(Solution):
         self._robot.crawl()
         self._robot.show()
 
-        astar = AStar(OxygenSearchState(self._robot.map, Point2D(0, 0), 0, 0, sys.maxsize), OxygenSearchState(self._robot.map, self._robot.oxygen, 0, 0, sys.maxsize))
+        astar = AStar(OxygenSearchState(self._robot.map, Point2D(0, 0), 0, 0), OxygenSearchState(self._robot.map, self._robot.oxygen, 0, 0))
         path = astar.find_path()
         print(path)
         return path.depth - 1

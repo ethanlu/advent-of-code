@@ -8,11 +8,11 @@ from typing import List, TypeVar
 
 
 class SearchState(ABC):
-    def __init__(self, fingerprint: str, gain: int, cost: int, max_cost: int):
+    def __init__(self, fingerprint: str, gain: int, cost: int):
         self._fingerprint = fingerprint
         self._gain = gain
         self._cost = cost
-        self._max_cost = max_cost
+        self._completed = False
 
     def __eq__(self, other):
         return self.fingerprint == other.fingerprint if issubclass(type(other), SearchState) else False
@@ -55,16 +55,20 @@ class SearchState(ABC):
         return self._cost
 
     @property
-    def max_cost(self) -> int:
-        return self._max_cost
-
-    @property
     def potential_gain(self) -> int:
         return 0
+
+    @property
+    def completed(self) -> bool:
+        return self._completed
 
     @abstractmethod
     def next_search_states(self) -> List[S]:
         raise Exception("implement in subclass")
+
+    def complete(self) -> S:
+        self._completed = True
+        return self
 
 
 S = TypeVar('S', bound=SearchState)
@@ -117,8 +121,8 @@ class SearchPath(object):
         return self._search_states[-1].cost
 
     @property
-    def max_cost(self) -> int:
-        return self._search_states[-1].max_cost
+    def completed(self) -> bool:
+        return self._search_states[-1].completed
 
     @property
     def potential_gain(self) -> int:
@@ -212,9 +216,9 @@ class BFS(DebugMixin):
         while not candidates.empty():
             candidate: SearchPath = candidates.get()
 
-            # candidate reached max cost limit, check if it is now the current best before continuing search
-            if candidate.cost >= candidate.max_cost:
-                if best is None or candidate.gain > best.gain:
+            # candidate completed its search, check if it is now the current best before continuing search
+            if candidate.completed:
+                if (best is None) or (candidate.gain > best.gain) or (candidate.gain == best.gain and candidate.cost < best.cost):
                     best = candidate
                 continue
 
