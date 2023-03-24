@@ -4,7 +4,7 @@ from collections import deque
 from copy import copy
 from functools import reduce, total_ordering
 from queue import PriorityQueue
-from typing import List, TypeVar
+from typing import Dict, List, Tuple, TypeVar
 
 
 class SearchState(ABC):
@@ -233,5 +233,52 @@ class BFS(DebugMixin):
             i += 1
             if self._verbose and i % self._lap == 0:
                 print(f"{i} : ~{candidates.qsize()} : {trimmed} : " + (f"{best.gain}" + best.last.fingerprint if best is not None else '?'))
+
+        return best
+
+
+class DFS(DebugMixin):
+    def __init__(self, start_path: P):
+        super().__init__()
+        self._start_path = start_path
+        self._cached = {}
+
+    def find_path(self) -> P:
+        best = None
+
+        candidates = deque();
+        candidates.append(self._start_path)
+
+        visited: Dict[S, Tuple[int, int]] = {}
+
+        i = 1
+        trimmed = 0
+        while len(candidates) > 0:
+            candidate: SearchPath = candidates.pop()
+
+            # candidate completed its search, check if it is now the current best before continuing search
+            if candidate.completed:
+                if (best is None) or (candidate.gain > best.gain) or (candidate.gain == best.gain and candidate.cost < best.cost):
+                    best = candidate
+                continue
+
+            # continue search by getting current search state's next states and add to priority queue
+            for next_search_state in candidate.last.next_search_states():
+                if best is not None and next_search_state.gain < best.gain and (next_search_state.potential_gain + next_search_state.gain) < best.gain:
+                    trimmed += 1
+                    continue
+
+                if next_search_state in visited and\
+                        (next_search_state.gain < visited[next_search_state][0] or
+                         (next_search_state.gain == visited[next_search_state][0] and next_search_state.cost >= visited[next_search_state][1])):
+                    trimmed += 1
+                    continue
+
+                visited[next_search_state] = (next_search_state.gain, next_search_state.cost)
+                candidates.append(copy(candidate).add(next_search_state))
+
+            i += 1
+            if self._verbose and i % self._lap == 0:
+                print(f"{i} : ~{len(candidates)} : {trimmed} : " + (f"{best.gain}" + best.last.fingerprint if best is not None else '?'))
 
         return best
