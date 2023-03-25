@@ -1,4 +1,5 @@
 from __future__ import annotations
+from adventofcode.common.grid import Point2D
 from functools import total_ordering
 from typing import Union
 
@@ -64,3 +65,56 @@ class Interval(object):
             return Interval(min(self.left, other.left), max(self.right, other.right))
         else:
             raise Exception(f"Intervals do not overlap for Interval::intersect : {self} and {other}")
+
+
+class Box2D(object):
+    def __init__(self, top_left: Point2D, bottom_right: Point2D):
+        self._top_left = top_left
+        self._bottom_right = bottom_right
+        self._top_right = Point2D(self._bottom_right.x, self._top_left.y)
+        self._bottom_left = Point2D(self._top_left.x, self._bottom_right.y)
+
+        self._width = abs(self._top_right.x - self._bottom_left.x)
+        self._height = abs(self._top_left.y - self._bottom_right.y)
+
+        self._x_interval = Interval(min(self._top_left.x, self._bottom_right.x), max(self._top_left.x, self._bottom_right.x))
+        self._y_interval = Interval(min(self._top_left.y, self._bottom_right.y), max(self._top_left.y, self._bottom_right.y))
+
+    def __hash__(self):
+        return self._top_left.x * self._top_left.y * 13 + self._bottom_right.x * self._bottom_right.y * 37
+
+    @property
+    def top_left(self) -> Point2D:
+        return self._top_left
+
+    @property
+    def bottom_right(self) -> Point2D:
+        return self._bottom_right
+
+    @property
+    def bottom_left(self) -> Point2D:
+        return self._bottom_left
+
+    @property
+    def top_right(self) -> Point2D:
+        return self._top_right
+
+    @property
+    def width(self) -> int:
+        return self._width
+
+    @property
+    def height(self) -> int:
+        return self._height
+
+    def overlap(self, other: Box2D) -> bool:
+        return self._x_interval.overlaps(other._x_interval) and self._y_interval.overlaps(other._y_interval)
+
+    def contains(self, other: Union[Box2D, Point2D]):
+        match other:
+            case Box2D():
+                return self.contains(other.top_left) and self.contains(other.top_right) and self.contains(other.bottom_right) and self.contains(other.bottom_left)
+            case Point2D():
+                return self._x_interval.contains(other.x) and self._y_interval.contains(other.y)
+            case _:
+                raise Exception(f"Unsupported type for Box2D::contains : {type(other)}")
