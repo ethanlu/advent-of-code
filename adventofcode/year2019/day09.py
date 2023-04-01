@@ -27,7 +27,7 @@ class Day09(Solution):
         outputs = []
         while not cpu.halted:
             cpu.run()
-            if not cpu.halted:
+            if cpu.has_output:
                 outputs.append(cpu.get_output())
         print(outputs)
         return outputs[-1]
@@ -38,7 +38,7 @@ class Day09(Solution):
         outputs = []
         while not cpu.halted:
             cpu.run()
-            if not cpu.halted:
+            if cpu.has_output:
                 outputs.append(cpu.get_output())
         print(outputs)
         return outputs[-1]

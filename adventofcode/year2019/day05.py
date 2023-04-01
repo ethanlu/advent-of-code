@@ -17,27 +17,33 @@ class IntCodeCPUModified(IntCodeCPU):
 
     def add_input(self, value: int):
         self._inputs.append(value)
+        self._need_input = False
 
     def clear_input(self):
         self._inputs.clear()
+        self._need_input = True
 
     def get_output(self) -> int:
+        self._has_output = False
         return self._output
 
     def _operation3(self):
         param1 = self._get_parameter_index(1)
-        value = self._inputs.popleft()
-        if self._verbose:
-            print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 2)]} : address[{param1}] = {value}")
-        self.write_memory(param1, value)
-        self._instruction_index += 2
+        if len(self._inputs) > 0:
+            value = self._inputs.popleft()
+            if self._verbose:
+                print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 2)]} : address[{param1}] = {value}")
+            self.write_memory(param1, value)
+            self._instruction_index += 2
+        else:
+            self._need_input = True
 
     def _operation4(self):
         param1 = self.read_memory(self._get_parameter_index(1))
         if self._verbose:
             print(f"{self._instruction_index}: {self._memory[self._instruction_index:(self._instruction_index + 2)]} : output address[{param1}]")
         self._output = param1
-        self._paused = True
+        self._has_output = True
         self._instruction_index += 2
 
     def _operation5(self):
@@ -88,7 +94,7 @@ class Day05(Solution):
         outputs = []
         while not cpu.halted:
             cpu.run()
-            if not cpu.halted:
+            if cpu.has_output:
                 outputs.append(cpu.get_output())
         print(outputs)
         return outputs[-1]
@@ -99,7 +105,7 @@ class Day05(Solution):
         outputs = []
         while not cpu.halted:
             cpu.run()
-            if not cpu.halted:
+            if cpu.has_output:
                 outputs.append(cpu.get_output())
         print(outputs)
         return outputs[-1]

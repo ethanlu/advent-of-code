@@ -9,13 +9,19 @@ class IntCodeCPU(object):
         self._memory = [i for i in instructions]
         self._relative_base = 0
         self._instruction_index = 0
-        self._paused = False
+        self._need_input = False
+        self._has_output = False
+
         self._halted = False
         self._verbose = verbose
 
     @property
-    def paused(self) -> bool:
-        return self._paused
+    def need_input(self) -> bool:
+        return self._need_input
+
+    @property
+    def has_output(self) -> bool:
+        return self._has_output
 
     @property
     def halted(self) -> bool:
@@ -68,8 +74,7 @@ class IntCodeCPU(object):
         self._halted = True
 
     def run(self) -> None:
-        self._paused = False
-        while not self._paused and not self._halted:
+        while not self._halted and not self._need_input and not self._has_output:
             opcode = int(self._get_operation_details()[-2:])
             operation = f"_operation{opcode}"
             if hasattr(self, operation):

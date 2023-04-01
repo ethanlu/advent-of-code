@@ -12,18 +12,14 @@ class AmplifierSystem(object):
     def set_phase(self, index: int, phase: int):
         self._amplifiers[index].add_input(phase)
 
-    def run(self, feedback: bool) -> int:
+    def run(self) -> int:
         thruster_input = 0
         amplifier_input = 0
         finished = False
         while not finished:
             for i, amplifier in enumerate(self._amplifiers):
                 amplifier.add_input(amplifier_input)
-                if not feedback:
-                    while not amplifier.halted:
-                        amplifier.run()
-                else:
-                    amplifier.run()
+                amplifier.run()
                 amplifier_input = amplifier.get_output()
 
             thruster_input = amplifier_input
@@ -43,7 +39,7 @@ class Day07(Solution):
             ampsys = AmplifierSystem(self._input, 5)
             for i, phase in enumerate(permutation):
                 ampsys.set_phase(i, phase)
-            output = ampsys.run(False)
+            output = ampsys.run()
 
             print(f"phase configuration : {permutation} --> {output}")
             if output > best:
@@ -57,7 +53,7 @@ class Day07(Solution):
             ampsys = AmplifierSystem(self._input, 5)
             for i, phase in enumerate(permutation):
                 ampsys.set_phase(i, phase)
-            output = ampsys.run(True)
+            output = ampsys.run()
 
             print(f"phase configuration : {permutation} --> {output}")
             if output > best:
