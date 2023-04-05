@@ -19,13 +19,13 @@ example
 ```
 
 ### Available Solutions
-| Year |       Python        |         C#         |
-|:----:|:-------------------:|:------------------:|
-| 2022 |                     | :white_check_mark: |
-| 2021 |                     |                    |
-| 2020 |                     |                    |
-| 2019 |                     |                    |
-| 2018 |                     | :white_check_mark: |
-| 2017 |                     | :white_check_mark: |
-| 2016 | :white_check_mark:  |                    |
-| 2015 | :white_check_mark:  |                    |
+| Year |       Python       |         C#         |
+|:----:|:------------------:|:------------------:|
+| 2022 |                    | :white_check_mark: |
+| 2021 |                    |                    |
+| 2020 |                    |                    |
+| 2019 | :white_check_mark: |                    |
+| 2018 |                    | :white_check_mark: |
+| 2017 |                    | :white_check_mark: |
+| 2016 | :white_check_mark: |                    |
+| 2015 | :white_check_mark: |                    |
