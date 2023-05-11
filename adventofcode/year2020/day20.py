@@ -58,47 +58,57 @@ class ImageArray(object):
     def __init__(self, tiles: Dict[int, ImageTile]):
         self._tiles = tiles
         self._size = len(tiles)
-        self._arrangement = [[None for x in range(self._size)] for y in range(self._size)]
+        self._corners: List[ImageTile] = []
+        self._side_orientation_signatures: Dict[id, Dict[str, Set[str]]] = {}
+
+    @property
+    def corners(self) -> List[ImageTile]:
+        return self._corners
 
     def _get_side_orientations(self, side: str, tile: ImageTile) -> Set[str]:
-        sides = set([])
+        if tile.id in self._side_orientation_signatures and side in self._side_orientation_signatures[tile.id]:
+            return self._side_orientation_signatures[tile.id][side]
+
+        if tile.id not in self._side_orientation_signatures:
+            self._side_orientation_signatures[tile.id] = {}
+        if side not in self._side_orientation_signatures[tile.id]:
+            self._side_orientation_signatures[tile.id][side] = set([])
 
         # get the side from all 4 rotations
         for _ in range(4):
-            sides.add(getattr(tile, side))
+            self._side_orientation_signatures[tile.id][side].add(getattr(tile, side))
             tile.rotate_right()
 
         # get the side from all 4 rotations after flipping on x
         tile.flip_x()
         for _ in range(4):
-            sides.add(getattr(tile, side))
+            self._side_orientation_signatures[tile.id][side].add(getattr(tile, side))
             tile.rotate_left()
 
         # get the side from all 4 rotations after flipping on y
         tile.flip_x()
         tile.flip_y()
         for _ in range(4):
-            sides.add(getattr(tile, side))
+            self._side_orientation_signatures[tile.id][side].add(getattr(tile, side))
             tile.rotate_right()
 
-        return sides
+        return self._side_orientation_signatures[tile.id][side]
 
-    def corners(self) -> List[ImageTile]:
+    def solve(self) -> None:
         corners = []
         # each corner has 2 unique sides that must match and the other 2 sides should not match at all
         candidates = set(self._tiles.keys()).difference(set((c.id for c in corners)))
         for candidate in candidates:
             neighbor_matches = set([])
-            for corner_side, neighbor_side in (('top', 'bottom'), ('right', 'left'), ('bottom', 'top'), ('left', 'right')):
-                candidate_sides = self._get_side_orientations(corner_side, self._tiles[candidate])
+            for candidate_side, neighbor_side in (('top', 'bottom'), ('right', 'left'), ('bottom', 'top'), ('left', 'right')):
+                candidate_sides = self._get_side_orientations(candidate_side, self._tiles[candidate])
                 for neighbor in (neighbor for neighbor in candidates if neighbor != candidate):
                     neighbor_sides = self._get_side_orientations(neighbor_side, self._tiles[neighbor])
                     if len(candidate_sides.intersection(neighbor_sides)) != 0:
                         neighbor_matches.add(neighbor)
 
             if len(neighbor_matches) == 2:
-                corners.append(self._tiles[candidate])
-        return corners
+                self._corners.append(self._tiles[candidate])
 
 
 class Day20(Solution):
@@ -123,10 +133,10 @@ class Day20(Solution):
 
     def part_one(self):
         ia = ImageArray(self._tiles)
-        corners = ia.corners()
+        ia.solve()
 
         total = 1
-        for corner in corners:
+        for corner in ia.corners:
             print(f"tile {corner.id} is a corner")
             total *= corner.id
 
