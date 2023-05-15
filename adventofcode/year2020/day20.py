@@ -1,5 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
+from adventofcode.common.grid import Point2D
 from collections import deque
 from typing import Dict, List, Optional, Set, Union
 
@@ -7,9 +8,9 @@ import math
 
 
 class ImageTile(object):
-    def __init__(self, id: int, data: List[str]):
+    def __init__(self, id: int, data: List[List[str]]):
         self._id = id
-        self._data = [[c for c in data[y]] for y in range(len(data))]
+        self._data = data.copy()
         self._size = len(data)
 
     @property
@@ -19,6 +20,10 @@ class ImageTile(object):
     @property
     def size(self) -> int:
         return self._size
+
+    @property
+    def data(self) -> List[List[str]]:
+        return self._data
 
     @property
     def top(self) -> str:
@@ -36,15 +41,15 @@ class ImageTile(object):
     def right(self) -> str:
         return "".join((self._data[y][self._size - 1] for y in range(self._size)))
 
-    def flip(self) -> List[str]:
-        return ["".join(reversed(row)) for row in self._data]
+    def flip(self) -> List[List[str]]:
+        return [list(reversed(row)) for row in self._data]
 
-    def rotate(self) -> List[str]:
+    def rotate(self) -> List[List[str]]:
         data = [["?" for x in range(self._size)] for y in range(self._size)]
         for y in range(self._size):
             for x in range(self._size):
                 data[y][x] = self._data[self._size - 1 - x][y]
-        return ["".join(row) for row in data]
+        return [row for row in data]
 
     def row(self, row: int) -> List[str]:
         return self._data[row]
@@ -267,6 +272,58 @@ class ImageArray(object):
                 print(" ".join(line_output))
             print()
 
+    def combine(self) -> ImageTile:
+        combined_size = self._size * (self._tile_size - 2)
+        combined_data = [["?" for x in range(combined_size)] for y in range(combined_size)]
+        for row, tiles in enumerate(self._image):
+            for col, tile in enumerate(tiles):
+                for y in range(1, self._tile_size - 1):
+                    combined_y = (y - 1) + (row * (self._tile_size - 2))
+                    for x in range(1, self._tile_size - 1):
+                        combined_x = (x - 1) + (col * (self._tile_size - 2))
+                        combined_data[combined_y][combined_x] = tile.data[y][x]
+        return ImageTile(0, combined_data)
+
+
+class ImageSearch(object):
+    def __init__(self, pattern: ImageTile):
+        self._pattern = pattern
+        self._points_of_interest = []
+        self._maxx = 0
+        self._maxy = 0
+
+        for y, row in enumerate(pattern.data):
+            for x, c in enumerate(row):
+                if c == '#':
+                    self._points_of_interest.append(Point2D(x, y))
+                    self._maxx = x if x > self._maxx else self._maxx
+                    self._maxy = y if y > self._maxy else self._maxy
+
+    def search(self, subject: ImageTile) -> Optional[ImageTile]:
+        found_offsets = []
+        for y in range(len(subject.data)):
+            if 0 <= (y + self._maxy) < len(subject.data):
+                for x in range(len(subject.data)):
+                    if 0 <= (x + self._maxx) < len(subject.data):
+                        for p in self._points_of_interest:
+                            if subject.data[y + p.y][x + p.x] != '#':
+                                # one of the points of interest was not #...so pattern does not match
+                                break
+                        else:
+                            # all points of interests were found at this offset...record it
+                            found_offsets.append(Point2D(x, y))
+
+        if found_offsets:
+            # pattern(s) found in this image, mark the pattern with O
+            data = subject.data.copy()
+            for offset in found_offsets:
+                for p in self._points_of_interest:
+                    data[offset.y + p.y][offset.x + p.x] = "O"
+            return ImageTile(0, data)
+        else:
+            # pattern not found in this image
+            return None
+
 
 class Day20(Solution):
     def __init__(self, year: str, day: str):
@@ -285,7 +342,7 @@ class Day20(Solution):
             if line.startswith("Tile"):
                 id = int(line.replace("Tile ", "").replace(":", "").strip())
             else:
-                data.append(line)
+                data.append(list(line))
         self._tiles[id] = ImageTile(id, data)
 
     def part_one(self):
@@ -303,4 +360,50 @@ class Day20(Solution):
         return total
 
     def part_two(self):
-        return "ᕕ( ᐛ )ᕗ"
+        ia = ImageArray(self._tiles)
+        ia.solve()
+
+        subject = ia.combine()
+        print(f"\nimage tiles combined into:")
+        subject.show()
+
+        ims = ImageSearch(ImageTile(
+            1,
+            [
+                list("                  # "),
+                list("#    ##    ##    ###"),
+                list(" #  #  #  #  #  #   ")
+            ]
+        ))
+
+        rough_waters = 0
+        for _ in range(4):
+            found = ims.search(subject)
+
+            if found:
+                print(f"\nsea monster found in image rotated as:")
+                found.show()
+                for row in found.data:
+                    for c in row:
+                        rough_waters += 1 if c == '#' else 0
+                break
+
+            subject = ImageTile(subject.id, subject.rotate())
+        else:
+            subject = ImageTile(subject.id, subject.flip())
+            for _ in range(4):
+                found = ims.search(subject)
+
+                if found:
+                    print(f"\nsea monster found in image flipped and rotated as:")
+                    found.show()
+                    for row in found.data:
+                        for c in row:
+                            rough_waters += 1 if c == '#' else 0
+                    break
+
+                subject = ImageTile(subject.id, subject.rotate())
+            else:
+                raise Exception("pattern not found")
+
+        return rough_waters
