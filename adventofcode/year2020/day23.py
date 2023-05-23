@@ -1,41 +1,55 @@
 from __future__ import annotations
 from adventofcode.common import Solution
+from adventofcode.common.graph import LinkedListNode, LLN
 from collections import deque
-from typing import List
+from typing import Dict, List
+
+import sys
 
 
 class CrabCup(object):
     def __init__(self, cups: List[int]):
-        self._cups = deque(cups)
-        self._min = min(cups)
-        self._max = max(cups)
+        self._cups: Dict[str, LinkedListNode] = {}
+        self._current = None
+        self._min = sys.maxsize
+        self._max = 0
 
-    @property
-    def cups(self) -> List[int]:
-        return list(self._cups)
+        current = None
+        for c in cups:
+            cup = LinkedListNode(str(c))
+            self._cups[cup.id] = cup
 
-    def index(self, c: int) -> int:
-        return self._cups.index(c)
+            if current:
+                current.next = cup
+            current = cup
+            self._min = c if c < self._min else self._min
+            self._max = c if c > self._max else self._max
+        self._current = self._cups[str(cups[0])]
+        current.next = self._current
+
+    def cup(self, c: int) -> LinkedListNode:
+        return self._cups[str(c)]
 
     def move(self) -> None:
-        current = self._cups.popleft()
-        pickups = (self._cups.popleft(), self._cups.popleft(), self._cups.popleft())
-        self._cups.appendleft(current)
+        # pickup next 3 from current
+        pickups = (int(self._current.next.id), int(self._current.next.next.id), int(self._current.next.next.next.id))
 
-        destination = current - 1 if current > self._min else self._max
+        # determine next valid destination
+        destination = int(self._current.id) - 1 if int(self._current.id) > self._min else self._max
         while destination in pickups:
             destination -= 1
             if destination < self._min:
                 destination = self._max
 
-        destination_index = self._cups.index(destination)
-        for i, n in enumerate(pickups):
-            self._cups.insert(destination_index + 1 + i, n)
+        # remove pickups from the list
+        self._current.next = self._cups[str(pickups[2])].next
 
-        self._cups.rotate(-1)
+        # insert pickups in new position after destination
+        self._cups[str(pickups[2])].next = self._cups[str(destination)].next
+        self._cups[str(destination)].next = self._cups[str(pickups[0])]
 
-    def show(self) -> None:
-        print(list(self._cups))
+        # move current
+        self._current = self._current.next
 
 
 class Day23(Solution):
@@ -49,13 +63,20 @@ class Day23(Solution):
         for _ in range(100):
             cc.move()
 
-        cups = deque(cc.cups)
-        cup = cups.popleft()
-        while cup != 1:
-            cups.append(cup)
-            cup = cups.popleft()
+        cups = []
+        cup = cc.cup(1).next
+        while cup.id != "1":
+            cups.append(cup.id)
+            cup = cup.next
 
-        return "".join((str(c) for c in cups))
+        return "".join(cups)
 
     def part_two(self):
-        return "ᕕ( ᐛ )ᕗ"
+        cc = CrabCup(self._input + list(range(10, 1000001)))
+
+        for _ in range(10000000):
+            cc.move()
+
+        cup = cc.cup(1)
+
+        return int(cup.next.id) * int(cup.next.next.id)
