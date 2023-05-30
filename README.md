@@ -23,7 +23,7 @@ example
 |:----:|:------------------:|:------------------:|
 | 2022 |                    | :white_check_mark: |
 | 2021 |                    |                    |
-| 2020 |                    |                    |
+| 2020 | :white_check_mark: |                    |
 | 2019 | :white_check_mark: |                    |
 | 2018 |                    | :white_check_mark: |
 | 2017 |                    | :white_check_mark: |
