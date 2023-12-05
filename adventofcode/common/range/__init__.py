@@ -62,7 +62,7 @@ class Interval(object):
 
     def intersect(self, other: Interval) -> Interval:
         if self.overlaps(other):
-            return Interval(min(self.left, other.left), max(self.right, other.right))
+            return Interval(max(self.left, other.left), min(self.right, other.right))
         else:
             raise Exception(f"Intervals do not overlap for Interval::intersect : {self} and {other}")
 
