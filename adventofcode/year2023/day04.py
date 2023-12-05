@@ -42,9 +42,9 @@ class Day04(Solution):
 
     def part_two(self):
         copies = [1] * len(self._cards)
-        for i, c in enumerate(self._cards):
+        for c in self._cards:
             for j in range(len(c.winners)):
-                copies[i + j + 1] += 1 * copies[i]
+                copies[c.card + j] += copies[c.card - 1]
 
         print(f"copies : {copies}")
         return sum(copies)
