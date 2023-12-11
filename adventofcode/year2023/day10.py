@@ -2,6 +2,7 @@ from __future__ import annotations
 from adventofcode.common import Solution
 from adventofcode.common.grid import Point2D
 from adventofcode.common.util import show_dict_grid
+from random import choice
 from typing import Dict, List, Optional, Set, Tuple
 
 
@@ -141,15 +142,8 @@ class Day10(Solution):
                     grid[(p.x, p.y)] = self._pm.cell(p)
                     continue
                 else:               # cell in pipe maze is not part of pipe path...determine if it is inside or outside
-                    has_zero_crossing = False
-                    has_odd_crossing = False
-                    for d in directions.keys():
-                        cross_count = self._pm.crossed(p, d)
-                        if cross_count == 0:
-                            has_zero_crossing = True
-                        if cross_count % 2 == 1:
-                            has_odd_crossing = True
-                    if not has_zero_crossing and has_odd_crossing:
+                    cross_count = self._pm.crossed(p, choice(list(directions.keys())))
+                    if (cross_count % 2) == 1:
                         grid[(p.x, p.y)] = 'I'
                         inside += 1
                     else:
