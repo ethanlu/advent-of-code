@@ -246,7 +246,7 @@ class DFS(DebugMixin):
     def find_path(self) -> P:
         best = None
 
-        candidates = deque();
+        candidates = deque()
         candidates.append(self._start_path)
 
         visited: Dict[S, Tuple[int, int]] = {}
