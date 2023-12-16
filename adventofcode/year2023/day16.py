@@ -29,18 +29,18 @@ class LightContraption(object):
         show_dict_grid({(p.x, p.y): '#' if p in energized else c for p, c in self._grid.items()}, self._maxx, self._maxy)
 
     def energize(self, light: Tuple[Point2D, str]) -> Set[Point2D]:
-        energized = set()
-        visited = set()
+        visited = {}
         remaining = deque([light])
         while len(remaining):
             light_position, light_direction = remaining.pop()
             if light_position in self._grid:
-                energized.add(light_position)
-                if (light_position, light_direction) not in visited:
-                    visited.add((light_position, light_direction))
+                if light_position not in visited:
+                    visited[light_position] = set()
+                if light_direction not in visited[light_position]:
+                    visited[light_position].add(light_direction)
                     for next_light_direction in light_ingress_egress[self._grid[light_position]][light_direction]:
                         remaining.append((light_position + directions[next_light_direction], next_light_direction))
-        return energized
+        return set(visited.keys())
 
 
 class Day16(Solution):
