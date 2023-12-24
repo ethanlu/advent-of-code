@@ -147,23 +147,20 @@ class Day23(Solution):
         return best.gain
 
     def part_two(self):
-        def LongestHikeDFS(p: Point2D, visited: Set[Point2D]) -> Tuple[int, List[Point2D]]:
-            if p == self._end:
-                return 0, []
-            longest = 0
-            longest_path = []
-            for neighbor, (steps, _) in ht.neighbors(p).items():
-                if neighbor not in visited:
-                    l, path = LongestHikeDFS(neighbor, visited | {neighbor})
-                    l += steps
-                    if l > longest:
-                        longest = l
-                        longest_path = [neighbor] + path
-            return longest, longest_path
         ht = HikeTrail(self._grid, self._maxp, self._walkable, self._start, self._end, True)
-        ls, lp = LongestHikeDFS(self._start, {self._start})
-        lp = [self._start] + lp
+        best_length = 0
+        best_path = []
+        remaining = deque([(self._start, {self._start}, [self._start], 0)])
+        while len(remaining) > 0:
+            p, visited, path, length = remaining.pop()
+            if p == self._end:
+                if best_length < length:
+                    best_length = length
+                    best_path = path
+            for neighbor, (steps, subpath) in ht.neighbors(p).items():
+                if neighbor not in visited:
+                    remaining.append((neighbor, visited | {neighbor}, path + [neighbor], length + steps))
 
-        ht.show(lp)
-        print(f"best path: {[str(p) for p in lp]}")
-        return ls
+        ht.show(best_path)
+        print(f"best path: {[str(p) for p in best_path]}")
+        return best_length
