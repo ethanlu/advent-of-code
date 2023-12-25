@@ -6,12 +6,14 @@ from typing import Union
 
 @total_ordering
 class Interval(object):
-    def __init__(self, left: int, right: int):
+    def __init__(self, left: Union[int, float], right: Union[int, float]):
+        if type(left) != type(right):
+            raise Exception(f"Interval range must be same type. {left} and {right} are incompatible")
         self._left = left
         self._right = right
 
     def __hash__(self):
-        return self.left * 13 + self.right * 37
+        return int(self.left * 13 + self.right * 37)
 
     def __str__(self):
         return f"({self.left}..{self.right})"
@@ -35,21 +37,23 @@ class Interval(object):
         return self.left >= other.left
 
     @property
-    def left(self) -> int:
+    def left(self) -> Union[int, float]:
         return self._left
 
     @property
-    def right(self) -> int:
+    def right(self) -> Union[int, float]:
         return self._right
 
     def overlaps(self, other: Interval):
         return self._left <= other.right and self.right >= other.left
 
-    def contains(self, other: Union[Interval, int]):
+    def contains(self, other: Union[Interval, int, float]):
         match other:
             case Interval():
                 return self.left <= other.left and self.right >= other.right
             case int():
+                return self.left <= other <= self.right
+            case float():
                 return self.left <= other <= self.right
             case _:
                 raise Exception(f"Unsupported type for Interval::contains : {type(other)}")
