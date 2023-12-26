@@ -21,6 +21,7 @@ example
 ### Available Solutions
 | Year |       Python       |         C#         |
 |:----:|:------------------:|:------------------:|
+| 2023 | :white_check_mark: |                    |
 | 2022 |                    | :white_check_mark: |
 | 2021 |                    |                    |
 | 2020 | :white_check_mark: |                    |
