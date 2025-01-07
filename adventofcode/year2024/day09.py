@@ -116,14 +116,8 @@ class ContiguousDisk(Disk):
                     self._disk[data_index], self._disk[space_index] = self._disk[space_index], self._disk[data_index]
                 if fb.length > db.length:
                     free_blocks.append(ContiguousBlock(fb.range.left + db.length, fb.range.right, -1))
-                remaining_free_blocks = sorted([ContiguousBlock(db.range.left, db.range.right, -1)] + self._free_blocks[(i + 1):])
+                free_blocks += self._free_blocks[i + 1:]
                 break
-
-            for rfb in remaining_free_blocks:
-                if free_blocks and free_blocks[-1].is_neighbor(rfb):
-                    free_blocks[-1] = ContiguousBlock(free_blocks[-1].range.left, rfb.range.right, -1)
-                else:
-                    free_blocks.append(rfb)
             self._free_blocks = free_blocks
 
 
