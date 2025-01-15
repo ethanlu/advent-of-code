@@ -55,7 +55,7 @@ class MemoryGrid(object):
     def is_corrupted(self, position: Point2D) -> bool:
         return position in self._falling_bytes
 
-    def show(self, path: P = None) -> None:
+    def show(self, path: P = None, blockade: Point2D = None) -> None:
         grid = {}
 
         for y in range(self._maxy):
@@ -66,6 +66,8 @@ class MemoryGrid(object):
         if path:
             for s in path.search_states:
                 grid[(s.position.x, s.position.y)] = 'O'
+        if blockade:
+            grid[(blockade.x, blockade.y)] = 'X'
         grid[(self._start.x, self._start.y)] = 'S'
         grid[(self._end.x, self._end.y)] = 'E'
         show_dict_grid(grid, self._maxx, self._maxy)
@@ -92,18 +94,35 @@ class Day18(Solution):
         return len(p.search_states) - 1
 
     def part_two(self):
+        # binary search to get first memory position that will block a path
         memory_space = 70
-        starting_memory_limit = 1024
-        for falling_memory_limit in range(starting_memory_limit, len(self._input)):
-            mg = MemoryGrid(memory_space, self._input[:falling_memory_limit])
+        lower_memory_limit = 1024
+        upper_memory_limit = len(self._input)
+        last_shortest_path = None
+        last_memory_with_no_path = None
+        while True:
+            candidate_memory_limit = (lower_memory_limit + upper_memory_limit) // 2
+
+            if candidate_memory_limit == lower_memory_limit:
+                # found memory position
+                break
+
+            mg = MemoryGrid(memory_space, self._input[:(candidate_memory_limit + 1)])
             ss = ShortestPathSearchState(mg, mg.start, 0)
             es = ShortestPathSearchState(mg, mg.end, 0)
             astar = AStar(ss, es)
             p = astar.find_path()
 
             if p.search_states[-1].position == mg.end:
-                print(f"byte #{str(falling_memory_limit)} ({self._input[falling_memory_limit - 1]}) has a path")
+                print(f"byte #{str(candidate_memory_limit + 1)} {self._input[candidate_memory_limit]} has a path")
+                lower_memory_limit = candidate_memory_limit
+                last_shortest_path = p
             else:
-                print(f"byte #{str(falling_memory_limit)} ({self._input[falling_memory_limit - 1]}) has no path")
-                mg.show()
-                return f"{self._input[falling_memory_limit - 1].x},{self._input[falling_memory_limit - 1].y}"
+                print(f"byte #{str(candidate_memory_limit + 1)} {self._input[candidate_memory_limit]} has no path")
+                upper_memory_limit = candidate_memory_limit
+                last_memory_with_no_path = candidate_memory_limit
+
+        mg = MemoryGrid(memory_space, self._input[:last_memory_with_no_path])
+        mg.show(last_shortest_path, self._input[last_memory_with_no_path])
+
+        return f"{self._input[last_memory_with_no_path].x},{self._input[last_memory_with_no_path].y}"
