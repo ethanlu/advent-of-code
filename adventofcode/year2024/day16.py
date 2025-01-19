@@ -1,12 +1,9 @@
 from __future__ import annotations
 from adventofcode.common import Solution
 from adventofcode.common.grid import Point2D
-from adventofcode.common.graph.search import AStar, SearchState, SearchPath, S, P
+from adventofcode.common.graph.search import AStar, SearchState, S
 from adventofcode.common.util import show_dict_grid
-from collections import deque
-from functools import reduce
-from queue import PriorityQueue
-from typing import Dict, Iterable, List, Set, Tuple
+from typing import Iterable, List, Tuple
 
 
 directions = {
@@ -57,64 +54,6 @@ class MinimumTurnSearchState(SearchState):
             if not self._maze.is_wall(next_p):
                 states.append(self.__class__(self._maze, next_p, facing, self._cost + (1 if facing == self.facing else 1001)))
         return states
-
-
-class AStarPlus(AStar):
-    def _build_shortest_paths(self, end: S, shortest_previous: Dict[S, Set[S]]) -> List[P]:
-        shortest_paths = []
-        remaining = deque([[end]])
-
-        while len(remaining) > 0:
-            path= remaining.pop()
-            if path[-1] in shortest_previous:
-                for ns in shortest_previous[path[-1]]:
-                    remaining.append(path + [ns])
-            else:
-                shortest_paths.append(reduce(lambda p, s: p.add(s), reversed(path), SearchPath(self._start)))
-        return shortest_paths
-
-    def find_all_paths(self) -> List[P]:
-        scores = {self._start: 0}
-        shortest_previous = {}
-        lowest_cost = None
-        end_candidate = None
-
-        candidates = PriorityQueue()
-        candidates.put(self._start)
-
-        i = 1
-        trimmed = 0
-        while not candidates.empty():
-            candidate: S = candidates.get()
-
-            if candidate == self._end:
-                if lowest_cost is None:
-                    # encountered first shortest path...record the cost and keep searching until no more paths of equal cost are found
-                    lowest_cost = candidate.cost
-                    end_candidate = candidate
-                if lowest_cost != candidate.cost:
-                    # encountered all shortest paths...build them all and return
-                    return self._build_shortest_paths(end_candidate, shortest_previous)
-                # keep searching as long as candidate are found with the same shortest path cost
-                continue
-
-            # continue search by getting current search state's next states and add to priority queue
-            for next_search_state in candidate.next_search_states():
-                if next_search_state not in scores.keys() or next_search_state.cost <= scores[next_search_state]:
-                    scores[next_search_state] = next_search_state.cost
-                    if next_search_state not in shortest_previous:
-                        shortest_previous[next_search_state] = set([])
-                    shortest_previous[next_search_state].add(candidate)
-                    candidates.put(next_search_state)
-                    continue
-
-                trimmed += 1
-
-            i += 1
-            if self._verbose and i % self._lap == 0:
-                print(f"{i} : ~{candidates.qsize()} : {trimmed}")
-
-        return self._build_shortest_paths(end_candidate, shortest_previous)
 
 
 class Maze(object):
@@ -182,7 +121,7 @@ class Day16(Solution):
     def part_two(self):
         ss = MinimumTurnSearchState(self._maze, self._maze.start, self._maze.facing, 0)
         es = MinimumTurnSearchState(self._maze, self._maze.end, '*', 0)
-        astar = AStarPlus(ss, es)
+        astar = AStar(ss, es)
         astar.verbose(True, 10000)
         best_spots = set([])
         for shortest_path in astar.find_all_paths():

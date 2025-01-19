@@ -199,6 +199,57 @@ class AStar(DebugMixin):
 
         return SearchPath(self._start)
 
+    def find_all_paths(self) -> List[P]:
+        scores = {self._start: 0}
+        shortest_previous = {}
+        lowest_cost = None
+        end_candidate = None
+
+        candidates = PriorityQueue()
+        candidates.put(self._start)
+
+        i = 1
+        trimmed = 0
+        while not candidates.empty():
+            candidate: S = candidates.get()
+
+            if candidate == self._end:
+                if lowest_cost is None:
+                    # encountered first shortest path...record the cost and keep searching until no more paths of equal cost are found
+                    lowest_cost = candidate.cost
+                    end_candidate = candidate
+                if lowest_cost != candidate.cost:
+                    # encountered all shortest paths...end search
+                    break
+                # keep searching as long as candidate are found with the same shortest path cost
+                continue
+
+            # continue search by getting current search state's next states and add to priority queue
+            for next_search_state in candidate.next_search_states():
+                if next_search_state not in scores.keys() or next_search_state.cost <= scores[next_search_state]:
+                    scores[next_search_state] = next_search_state.cost
+                    if next_search_state not in shortest_previous:
+                        shortest_previous[next_search_state] = set([])
+                    shortest_previous[next_search_state].add(candidate)
+                    candidates.put(next_search_state)
+                    continue
+                trimmed += 1
+
+            i += 1
+            if self._verbose and i % self._lap == 0:
+                print(f"{i} : ~{candidates.qsize()} : {trimmed}")
+
+        shortest_paths = []
+        remaining = deque([[end_candidate]])
+        while len(remaining) > 0:
+            path = remaining.pop()
+            if path[-1] in shortest_previous:
+                for ns in shortest_previous[path[-1]]:
+                    remaining.append(path + [ns])
+            else:
+                shortest_paths.append(reduce(lambda p, s: p.add(s), reversed(path[:-1]), SearchPath(path[-1])))
+        return shortest_paths
+
 
 class BFS(DebugMixin):
     def __init__(self, start_path: P):
