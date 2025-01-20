@@ -22,7 +22,7 @@ class Interval(object):
         return self.left == other.left and self.right == other.right if issubclass(type(other), Interval) else False
 
     def __ne__(self, other):
-        return self.left != other.left or self.right != other.right if issubclass(type(other), Interval) else False
+        return self.left != other.left or self.right != other.right if issubclass(type(other), Interval) else True
 
     def __lt__(self, other):
         return self.left < other.left
