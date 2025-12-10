@@ -111,7 +111,7 @@ class Box2D(object):
     def height(self) -> int:
         return self._height
 
-    def overlap(self, other: Box2D) -> bool:
+    def overlaps(self, other: Box2D) -> bool:
         return self._x_interval.overlaps(other._x_interval) and self._y_interval.overlaps(other._y_interval)
 
     def contains(self, other: Union[Box2D, Point2D]):
