@@ -51,25 +51,26 @@ class Day09(Solution):
             Point2D(min(self._corners[0].x, self._corners[-1].x), min(self._corners[0].y, self._corners[-1].y)),
             Point2D(max(self._corners[0].x, self._corners[-1].x), max(self._corners[0].y, self._corners[-1].y))))
         largest = None
-        i = 0
-        for p1, p2 in reversed(sorted(combinations(self._corners, 2), key=lambda p: area(p[0], p[1]))):
-            if i % 1000 == 0:
-                print(f"{i} processed")
+        output_threshold = 1
+        for i, (p1, p2) in enumerate(reversed(sorted(combinations(self._corners, 2), key=lambda p: area(p[0], p[1])))):
+            if i == output_threshold:
+                output_threshold *= 2
+                print(f"{i} processed...")
             candidate = Box2D(Point2D(min(p1.x, p2.x), min(p1.y, p2.y)), Point2D(max(p1.x, p2.x), max(p1.y, p2.y)))
             # candidate rectangle is valid if all corners are either outside or only along the edge of the rectangle. it is invalid if there is any corners inside the rectangle
             for b in boundaries:
-                if candidate.overlaps(b):
-                    delta = Point2D(1 if b.top_left.x != b.bottom_right.x else 0, 1 if b.top_left.y != b.bottom_right.y else 0)
-                    current = b.top_left
-                    intersects = False
-                    while current != b.bottom_right:
-                        if candidate.top_left.x < current.x < candidate.bottom_right.x and candidate.top_left.y < current.y < candidate.bottom_right.y:
-                            # boundary points are inside the rectangle
-                            intersects = True
-                            break
-                        current = current + delta
-                    if intersects:
-                        # found an intersection with a boundary and the rectangle
+                if not candidate.overlaps(b):
+                    continue
+
+                # check if boundary cuts into the rectangle
+                if b.top_left.x == b.bottom_right.x:
+                    # vertical boundary
+                    # self._left <= other.right and self.right >= other.left
+                    if candidate.top_left.x < b.top_left.x < candidate.bottom_right.x and candidate.top_left.y < b.bottom_right.y and candidate.bottom_right.y > b.top_left.y:
+                        break
+                else:
+                    # horizontal boundary
+                    if candidate.top_left.y < b.top_left.y < candidate.bottom_right.y and candidate.top_left.x < b.bottom_right.x and candidate.bottom_right.x > b.top_left.x:
                         break
             else:
                 # rectangle is valid because no corners were inside it
