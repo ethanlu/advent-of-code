@@ -1,62 +1,10 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.grid import Point2D
+from adventofcode.common.grid import ImageTile, Point2D
 from collections import deque
 from typing import Dict, List, Optional, Set, Union
 
 import math
-
-
-class ImageTile(object):
-    def __init__(self, id: int, data: List[List[str]]):
-        self._id = id
-        self._data = data.copy()
-        self._size = len(data)
-
-    @property
-    def id(self) -> int:
-        return self._id
-
-    @property
-    def size(self) -> int:
-        return self._size
-
-    @property
-    def data(self) -> List[List[str]]:
-        return self._data
-
-    @property
-    def top(self) -> str:
-        return "".join(self._data[0])
-
-    @property
-    def bottom(self) -> str:
-        return "".join(self._data[self._size - 1])
-
-    @property
-    def left(self) -> str:
-        return "".join((self._data[y][0] for y in range(self._size)))
-
-    @property
-    def right(self) -> str:
-        return "".join((self._data[y][self._size - 1] for y in range(self._size)))
-
-    def flip(self) -> List[List[str]]:
-        return [list(reversed(row)) for row in self._data]
-
-    def rotate(self) -> List[List[str]]:
-        data = [["?" for x in range(self._size)] for y in range(self._size)]
-        for y in range(self._size):
-            for x in range(self._size):
-                data[y][x] = self._data[self._size - 1 - x][y]
-        return [row for row in data]
-
-    def row(self, row: int) -> List[str]:
-        return self._data[row]
-
-    def show(self) -> None:
-        for row in self._data:
-            print("".join(row))
 
 
 class ImageArray(object):
