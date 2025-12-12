@@ -1,6 +1,6 @@
 from __future__ import annotations
 from adventofcode.common import Solution
-from adventofcode.common.grid import ImageTile, Point2D
+from adventofcode.common.grid import Grid2D, Point2D
 from collections import deque
 from typing import Dict, List, Optional, Set, Union
 
@@ -8,13 +8,13 @@ import math
 
 
 class ImageArray(object):
-    def __init__(self, tiles: Dict[int, ImageTile]):
+    def __init__(self, tiles: Dict[int, Grid2D]):
         self._size = int(math.sqrt(len(tiles)))
         self._tile_size = list(tiles.values())[0].size
-        self._image: List[List[Optional[ImageTile]]] = [[None for x in range(self._size)] for y in range(self._size)]
+        self._image: List[List[Optional[Grid2D]]] = [[None for x in range(self._size)] for y in range(self._size)]
 
         # store all possible orientations of each tile for future reference
-        self._tiles: Dict[int, List[ImageTile]] = {}
+        self._tiles: Dict[int, List[Grid2D]] = {}
 
         # store a lookup table of side signatures for each tile's side (and all orientations)
         self._tile_side_signatures: Dict[id, Dict[str, Set[str]]] = {}
@@ -33,16 +33,16 @@ class ImageArray(object):
                 self._tiles[id].append(t)
                 for side in ('top', 'right', 'bottom', 'left'):
                     self._tile_side_signatures[id][side].add(getattr(t, side))
-                t = ImageTile(id, t.rotate())
+                t = Grid2D(id, t.rotate())
 
-            t = ImageTile(id, tile.flip())
+            t = Grid2D(id, tile.flip())
             for _ in range(4):
                 self._tiles[id].append(t)
                 for side in ('top', 'right', 'bottom', 'left'):
                     self._tile_side_signatures[id][side].add(getattr(t, side))
-                t = ImageTile(t.id, t.rotate())
+                t = Grid2D(t.id, t.rotate())
 
-    def corners(self) -> Dict[str, Union[ImageTile, None]]:
+    def corners(self) -> Dict[str, Union[Grid2D, None]]:
         return {
             'upper left': self._image[0][0],
             'upper right': self._image[0][self._size - 1],
@@ -50,7 +50,7 @@ class ImageArray(object):
             'lower right': self._image[self._size - 1][self._size - 1]
         }
 
-    def _can_fit(self, x: int, y: int, tile_id: int) -> Optional[ImageTile]:
+    def _can_fit(self, x: int, y: int, tile_id: int) -> Optional[Grid2D]:
         # get all neighbors that are already placed in the image
         neighbors = []
         if 0 <= (y - 1) < self._size and self._image[y - 1][x] is not None:     # top neighbor
@@ -220,7 +220,7 @@ class ImageArray(object):
                 print(" ".join(line_output))
             print()
 
-    def combine(self) -> ImageTile:
+    def combine(self) -> Grid2D:
         combined_size = self._size * (self._tile_size - 2)
         combined_data = [["?" for x in range(combined_size)] for y in range(combined_size)]
         for row, tiles in enumerate(self._image):
@@ -230,11 +230,11 @@ class ImageArray(object):
                     for x in range(1, self._tile_size - 1):
                         combined_x = (x - 1) + (col * (self._tile_size - 2))
                         combined_data[combined_y][combined_x] = tile.data[y][x]
-        return ImageTile(0, combined_data)
+        return Grid2D(0, combined_data)
 
 
 class ImageSearch(object):
-    def __init__(self, pattern: ImageTile):
+    def __init__(self, pattern: Grid2D):
         self._pattern = pattern
         self._points_of_interest = []
         self._maxx = 0
@@ -247,7 +247,7 @@ class ImageSearch(object):
                     self._maxx = x if x > self._maxx else self._maxx
                     self._maxy = y if y > self._maxy else self._maxy
 
-    def search(self, subject: ImageTile) -> Optional[ImageTile]:
+    def search(self, subject: Grid2D) -> Optional[Grid2D]:
         found_offsets = []
         for y in range(len(subject.data)):
             if 0 <= (y + self._maxy) < len(subject.data):
@@ -267,7 +267,7 @@ class ImageSearch(object):
             for offset in found_offsets:
                 for p in self._points_of_interest:
                     data[offset.y + p.y][offset.x + p.x] = "O"
-            return ImageTile(0, data)
+            return Grid2D(0, data)
         else:
             # pattern not found in this image
             return None
@@ -282,7 +282,7 @@ class Day20(Solution):
         data = []
         for line in self._load_input_as_lines():
             if not line:
-                self._tiles[id] = ImageTile(id, data)
+                self._tiles[id] = Grid2D(id, data)
                 id = 0
                 data = []
                 continue
@@ -291,7 +291,7 @@ class Day20(Solution):
                 id = int(line.replace("Tile ", "").replace(":", "").strip())
             else:
                 data.append(list(line))
-        self._tiles[id] = ImageTile(id, data)
+        self._tiles[id] = Grid2D(id, data)
 
     def part_one(self):
         ia = ImageArray(self._tiles)
@@ -315,7 +315,7 @@ class Day20(Solution):
         print(f"\nimage tiles combined into:")
         subject.show()
 
-        ims = ImageSearch(ImageTile(
+        ims = ImageSearch(Grid2D(
             1,
             [
                 list("                  # "),
@@ -336,9 +336,9 @@ class Day20(Solution):
                         rough_waters += 1 if c == '#' else 0
                 break
 
-            subject = ImageTile(subject.id, subject.rotate())
+            subject = Grid2D(subject.id, subject.rotate())
         else:
-            subject = ImageTile(subject.id, subject.flip())
+            subject = Grid2D(subject.id, subject.flip())
             for _ in range(4):
                 found = ims.search(subject)
 
@@ -350,7 +350,7 @@ class Day20(Solution):
                             rough_waters += 1 if c == '#' else 0
                     break
 
-                subject = ImageTile(subject.id, subject.rotate())
+                subject = Grid2D(subject.id, subject.rotate())
             else:
                 raise Exception("pattern not found")
 

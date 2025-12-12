@@ -169,7 +169,7 @@ class Point3D(object):
         return self._z
 
 
-class ImageTile(object):
+class Grid2D(object):
     def __init__(self, id: int, data: List[List[str]]):
         self._id = id
         self._data = data.copy()
