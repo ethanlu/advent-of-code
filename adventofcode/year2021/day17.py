@@ -87,7 +87,7 @@ class Day17(Solution):
                     # undershot and it was an adjustment...but it got closer...so continue adjusting
                     remaining.append(velocity + Point2D(1, 0))
                 # landed in range of x position, but overshot the y position....only try a faster/slower y velocity if landed within the width of the y range of the target
-                if final_position.x < self._target.bottom_right.x and abs(final_position.y - self._target.bottom_right.y) < 10 * self._target.height:
+                if final_position.x < self._target.bottom_right.x and abs(final_position.y - self._target.bottom_right.y) < 5 * self._target.height:
                     remaining.append(velocity + Point2D(0, 1))
                     remaining.append(velocity + Point2D(0, -1))
         return len(velocities)
