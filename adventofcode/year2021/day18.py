@@ -185,18 +185,17 @@ class SnailfishNumber(object):
         else:
             self.right = SnailfishNumber(self, [floor(self.right / 2), ceil(self.right / 2)])
 
-
-def reduce(sn: SnailfishNumber) -> None:
-    while True:
-        ex = sn.explodable()
-        if ex:
-            ex.explode()
-            continue
-        sp = sn.splittable()
-        if sp:
-            sp.split()
-            continue
-        break
+    def reduce(self) -> None:
+        while True:
+            ex = self.explodable()
+            if ex:
+                ex.explode()
+                continue
+            sp = self.splittable()
+            if sp:
+                sp.split()
+                continue
+            break
 
 
 class Day18(Solution):
@@ -208,13 +207,13 @@ class Day18(Solution):
         total = None
         for sn in (SnailfishNumber(None, eval(line)) for line in self._data):
             print(f"{sn}:")
-            reduce(sn)
+            sn.reduce()
             print(f"\tafter reduction: {sn}")
             if total is None:
                 total = sn
             else:
                 total += sn
-                reduce(total)
+                total.reduce()
             print(f"\tafter addition and reduction : {total}")
         return total.magnitude
 
@@ -223,10 +222,10 @@ class Day18(Solution):
         for a, b in permutations(self._data, 2):
             sna = SnailfishNumber(None, eval(a))
             snb = SnailfishNumber(None, eval(b))
-            reduce(sna)
-            reduce(snb)
+            sna.reduce()
+            snb.reduce()
             candidate = sna + snb
-            reduce(candidate)
+            candidate.reduce()
             m = candidate.magnitude
             if m > largest:
                 print(f"{a} and {b} yields new largest : {m}")
